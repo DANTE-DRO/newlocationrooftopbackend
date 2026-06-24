@@ -1,0 +1,1757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>LocationRooftop — Premium Hospitality Management Suite</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+:root{
+  --gold-1:#fff4d0;
+  --gold-2:#f4cf6f;
+  --gold-3:#c9952b;
+  --gold-4:#8a5a0b;
+  --gold-5:#d4af37;
+  --bg-deep:#0a0703;
+  --bg-soft:#1a1207;
+  --bg-mid:#241a0c;
+  --ink:#2b1f0c;
+  --paper:#fffaf0;
+  --line:rgba(201,149,43,.35);
+  --line-gold:rgba(212,175,55,.5);
+  --ok:#2e7d32; --err:#c62828; --warn:#ef6c00;
+  --shadow:0 18px 50px rgba(0,0,0,.55);
+  --gold-grad:linear-gradient(135deg,#f4cf6f 0%,#c9952b 50%,#8a5a0b 100%);
+  --gold-grad-bright:linear-gradient(135deg,#ffe9a8 0%,#d4af37 50%,#c9952b 100%);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family:'Inter',system-ui,sans-serif;
+  color:var(--ink);
+  background:
+    radial-gradient(1400px 900px at 0% 0%,rgba(212,175,55,.18) 0%,transparent 55%),
+    radial-gradient(1200px 800px at 100% 100%,rgba(201,149,43,.15) 0%,transparent 55%),
+    linear-gradient(135deg,#0a0703 0%,#1a1207 40%,#241a0c 100%);
+  min-height:100vh;
+  overflow-x:hidden;
+}
+h1,h2,h3{font-family:'Playfair Display',serif;color:#3a2607}
+button{font-family:inherit;cursor:pointer;border:none}
+input,select,textarea{font-family:inherit}
+.hidden{display:none !important}
+
+/* Floating gold particles background */
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:
+    radial-gradient(circle at 20% 30%,rgba(212,175,55,.08) 0,transparent 2px),
+    radial-gradient(circle at 80% 60%,rgba(212,175,55,.06) 0,transparent 2px),
+    radial-gradient(circle at 50% 80%,rgba(212,175,55,.05) 0,transparent 2px);
+  background-size:120px 120px,180px 180px,200px 200px;
+}
+
+/* ============ LOGIN SCREEN ============ */
+.login-wrap{
+  min-height:100vh;display:grid;place-items:center;padding:24px;position:relative;z-index:1;
+}
+.login-shell{
+  width:min(960px,100%);
+  background:linear-gradient(135deg,rgba(26,18,7,.92) 0%,rgba(36,26,12,.88) 100%);
+  backdrop-filter:blur(20px);
+  border:1px solid var(--line-gold);
+  border-radius:28px;
+  box-shadow:var(--shadow),inset 0 1px 0 rgba(255,255,255,.05);
+  overflow:hidden;
+  position:relative;
+}
+.login-shell::before{
+  content:'';position:absolute;inset:0;
+  background:
+    radial-gradient(600px 300px at 0% 0%,rgba(212,175,55,.15),transparent 60%),
+    radial-gradient(600px 300px at 100% 100%,rgba(212,175,55,.1),transparent 60%);
+  pointer-events:none;
+}
+
+.login-header{
+  text-align:center;padding:32px 24px 18px;border-bottom:1px solid var(--line-gold);
+  position:relative;z-index:1;
+}
+.login-header .brand-row{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:8px}
+.brand-logo-big{
+  width:64px;height:64px;border-radius:18px;
+  background:var(--gold-grad-bright);
+  display:grid;place-items:center;color:#1a1207;font-weight:900;font-size:26px;
+  box-shadow:inset 0 0 0 2px rgba(255,255,255,.4),0 12px 30px rgba(212,175,55,.4);
+  letter-spacing:-1px;
+}
+.login-header h1{
+  font-family:'Playfair Display';font-size:32px;font-weight:900;line-height:1;
+  background:var(--gold-grad-bright);-webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.login-header .tagline{
+  font-size:12px;letter-spacing:4px;color:#d4af37;text-transform:uppercase;font-weight:500;margin-top:6px;
+}
+
+/* Panel selector tabs */
+.panel-tabs{
+  display:grid;grid-template-columns:1fr 1fr;gap:0;
+  background:rgba(0,0,0,.4);position:relative;z-index:1;
+}
+.panel-tab{
+  padding:18px 20px;background:transparent;color:#a88a4d;
+  font-weight:600;font-size:15px;letter-spacing:.5px;
+  border-bottom:3px solid transparent;transition:.3s;
+  display:flex;align-items:center;justify-content:center;gap:10px;
+}
+.panel-tab .ico{font-size:20px}
+.panel-tab:hover{color:#f4cf6f;background:rgba(212,175,55,.05)}
+.panel-tab.active{
+  color:#fff;
+  background:linear-gradient(180deg,rgba(212,175,55,.18),rgba(212,175,55,.05));
+  border-bottom-color:#d4af37;
+}
+.panel-tab.staff.active{border-bottom-color:#d4af37}
+.panel-tab.admin.active{border-bottom-color:#d4af37}
+
+.panel-body{
+  display:grid;grid-template-columns:1fr 1fr;gap:0;
+  position:relative;z-index:1;min-height:480px;
+}
+.panel-side{
+  padding:36px 32px;display:flex;flex-direction:column;justify-content:center;
+  transition:.4s;
+}
+.panel-side.staff{
+  background:linear-gradient(135deg,rgba(36,26,12,.6),rgba(26,18,7,.4));
+  border-right:1px solid var(--line-gold);
+}
+.panel-side.admin{
+  background:linear-gradient(135deg,rgba(26,18,7,.4),rgba(36,26,12,.6));
+}
+.panel-side.dimmed{
+  opacity:.35;pointer-events:none;filter:grayscale(.6);
+}
+.panel-side.active{
+  background:linear-gradient(135deg,rgba(212,175,55,.12),rgba(138,90,11,.18));
+}
+
+.panel-title-row{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+.panel-icon{
+  width:44px;height:44px;border-radius:12px;
+  background:var(--gold-grad);
+  display:grid;place-items:center;font-size:22px;
+  box-shadow:0 6px 16px rgba(138,90,11,.4),inset 0 0 0 1px rgba(255,255,255,.2);
+}
+.panel-h2{
+  font-family:'Playfair Display';font-size:22px;color:#fff;font-weight:700;
+}
+.panel-hint{font-size:12px;color:#c9a05a;margin-bottom:22px;line-height:1.5}
+
+.field{margin-bottom:14px}
+.field label{
+  display:block;font-size:11px;font-weight:600;color:#d4af37;
+  margin-bottom:6px;letter-spacing:1.2px;text-transform:uppercase
+}
+.field input,.field select,.field textarea{
+  width:100%;padding:12px 14px;border-radius:11px;
+  border:1.5px solid rgba(212,175,55,.3);
+  background:rgba(0,0,0,.35);font-size:14px;color:#fff;outline:none;transition:.2s;
+}
+.field input::placeholder{color:rgba(212,175,55,.4)}
+.field input:focus,.field select:focus,.field textarea:focus{
+  border-color:#d4af37;box-shadow:0 0 0 4px rgba(212,175,55,.18);background:rgba(0,0,0,.55);
+}
+.field select option{background:#1a1207;color:#fff}
+
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  padding:13px 20px;border-radius:11px;font-weight:700;font-size:14px;
+  background:var(--gold-grad);color:#1a1207;
+  box-shadow:0 8px 22px rgba(138,90,11,.45),inset 0 1px 0 rgba(255,255,255,.3);
+  transition:.2s;letter-spacing:.3px;
+}
+.btn:hover{transform:translateY(-2px);box-shadow:0 14px 30px rgba(138,90,11,.55)}
+.btn:active{transform:translateY(0)}
+.btn-block{width:100%}
+.btn-ghost{
+  background:transparent;color:#d4af37;
+  box-shadow:none;border:1.5px solid rgba(212,175,55,.4);
+}
+.btn-ghost:hover{background:rgba(212,175,55,.1);color:#fff}
+.btn-danger{background:linear-gradient(135deg,#e57373,#c62828);color:#fff}
+.btn-ok{background:linear-gradient(135deg,#66bb6a,#2e7d32);color:#fff}
+.btn-sm{padding:7px 12px;font-size:12px;border-radius:9px}
+
+.alert{padding:11px 14px;border-radius:10px;font-size:13px;margin-bottom:12px;font-weight:500}
+.alert.err{background:rgba(198,40,40,.15);color:#ff8a80;border:1px solid rgba(198,40,40,.4)}
+.alert.ok{background:rgba(46,125,50,.15);color:#a5d6a7;border:1px solid rgba(46,125,50,.4)}
+.alert.info{background:rgba(212,175,55,.12);color:#ffe082;border:1px solid rgba(212,175,55,.35)}
+
+.role-select-wrap{margin-bottom:14px}
+.forgot-link{
+  display:block;text-align:center;font-size:12px;color:#d4af37;
+  margin-top:14px;text-decoration:none;
+}
+.forgot-link:hover{color:#fff;text-decoration:underline}
+
+.test-accounts{
+  margin-top:18px;font-size:11px;color:#c9a05a;
+  border:1px solid rgba(212,175,55,.2);border-radius:10px;padding:10px;
+  background:rgba(0,0,0,.25);
+}
+.test-accounts summary{cursor:pointer;font-weight:600;color:#d4af37;font-size:12px}
+.test-accounts code{color:#ffe082;font-family:'Courier New',monospace}
+
+.login-footer{
+  text-align:center;padding:14px;font-size:11px;color:#a88a4d;
+  border-top:1px solid var(--line-gold);background:rgba(0,0,0,.3);
+  letter-spacing:1px;text-transform:uppercase;position:relative;z-index:1;
+}
+.login-footer .dot{color:#d4af37;margin:0 6px}
+
+/* ============ APP SHELL ============ */
+.app{display:none;min-height:100vh;position:relative;z-index:1}
+.app.active{display:grid;grid-template-columns:260px 1fr}
+.sidebar{
+  background:linear-gradient(180deg,#1a1207 0%,#0a0703 100%);
+  color:#f7e8c4;padding:20px 14px;position:sticky;top:0;height:100vh;overflow-y:auto;
+  border-right:1px solid var(--line-gold);
+}
+.sidebar .brand-row{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+.brand-logo{
+  width:48px;height:48px;border-radius:12px;
+  background:var(--gold-grad-bright);
+  display:grid;place-items:center;color:#1a1207;font-weight:900;font-size:20px;
+  box-shadow:inset 0 0 0 2px rgba(255,255,255,.3),0 6px 16px rgba(212,175,55,.4);
+}
+.sidebar .brand-title{
+  font-family:'Playfair Display';font-size:20px;color:#fff;line-height:1;
+}
+.sidebar .brand-sub{font-size:10px;letter-spacing:2px;color:#d4af37;text-transform:uppercase;margin-top:3px}
+.nav{margin-top:14px;display:flex;flex-direction:column;gap:3px}
+.nav button{
+  text-align:left;background:transparent;color:#e6d5a4;padding:11px 12px;border-radius:10px;
+  font-size:13px;font-weight:500;display:flex;align-items:center;gap:10px;transition:.18s;
+}
+.nav button:hover{background:rgba(212,175,55,.12);color:#fff}
+.nav button.active{
+  background:var(--gold-grad);color:#1a1207;font-weight:700;
+  box-shadow:0 6px 14px rgba(138,90,11,.4);
+}
+.nav .ico{width:18px;text-align:center;font-size:15px}
+.sidebar-foot{margin-top:24px;padding-top:16px;border-top:1px solid rgba(212,175,55,.2);font-size:11px;color:#a88a4d}
+.sidebar-foot .status-dot{color:#66bb6a;font-size:14px}
+
+.main{padding:24px 28px;overflow-x:hidden;background:linear-gradient(135deg,#fff8e7 0%,#fff4d0 100%);min-height:100vh}
+.topbar{
+  display:flex;align-items:center;justify-content:space-between;gap:14px;
+  background:rgba(255,255,255,.7);backdrop-filter:blur(10px);
+  border:1px solid var(--line);border-radius:16px;padding:12px 18px;margin-bottom:20px;
+  box-shadow:0 6px 18px rgba(60,40,5,.1);
+}
+.topbar .user{display:flex;align-items:center;gap:10px;font-size:13px}
+.avatar{
+  width:38px;height:38px;border-radius:50%;
+  background:var(--gold-grad);color:#1a1207;
+  display:grid;place-items:center;font-weight:800;
+  box-shadow:0 4px 10px rgba(138,90,11,.3);
+}
+.mode-pill{
+  font-size:10px;padding:4px 8px;border-radius:99px;font-weight:700;letter-spacing:.5px;
+  background:rgba(46,125,50,.15);color:#2e7d32;text-transform:uppercase;
+}
+.mode-pill.demo{background:rgba(239,108,0,.15);color:#ef6c00}
+
+.section-title{font-size:28px;margin-bottom:6px;color:#3a2607}
+.section-sub{color:#7a5a18;font-size:14px;margin-bottom:18px}
+
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin-bottom:20px}
+.kpi{
+  background:linear-gradient(135deg,#fffaf0 0%,#fff4d0 100%);
+  border:1px solid var(--line);border-radius:16px;padding:16px 18px;
+  box-shadow:0 6px 18px rgba(60,40,5,.08);
+  position:relative;overflow:hidden;
+}
+.kpi::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--gold-grad);
+}
+.kpi .label{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#7a5a18;font-weight:600}
+.kpi .value{font-family:'Playfair Display';font-size:26px;color:#3a2607;margin-top:4px;font-weight:700}
+.kpi .delta{font-size:11px;color:#2e7d32;margin-top:4px;font-weight:500}
+.kpi.warn::before{background:linear-gradient(135deg,#ef6c00,#c62828)}
+.kpi.warn .delta{color:#c62828}
+
+.card{
+  background:rgba(255,250,240,.92);
+  border:1px solid var(--line);border-radius:16px;padding:18px;
+  box-shadow:0 6px 18px rgba(60,40,5,.08);margin-bottom:18px;
+}
+.card h3{font-size:18px;margin-bottom:12px;display:flex;align-items:center;gap:8px;color:#3a2607}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:end}
+.row > .field{flex:1;min-width:160px;margin-bottom:0}
+
+/* Light theme for app inputs */
+.main .field label{color:#5a3e08}
+.main .field input,.main .field select,.main .field textarea{
+  background:#fffaf0;color:var(--ink);border-color:var(--line);
+}
+.main .field input::placeholder{color:#a88a4d}
+.main .field input:focus,.main .field select:focus,.main .field textarea:focus{
+  border-color:var(--gold-3);box-shadow:0 0 0 4px rgba(201,149,43,.18);background:#fff;
+}
+.main .field select option{background:#fff;color:var(--ink)}
+
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th,.tbl td{padding:9px 10px;text-align:left;border-bottom:1px solid var(--line)}
+.tbl th{background:rgba(201,149,43,.12);font-weight:700;color:#5a3e08;text-transform:uppercase;letter-spacing:.5px;font-size:11px}
+.tbl tr:hover{background:rgba(201,149,43,.06)}
+.tbl-wrap{overflow-x:auto;border-radius:12px;border:1px solid var(--line)}
+
+.badge{display:inline-block;padding:3px 9px;border-radius:99px;font-size:11px;font-weight:700}
+.badge.in{background:#e3f5e6;color:#15521a}
+.badge.ex{background:#ffe5e5;color:#7a1010}
+.badge.ls{background:#fff0d6;color:#7a4a10}
+
+.tabs{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+.tab{padding:9px 16px;border-radius:10px;background:#fff;border:1.5px solid var(--line);font-size:13px;font-weight:600;color:#5a3e08;cursor:pointer}
+.tab.active{background:var(--gold-grad);color:#fff;border-color:transparent;box-shadow:0 4px 12px rgba(138,90,11,.3)}
+
+/* Chatbot */
+.chat-fab{
+  position:fixed;bottom:22px;right:22px;width:62px;height:62px;border-radius:50%;
+  background:var(--gold-grad-bright);color:#1a1207;font-size:28px;
+  display:grid;place-items:center;box-shadow:0 12px 30px rgba(212,175,55,.6);
+  cursor:pointer;z-index:100;
+  border:2px solid rgba(255,255,255,.5);transition:.3s;
+}
+.chat-fab:hover{transform:scale(1.08) rotate(-5deg)}
+.chat-fab.pulse::after{
+  content:'';position:absolute;inset:-4px;border-radius:50%;
+  border:2px solid #d4af37;animation:pulse 2s infinite;
+}
+@keyframes pulse{
+  0%{transform:scale(1);opacity:1}
+  100%{transform:scale(1.4);opacity:0}
+}
+.chat-box{
+  position:fixed;bottom:96px;right:22px;width:min(380px,92vw);height:520px;
+  background:#fffaf0;border-radius:20px;box-shadow:0 24px 60px rgba(0,0,0,.4);
+  display:none;flex-direction:column;z-index:100;border:1px solid var(--line-gold);overflow:hidden;
+}
+.chat-box.open{display:flex;animation:slideUp .3s ease}
+@keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+.chat-head{
+  background:linear-gradient(135deg,#1a1207,#241a0c);color:#d4af37;
+  padding:14px 16px;font-weight:700;display:flex;justify-content:space-between;align-items:center;
+  border-bottom:2px solid #d4af37;
+}
+.chat-head .title{display:flex;align-items:center;gap:8px;font-size:14px}
+.chat-head .close{cursor:pointer;color:#d4af37;font-size:18px;line-height:1}
+.chat-head .close:hover{color:#fff}
+.chat-body{flex:1;overflow-y:auto;padding:14px;background:linear-gradient(180deg,#fff4d0,#fffaf0)}
+.msg{padding:10px 13px;border-radius:14px;margin-bottom:8px;font-size:13px;max-width:85%;line-height:1.5;animation:fadeIn .3s}
+@keyframes fadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.msg.bot{background:#fff;border:1px solid var(--line);color:#3a2607}
+.msg.me{background:var(--gold-grad);color:#fff;margin-left:auto;box-shadow:0 4px 10px rgba(138,90,11,.25)}
+.msg .ts{font-size:9px;opacity:.6;display:block;margin-top:3px}
+.chat-foot{display:flex;gap:6px;padding:10px;background:#fff;border-top:1px solid var(--line)}
+.chat-foot input{flex:1;border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:13px;outline:none;color:var(--ink)}
+.chat-foot input:focus{border-color:var(--gold-3)}
+.chat-quick{display:flex;gap:6px;padding:6px 10px;background:#fff;border-top:1px solid var(--line);flex-wrap:wrap}
+.chat-quick button{
+  font-size:11px;padding:5px 10px;border-radius:99px;
+  background:rgba(212,175,55,.15);color:#5a3e08;border:1px solid var(--line);font-weight:600;
+}
+.chat-quick button:hover{background:var(--gold-grad);color:#fff;border-color:transparent}
+
+/* OCR scan */
+.scan-zone{
+  border:2px dashed var(--gold-3);border-radius:14px;padding:30px 20px;text-align:center;
+  background:rgba(255,244,208,.5);transition:.2s;cursor:pointer;display:block;
+}
+.scan-zone:hover{background:rgba(255,244,208,.9);border-color:var(--gold-4)}
+.scan-zone .ico{font-size:48px;margin-bottom:8px;display:block}
+.scan-progress{height:8px;background:#eee;border-radius:99px;overflow:hidden;margin-top:12px;display:none}
+.scan-progress.show{display:block}
+.scan-progress > div{height:100%;background:var(--gold-grad);width:0;transition:.3s}
+
+/* Responsive */
+@media (max-width: 900px){
+  .panel-body{grid-template-columns:1fr}
+  .panel-side.staff{border-right:none;border-bottom:1px solid var(--line-gold)}
+  .panel-side.dimmed{display:none}
+  .app.active{grid-template-columns:1fr}
+  .sidebar{position:fixed;left:-280px;top:0;width:260px;z-index:200;transition:.3s;height:100vh}
+  .sidebar.show{left:0}
+  .menu-toggle{display:inline-flex !important}
+  .main{padding:18px 14px}
+}
+.menu-toggle{display:none;background:transparent;color:#5a3e08;font-size:22px}
+@media (max-width: 560px){
+  .section-title{font-size:22px}
+  .kpi .value{font-size:22px}
+  .login-header h1{font-size:24px}
+  .chat-box{width:calc(100vw - 24px);right:12px}
+  .chat-fab{right:12px;bottom:12px}
+}
+
+/* Toast notifications */
+.toast-wrap{position:fixed;top:20px;right:20px;z-index:1000;display:flex;flex-direction:column;gap:8px}
+.toast{
+  background:#fff;border:1px solid var(--line);border-left:4px solid var(--gold-3);
+  border-radius:10px;padding:12px 16px;box-shadow:0 8px 24px rgba(0,0,0,.15);
+  min-width:240px;animation:slideIn .3s;font-size:13px;color:var(--ink);
+}
+.toast.ok{border-left-color:#2e7d32}
+.toast.err{border-left-color:#c62828}
+@keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+</style>
+</head>
+<body>
+
+<!-- Toast container -->
+<div class="toast-wrap" id="toastWrap"></div>
+
+<!-- ============ LOGIN SCREEN ============ -->
+<div id="loginScreen" class="login-wrap">
+  <div class="login-shell">
+    <div class="login-header">
+      <div class="brand-row">
+        <div class="brand-logo-big">LR</div>
+        <div style="text-align:left">
+          <h1>LocationRooftop</h1>
+          <div class="tagline">Premium Hospitality Management Suite</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel selector tabs -->
+    <div class="panel-tabs">
+      <button class="panel-tab staff active" id="tabStaff" onclick="switchPanel('staff')">
+        <span class="ico">👥</span> Staff Login
+      </button>
+      <button class="panel-tab admin" id="tabAdmin" onclick="switchPanel('admin')">
+        <span class="ico">🔐</span> Admin Panel
+      </button>
+    </div>
+
+    <div class="panel-body">
+      <!-- ===== STAFF SIDE (LEFT) ===== -->
+      <div class="panel-side staff active" id="staffPanel">
+        <div class="panel-title-row">
+          <div class="panel-icon">👥</div>
+          <div>
+            <div class="panel-h2">Staff Portal</div>
+            <div style="font-size:11px;color:#d4af37;letter-spacing:1px;text-transform:uppercase">Employee Access</div>
+          </div>
+        </div>
+        <div class="panel-hint">All panels: Cost Controller, Procurement, Storekeeper, Accounts, Finance, Supervisor, HR, Director, Auditor.</div>
+
+        <div class="field role-select-wrap">
+          <label>Select Your Panel</label>
+          <select id="staffRole">
+            <option value="auto">— Auto-detect from username —</option>
+            <option value="cost_controller">Cost Controller</option>
+            <option value="procurement">Procurement</option>
+            <option value="storekeeper">Storekeeper</option>
+            <option value="accounts">Accounts</option>
+            <option value="finance_manager">Finance Manager</option>
+            <option value="supervisor">Supervisor</option>
+            <option value="hr">Human Resources (HR)</option>
+            <option value="director">Director</option>
+            <option value="auditor">Auditor</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Username</label>
+          <input id="staffUser" placeholder="e.g. cost" autocomplete="username" />
+        </div>
+        <div class="field">
+          <label>Password</label>
+          <input id="staffPass" type="password" placeholder="••••••••" autocomplete="current-password"
+                 onkeydown="if(event.key==='Enter')doLogin('staff')" />
+        </div>
+
+        <div id="staffMsg"></div>
+        <button class="btn btn-block" onclick="doLogin('staff')">🔓 Sign In to Staff Panel</button>
+
+        <a href="#" class="forgot-link" onclick="showForgot();return false">Forgot password? Contact Admin →</a>
+      </div>
+
+      <!-- ===== ADMIN SIDE (RIGHT) ===== -->
+      <div class="panel-side admin dimmed" id="adminPanel">
+        <div class="panel-title-row">
+          <div class="panel-icon">🔐</div>
+          <div>
+            <div class="panel-h2">Administrator</div>
+            <div style="font-size:11px;color:#d4af37;letter-spacing:1px;text-transform:uppercase">Full System Control</div>
+          </div>
+        </div>
+        <div class="panel-hint">Admin can create accounts, reset all user passwords, manage records, and view audit logs.</div>
+
+        <div class="field">
+          <label>Administrator Username</label>
+          <input id="adminUser" value="admin" placeholder="admin" autocomplete="username" />
+        </div>
+        <div class="field">
+          <label>Administrator Password</label>
+          <input id="adminPass" type="password" placeholder="••••••••" autocomplete="current-password"
+                 onkeydown="if(event.key==='Enter')doLogin('admin')" />
+        </div>
+
+        <div id="adminMsg"></div>
+        <button class="btn btn-block" onclick="doLogin('admin')">🛡️ Enter Admin Panel</button>
+
+        <div style="margin-top:14px;font-size:11px;color:#a88a4d;text-align:center;line-height:1.6">
+          Admin can reset all user passwords and manage records
+        </div>
+
+        <details class="test-accounts">
+          <summary>🔑 Default Test Credentials</summary>
+          <div style="margin-top:8px;line-height:1.8">
+            <strong style="color:#ffe082">Admin:</strong> <code>admin / 119722</code><br>
+            <strong style="color:#ffe082">Staff accounts:</strong><br>
+            <code>cost / cost123</code> · <code>procurement / proc123</code><br>
+            <code>storekeeper / store123</code> · <code>accounts / acc123</code><br>
+            <code>finance / fin123</code> · <code>supervisor / sup123</code><br>
+            <code>hr / hr123</code> · <code>director / dir123</code> · <code>auditor / aud123</code>
+          </div>
+        </details>
+      </div>
+    </div>
+
+    <div class="login-footer">
+      <span>🛡️ Secure</span><span class="dot">●</span>
+      <span>v1.0.0</span><span class="dot">●</span>
+      <span>© LocationRooftop</span><span class="dot">●</span>
+      <span id="modeIndicator">Initializing...</span>
+    </div>
+  </div>
+</div>
+
+<!-- ============ APP ============ -->
+<div id="app" class="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand-row">
+      <div class="brand-logo">LR</div>
+      <div>
+        <div class="brand-title">LocationRooftop</div>
+        <div class="brand-sub" id="sideRole">—</div>
+      </div>
+    </div>
+    <div class="nav" id="navList"></div>
+    <div class="sidebar-foot">
+      <div>v1.0.0 · © LocationRooftop</div>
+      <div style="margin-top:4px"><span class="status-dot">●</span> <span id="serverStatus">Ready</span></div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('show')">☰</button>
+      <div style="font-weight:700;font-size:14px;color:#5a3e08" id="pageTitle">Dashboard</div>
+      <div class="user">
+        <span class="mode-pill" id="modePill">ONLINE</span>
+        <div class="avatar" id="avatar">?</div>
+        <div>
+          <div style="font-weight:700" id="userName">—</div>
+          <div style="font-size:11px;color:#7a5a18" id="userRole">—</div>
+        </div>
+        <button class="btn btn-sm btn-ghost" onclick="logout()" style="color:#5a3e08;border-color:var(--line)">Logout</button>
+      </div>
+    </div>
+
+    <div id="pageContent"></div>
+  </main>
+</div>
+
+<!-- Chatbot -->
+<div class="chat-fab pulse" id="chatFab" onclick="toggleChat()" style="display:none">💬</div>
+<div class="chat-box" id="chatBox">
+  <div class="chat-head">
+    <div class="title">🤖 LocationRooftop AI Assistant</div>
+    <span class="close" onclick="toggleChat()">✕</span>
+  </div>
+  <div class="chat-body" id="chatBody">
+    <div class="msg bot">Hello! 👋 I'm your LocationRooftop AI Assistant. I can help with reports, inventory, staff, passwords, P&L analysis, and more. Try the quick actions below or ask me anything!</div>
+  </div>
+  <div class="chat-quick" id="chatQuick">
+    <button onclick="quickChat('Show me today\\'s summary')">📊 Today's summary</button>
+    <button onclick="quickChat('How do I reset a password?')">🔑 Reset password</button>
+    <button onclick="quickChat('Total income this month')">💰 Income</button>
+    <button onclick="quickChat('Help')">❓ Help</button>
+  </div>
+  <div class="chat-foot">
+    <input id="chatInput" placeholder="Type a question…" onkeydown="if(event.key==='Enter')sendChat()" />
+    <button class="btn btn-sm" onclick="sendChat()">Send</button>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   LocationRooftop Frontend — Premium Hospitality Management
+   Works in ONLINE mode (with backend) or DEMO mode (offline, localStorage)
+   ============================================================ */
+
+// ---------- API CONFIG ----------
+const API = (() => {
+  const saved = localStorage.getItem('lr_api');
+  if (saved) return saved;
+  const host = location.hostname;
+  if (host === 'localhost' || host === '127.0.0.1') return 'http://localhost:10000';
+  return location.origin;
+})();
+
+let TOKEN = localStorage.getItem('lr_token') || '';
+let ME = JSON.parse(localStorage.getItem('lr_me') || 'null');
+let DEMO_MODE = false;  // Set true when backend is unreachable
+
+// ============================================================
+// DEMO MODE - Full offline backend simulation using localStorage
+// ============================================================
+const DB = {
+  _key(t){ return 'lr_db_'+t; },
+  get(t){ try{ return JSON.parse(localStorage.getItem(this._key(t))||'[]'); }catch(e){ return []; } },
+  set(t,d){ localStorage.setItem(this._key(t), JSON.stringify(d)); },
+  add(t,row){ const d=this.get(t); row.id=(d[0]?.id||0)+1; for(const r of d) if(r.id>=row.id) row.id=r.id+1; d.unshift(row); this.set(t,d); return row; },
+  update(t,id,patch){ const d=this.get(t); const i=d.findIndex(r=>r.id==id); if(i>=0){ d[i]=Object.assign(d[i],patch); this.set(t,d); return d[i]; } return null; },
+  del(t,id){ this.set(t, this.get(t).filter(r=>r.id!=id)); },
+  reset(){ Object.keys(localStorage).filter(k=>k.startsWith('lr_db_')).forEach(k=>localStorage.removeItem(k)); }
+};
+
+// Seed default users if empty
+function seedDemoData(){
+  if (DB.get('users').length === 0) {
+    const defaults = [
+      { username:'admin', password:'119722', role:'admin', full_name:'System Administrator' },
+      { username:'cost', password:'cost123', role:'cost_controller', full_name:'Cost Controller' },
+      { username:'procurement', password:'proc123', role:'procurement', full_name:'Procurement Officer' },
+      { username:'storekeeper', password:'store123', role:'storekeeper', full_name:'Store Keeper' },
+      { username:'accounts', password:'acc123', role:'accounts', full_name:'Accounts Clerk' },
+      { username:'finance', password:'fin123', role:'finance_manager', full_name:'Finance Manager' },
+      { username:'supervisor', password:'sup123', role:'supervisor', full_name:'Floor Supervisor' },
+      { username:'hr', password:'hr123', role:'hr', full_name:'HR Manager' },
+      { username:'director', password:'dir123', role:'director', full_name:'Managing Director' },
+      { username:'auditor', password:'aud123', role:'auditor', full_name:'Internal Auditor' }
+    ];
+    defaults.forEach(u => DB.add('users', { ...u, created_at:new Date().toISOString() }));
+  }
+}
+
+// Demo API handler — simulates the backend
+async function demoApi(path, opts={}){
+  await new Promise(r=>setTimeout(r,150)); // tiny delay for realism
+  const method = (opts.method||'GET').toUpperCase();
+  const body = opts.body ? JSON.parse(opts.body) : {};
+  const now = new Date().toISOString();
+  const actor = ME?.username || 'system';
+
+  const audit = (action, details) => DB.add('audit', { actor, action, details: typeof details==='string'?details:JSON.stringify(details), created_at: now });
+
+  // ---- AUTH ----
+  if (path === '/api/login' && method==='POST') {
+    const { username, password, role } = body;
+    const users = DB.get('users');
+    const u = users.find(x => x.username.toLowerCase() === (username||'').toLowerCase() && x.password === password);
+    if (!u) throw new Error('Invalid username or password.');
+    if (role && role !== 'auto' && u.role !== role) throw new Error(`This account is registered as "${u.role}", not "${role}".`);
+    const token = 'demo_'+btoa(u.username+':'+Date.now()).replace(/=/g,'');
+    audit('login', `User ${u.username} signed in as ${u.role}`);
+    return { token, user: { username:u.username, role:u.role, fullName:u.full_name, id:u.id } };
+  }
+  if (path === '/api/health') return { ok:true, mode:'demo' };
+
+  if (path === '/api/change-password' && method==='POST') {
+    const users = DB.get('users');
+    const me = users.find(x => x.username === ME.username);
+    if (!me || me.password !== body.oldPassword) throw new Error('Old password is incorrect.');
+    if (!body.newPassword || body.newPassword.length < 4) throw new Error('New password must be 4+ characters.');
+    DB.update('users', me.id, { password: body.newPassword });
+    audit('change_password','self password changed');
+    return { ok:true };
+  }
+
+  // ---- USERS (admin) ----
+  if (path === '/api/users' && method==='GET') {
+    return DB.get('users').map(u=>({ id:u.id, username:u.username, role:u.role, full_name:u.full_name, created_at:u.created_at }));
+  }
+  if (path === '/api/users' && method==='POST') {
+    if (ME.role !== 'admin') throw new Error('Admin only.');
+    const exists = DB.get('users').find(u=>u.username.toLowerCase()===body.username.toLowerCase());
+    if (exists) throw new Error('Username already exists.');
+    const u = DB.add('users', { ...body, created_at: now });
+    audit('create_user', `Created user ${u.username} (${u.role})`);
+    return u;
+  }
+  if (path === '/api/admin/reset-password' && method==='POST') {
+    if (ME.role !== 'admin') throw new Error('Admin only.');
+    const users = DB.get('users');
+    const u = users.find(x=>x.username===body.username);
+    if (!u) throw new Error('User not found.');
+    DB.update('users', u.id, { password: body.newPassword });
+    audit('reset_password', `Reset password for ${body.username}`);
+    return { ok:true };
+  }
+  if (path.startsWith('/api/users/') && method==='DELETE') {
+    if (ME.role !== 'admin') throw new Error('Admin only.');
+    const id = path.split('/').pop();
+    DB.del('users', id);
+    audit('delete_user', `Deleted user id=${id}`);
+    return { ok:true };
+  }
+
+  // ---- RECORDS ----
+  if (path === '/api/records' && method==='GET') return DB.get('records');
+  if (path === '/api/records' && method==='POST') {
+    const r = DB.add('records', { ...body, amount:Number(body.amount)||0, created_by:actor, created_at:now });
+    audit('add_record', `Added record: ${r.title} (${r.category})`);
+    return r;
+  }
+  if (path.startsWith('/api/records/') && method==='DELETE') {
+    const id = path.split('/').pop();
+    DB.del('records', id);
+    audit('delete_record', `Deleted record id=${id}`);
+    return { ok:true };
+  }
+
+  // ---- TRANSACTIONS ----
+  if (path === '/api/transactions' && method==='GET') return DB.get('transactions');
+  if (path === '/api/transactions' && method==='POST') {
+    const t = DB.add('transactions', { ...body, amount:Number(body.amount)||0, created_by:actor, created_at:now });
+    audit('add_transaction', `${t.type} of KES ${t.amount} — ${t.category||''}`);
+    return t;
+  }
+  if (path.startsWith('/api/transactions/') && method==='DELETE') {
+    const id = path.split('/').pop();
+    DB.del('transactions', id);
+    audit('delete_transaction', `Deleted transaction id=${id}`);
+    return { ok:true };
+  }
+
+  // ---- STAFF ----
+  if (path === '/api/staff' && method==='GET') return DB.get('staff');
+  if (path === '/api/staff' && method==='POST') {
+    const s = DB.add('staff', { ...body, conduct_score:Number(body.conduct_score)||100, created_at:now });
+    audit('add_staff', `Added staff: ${s.full_name}`);
+    return s;
+  }
+  if (path.startsWith('/api/staff/') && method==='DELETE') {
+    const id = path.split('/').pop();
+    DB.del('staff', id);
+    audit('delete_staff', `Deleted staff id=${id}`);
+    return { ok:true };
+  }
+
+  // ---- INVENTORY ----
+  if (path === '/api/inventory' && method==='GET') return DB.get('inventory');
+  if (path === '/api/inventory' && method==='POST') {
+    const i = DB.add('inventory', {
+      ...body,
+      quantity:Number(body.quantity)||0,
+      unit_cost:Number(body.unit_cost)||0,
+      created_at:now
+    });
+    audit('add_inventory', `Added item: ${i.item_name} x${i.quantity}`);
+    return i;
+  }
+  if (path.startsWith('/api/inventory/') && method==='DELETE') {
+    const id = path.split('/').pop();
+    DB.del('inventory', id);
+    audit('delete_inventory', `Deleted inventory id=${id}`);
+    return { ok:true };
+  }
+
+  // ---- REPORTS ----
+  if (path.startsWith('/api/reports/profit-loss')) {
+    const url = new URL('http://x'+path);
+    const from = url.searchParams.get('from');
+    const to = url.searchParams.get('to');
+    const rate = Number(url.searchParams.get('interestRate')||0);
+    let tx = DB.get('transactions');
+    if (from) tx = tx.filter(t => t.created_at >= from);
+    if (to) tx = tx.filter(t => t.created_at <= to);
+    const sum = (type) => tx.filter(t=>t.type===type).reduce((a,b)=>a+Number(b.amount||0),0);
+    const income = sum('income') + sum('sale');
+    const expense = sum('expense') + sum('purchase');
+    const loss = sum('loss');
+    const net_profit = income - expense - loss;
+    const interest_amount = net_profit * (rate/100);
+    const final_balance = net_profit + interest_amount;
+    return {
+      income, expense, loss, net_profit,
+      interest_rate_percent: rate, interest_amount, final_balance,
+      period:{ from: from||'all-time', to: to||'now' },
+      generated_at: now
+    };
+  }
+  if (path === '/api/reports/daily') {
+    const tx = DB.get('transactions');
+    const days = {};
+    for (let i=13;i>=0;i--){
+      const d = new Date(); d.setDate(d.getDate()-i);
+      const k = d.toISOString().slice(0,10);
+      days[k] = { day:k, income:0, expense:0, loss:0 };
+    }
+    tx.forEach(t=>{
+      const k = (t.created_at||'').slice(0,10);
+      if (days[k]) {
+        if (t.type==='income'||t.type==='sale') days[k].income += Number(t.amount)||0;
+        else if (t.type==='loss') days[k].loss += Number(t.amount)||0;
+        else days[k].expense += Number(t.amount)||0;
+      }
+    });
+    return Object.values(days).reverse();
+  }
+
+  // ---- AUDIT ----
+  if (path === '/api/audit-log' && method==='GET') return DB.get('audit').slice(0,200);
+
+  // ---- CHAT ----
+  if (path === '/api/chat' && method==='POST') {
+    return { reply: smartChatReply(body.message) };
+  }
+
+  throw new Error('Endpoint not found: '+path);
+}
+
+// Smart offline chatbot brain
+function smartChatReply(msg){
+  const m = (msg||'').toLowerCase();
+  const tx = DB.get('transactions');
+  const inv = DB.get('inventory');
+  const staff = DB.get('staff');
+  const sum = (type) => tx.filter(t=>t.type===type).reduce((a,b)=>a+Number(b.amount||0),0);
+  const fmt = (n) => 'KES ' + Number(n).toLocaleString('en-KE', {minimumFractionDigits:2,maximumFractionDigits:2});
+
+  // Greetings
+  if (/^(hi|hello|hey|habari|jambo|good (morning|afternoon|evening))/i.test(msg))
+    return `Hello ${ME?.fullName||ME?.username||'there'}! 👋 How can I help you today? You can ask about reports, inventory, staff, passwords, or system features.`;
+
+  // Help
+  if (m.includes('help') || m === '?')
+    return `📘 Here's what I can do:\n\n• 📊 Show summary / today's report\n• 💰 Total income / expenses / profit\n• 📦 Inventory status & value\n• 👥 Staff count & details\n• 🔑 Password reset guidance\n• 📄 Generate receipt PDF info\n• 🔍 Audit log queries\n• ⚙️ How to use any feature\n\nJust ask in plain English!`;
+
+  // Summary / today
+  if (m.includes('summary') || m.includes('today') || m.includes('overview') || m.includes('dashboard')){
+    const inc = sum('income')+sum('sale'), exp = sum('expense')+sum('purchase'), loss = sum('loss');
+    const net = inc - exp - loss;
+    return `📊 Business Summary:\n• Income: ${fmt(inc)}\n• Expenses: ${fmt(exp)}\n• Loss: ${fmt(loss)}\n• Net Profit: ${fmt(net)}\n• Transactions: ${tx.length}\n• Inventory items: ${inv.length}\n• Staff: ${staff.length}\n\nNet margin: ${inc>0?((net/inc)*100).toFixed(1):0}%`;
+  }
+  // Income
+  if (m.includes('income') || m.includes('revenue') || m.includes('sales')){
+    return `💰 Total Income: ${fmt(sum('income')+sum('sale'))}\n(${tx.filter(t=>t.type==='income'||t.type==='sale').length} transactions)`;
+  }
+  // Expense
+  if (m.includes('expense') || m.includes('cost') || m.includes('spent')){
+    return `💸 Total Expenses: ${fmt(sum('expense')+sum('purchase'))}\n(${tx.filter(t=>t.type==='expense'||t.type==='purchase').length} transactions)`;
+  }
+  // Profit
+  if (m.includes('profit') || m.includes('net') || m.includes('p&l') || m.includes('p & l')){
+    const net = sum('income')+sum('sale')-sum('expense')-sum('purchase')-sum('loss');
+    return `📈 Net Profit: ${fmt(net)}\n\nTo see the full P&L report with interest calculations, go to Reports → Generate.`;
+  }
+  // Loss
+  if (m.includes('loss')){
+    return `📉 Recorded Losses: ${fmt(sum('loss'))}\n(${tx.filter(t=>t.type==='loss').length} events)`;
+  }
+  // Inventory
+  if (m.includes('inventory') || m.includes('stock') || m.includes('items')){
+    const total = inv.reduce((a,b)=>a+Number(b.quantity||0)*Number(b.unit_cost||0),0);
+    return `📦 Inventory: ${inv.length} items\n• Total stock value: ${fmt(total)}\n• Total quantity: ${inv.reduce((a,b)=>a+Number(b.quantity||0),0)} units\n\nGo to Inventory page to add or scan items.`;
+  }
+  // Staff
+  if (m.includes('staff') || m.includes('employee') || m.includes('hr')){
+    const avg = staff.length ? (staff.reduce((a,b)=>a+Number(b.conduct_score||0),0)/staff.length).toFixed(1) : 0;
+    return `🧑‍💼 Staff: ${staff.length} members\n• Average conduct score: ${avg}/100\n\nManage them in Staff (HR) page.`;
+  }
+  // Password
+  if (m.includes('password') || m.includes('reset') || m.includes('forgot')){
+    if (ME?.role==='admin')
+      return `🔑 As Admin, you can reset any password:\n1. Go to User Management\n2. Select the user\n3. Type a new password (4+ chars)\n4. Click "Reset Password"\n\nFor your own password, use Settings → Change my password.`;
+    return `🔑 To reset YOUR password: Go to Settings → Change my password.\n\nIf you forgot your password, ask the Administrator to reset it from the Admin Panel → User Management.`;
+  }
+  // PDF / Receipt
+  if (m.includes('pdf') || m.includes('receipt') || m.includes('print') || m.includes('download')){
+    return `📄 To download a P&L receipt PDF:\n1. Go to Reports → Profit & Loss\n2. Set date range and interest rate (optional)\n3. Click "Download Receipt PDF"\n\nThe receipt is formatted as 80mm thermal printer width.`;
+  }
+  // OCR / Scan
+  if (m.includes('ocr') || m.includes('scan') || m.includes('photo') || m.includes('camera')){
+    return `📷 OCR Scanning:\n• Records page → "Scan Image (OCR)" tab\n• Inventory page → "Scan label" tab\n\nTake a photo of a receipt/label and we'll auto-extract text + amount. Powered by Tesseract.js.`;
+  }
+  // Audit
+  if (m.includes('audit') || m.includes('log') || m.includes('history')){
+    const logs = DB.get('audit');
+    return `🔍 Audit Log: ${logs.length} entries recorded.\n\nEvery login, record, transaction, and admin action is logged permanently. Go to Audit Log page (admin/auditor/director/finance) to view.`;
+  }
+  // Deploy
+  if (m.includes('deploy') || m.includes('host') || m.includes('server') || m.includes('render')){
+    return `🚀 Deployment:\n• This frontend works standalone in DEMO MODE (uses your browser's localStorage)\n• For ONLINE mode with a real database, deploy the Node backend to Render/Railway/Vercel\n• Then enter your backend URL in Settings → Backend API URL`;
+  }
+  // Mode
+  if (m.includes('demo') || m.includes('mode') || m.includes('online') || m.includes('offline')){
+    return DEMO_MODE
+      ? `🟡 Currently in DEMO MODE — All data is stored locally in your browser. No backend required!`
+      : `🟢 Currently in ONLINE MODE — Connected to backend at ${API}`;
+  }
+  // Thanks
+  if (m.includes('thank') || m.includes('thx')) return `You're welcome! 😊 Happy to help anytime.`;
+  // Bye
+  if (m.includes('bye') || m.includes('goodbye')) return `Goodbye! 👋 Have a productive day at LocationRooftop.`;
+
+  // Default
+  return `I'm not sure I caught that. Try asking about:\n• "summary" or "today"\n• "income", "expenses", "profit"\n• "inventory" or "staff"\n• "password reset"\n• "receipt PDF"\n• "audit log"\n\nOr type "help" for the full list.`;
+}
+
+// ============================================================
+// SMART API WRAPPER — tries backend first, falls back to demo
+// ============================================================
+async function api(path, opts={}){
+  if (DEMO_MODE) return demoApi(path, opts);
+  opts.headers = Object.assign({ 'Content-Type':'application/json' }, opts.headers||{});
+  if (TOKEN && !TOKEN.startsWith('demo_')) opts.headers.Authorization = 'Bearer '+TOKEN;
+  try {
+    const r = await fetch(API+path, opts);
+    const data = await r.json().catch(()=>({}));
+    if (!r.ok) throw new Error(data.error || ('HTTP '+r.status));
+    return data;
+  } catch (e) {
+    // Network failure → activate demo mode automatically
+    if (e.message.includes('Failed to fetch') || e.message.includes('NetworkError') || e.message.includes('HTTP 404')) {
+      if (!DEMO_MODE) {
+        DEMO_MODE = true;
+        updateModeIndicator();
+        toast('Backend unreachable — switched to DEMO MODE','info');
+      }
+      return demoApi(path, opts);
+    }
+    throw e;
+  }
+}
+
+// Initial mode check
+async function detectMode(){
+  try {
+    const r = await fetch(API+'/api/health', { method:'GET' });
+    if (r.ok) { DEMO_MODE = false; return; }
+  } catch(e){}
+  DEMO_MODE = true;
+  seedDemoData();
+}
+
+function updateModeIndicator(){
+  const ind = $('modeIndicator');
+  const pill = $('modePill');
+  if (DEMO_MODE){
+    if (ind) ind.textContent = '🟡 Demo Mode (local)';
+    if (pill){ pill.textContent='DEMO'; pill.classList.add('demo'); }
+  } else {
+    if (ind) ind.textContent = '🟢 Online ('+API.replace(/^https?:\/\//,'').slice(0,30)+')';
+    if (pill){ pill.textContent='ONLINE'; pill.classList.remove('demo'); }
+  }
+}
+
+// ============================================================
+// LOGIN PANEL SWITCHING
+// ============================================================
+function switchPanel(which){
+  const tStaff = $('tabStaff'), tAdmin = $('tabAdmin');
+  const pStaff = $('staffPanel'), pAdmin = $('adminPanel');
+  if (which === 'staff'){
+    tStaff.classList.add('active'); tAdmin.classList.remove('active');
+    pStaff.classList.add('active'); pStaff.classList.remove('dimmed');
+    pAdmin.classList.remove('active'); pAdmin.classList.add('dimmed');
+    setTimeout(()=>$('staffUser').focus(),100);
+  } else {
+    tAdmin.classList.add('active'); tStaff.classList.remove('active');
+    pAdmin.classList.add('active'); pAdmin.classList.remove('dimmed');
+    pStaff.classList.remove('active'); pStaff.classList.add('dimmed');
+    setTimeout(()=>$('adminPass').focus(),100);
+  }
+}
+
+function showMsg(target, text, type='err'){
+  const el = $(target);
+  if (el) el.innerHTML = `<div class="alert ${type}">${text}</div>`;
+}
+
+async function doLogin(side){
+  let username, password, role, msgId;
+  if (side === 'staff'){
+    username = $('staffUser').value.trim();
+    password = $('staffPass').value;
+    role = $('staffRole').value;
+    msgId = 'staffMsg';
+  } else {
+    username = $('adminUser').value.trim();
+    password = $('adminPass').value;
+    role = 'admin';
+    msgId = 'adminMsg';
+  }
+  if (!username || !password) return showMsg(msgId, 'Please enter username and password.');
+  try {
+    const r = await api('/api/login', { method:'POST', body: JSON.stringify({ username, password, role }) });
+    TOKEN = r.token; ME = r.user;
+    localStorage.setItem('lr_token', TOKEN);
+    localStorage.setItem('lr_me', JSON.stringify(ME));
+    showMsg(msgId, '✓ Welcome '+(ME.fullName||ME.username)+'!', 'ok');
+    setTimeout(enterApp, 400);
+  } catch (e) {
+    showMsg(msgId, e.message || 'Login failed');
+  }
+}
+
+function showForgot(){
+  alert('🔐 Password Reset\n\nPlease contact your System Administrator.\nAdmin can reset passwords from:\nAdmin Panel → User Management → Reset Password.\n\nDefault admin: admin / 119722');
+}
+
+function logout(){
+  TOKEN=''; ME=null;
+  localStorage.removeItem('lr_token'); localStorage.removeItem('lr_me');
+  $('app').classList.remove('active');
+  $('loginScreen').style.display='grid';
+  $('chatFab').style.display='none';
+  $('chatBox').classList.remove('open');
+}
+
+// ============================================================
+// APP SHELL
+// ============================================================
+const ROLE_LABEL = {
+  admin:'Administrator', cost_controller:'Cost Controller',
+  procurement:'Procurement', storekeeper:'Storekeeper',
+  accounts:'Accounts', finance_manager:'Finance Manager',
+  supervisor:'Supervisor', hr:'Human Resources',
+  director:'Director', auditor:'Auditor'
+};
+
+const MENUS = {
+  admin:           ['dashboard','users','records','transactions','staff','inventory','reports','audit','settings'],
+  director:        ['dashboard','records','transactions','staff','inventory','reports','audit','settings'],
+  cost_controller: ['dashboard','records','transactions','reports','settings'],
+  procurement:     ['dashboard','inventory','records','transactions','settings'],
+  storekeeper:     ['dashboard','inventory','records','settings'],
+  accounts:        ['dashboard','transactions','records','staff','reports','receipt','settings'],
+  finance_manager: ['dashboard','transactions','records','reports','audit','settings'],
+  supervisor:      ['dashboard','records','staff','inventory','settings'],
+  hr:              ['dashboard','staff','records','settings'],
+  auditor:         ['dashboard','transactions','records','reports','audit','settings']
+};
+
+const PAGE_META = {
+  dashboard:    { icon:'📊', label:'Dashboard' },
+  users:        { icon:'👥', label:'User Management' },
+  records:      { icon:'📋', label:'Records' },
+  transactions: { icon:'💰', label:'Transactions' },
+  staff:        { icon:'🧑‍💼', label:'Staff (HR)' },
+  inventory:    { icon:'📦', label:'Inventory' },
+  reports:      { icon:'📈', label:'Reports & P&L' },
+  receipt:      { icon:'🧾', label:'Receipt PDF' },
+  audit:        { icon:'🔍', label:'Audit Log' },
+  settings:     { icon:'⚙️', label:'Settings' }
+};
+
+function enterApp(){
+  $('loginScreen').style.display='none';
+  $('app').classList.add('active');
+  $('chatFab').style.display='grid';
+  $('userName').textContent = ME.fullName||ME.username;
+  $('userRole').textContent = ROLE_LABEL[ME.role]||ME.role;
+  $('sideRole').textContent = ROLE_LABEL[ME.role]||ME.role;
+  $('avatar').textContent = (ME.fullName||ME.username).charAt(0).toUpperCase();
+  updateModeIndicator();
+  buildNav();
+  loadPage('dashboard');
+  // Stop the pulse animation after entering
+  setTimeout(()=>$('chatFab').classList.remove('pulse'), 6000);
+}
+
+function buildNav(){
+  const list = MENUS[ME.role] || MENUS.supervisor;
+  const nav = $('navList'); nav.innerHTML='';
+  list.forEach(key=>{
+    const m = PAGE_META[key];
+    const btn = document.createElement('button');
+    btn.innerHTML = `<span class="ico">${m.icon}</span> ${m.label}`;
+    btn.onclick = ()=>loadPage(key);
+    btn.dataset.key = key;
+    nav.appendChild(btn);
+  });
+}
+
+function loadPage(key){
+  document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active', b.dataset.key===key));
+  $('pageTitle').textContent = (PAGE_META[key]||{}).label || key;
+  $('sidebar').classList.remove('show');
+  const fn = PAGES[key];
+  if (fn) fn();
+  else $('pageContent').innerHTML = '<div class="card">Coming soon.</div>';
+}
+
+// ============================================================
+// HELPERS
+// ============================================================
+const PAGES = {};
+const $ = (id) => document.getElementById(id);
+const fmt = (n) => 'KES ' + (Number(n)||0).toLocaleString('en-KE',{minimumFractionDigits:2,maximumFractionDigits:2});
+const esc = (s) => String(s==null?'':s).replace(/[&<>"]/g,c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c]));
+
+function toast(msg, type='ok'){
+  const wrap = $('toastWrap');
+  const t = document.createElement('div');
+  t.className = 'toast '+type;
+  t.textContent = msg;
+  wrap.appendChild(t);
+  setTimeout(()=>{ t.style.transition='.3s'; t.style.opacity='0'; t.style.transform='translateX(50px)'; setTimeout(()=>t.remove(),300); }, 3200);
+}
+
+// ============================================================
+// DASHBOARD
+// ============================================================
+PAGES.dashboard = async () => {
+  $('pageContent').innerHTML = `
+    <h2 class="section-title">Welcome back, ${esc((ME.fullName||ME.username).split(' ')[0])} ✨</h2>
+    <div class="section-sub">Overview of operations as ${ROLE_LABEL[ME.role]}.</div>
+    <div class="kpis" id="kpis"></div>
+    <div class="card">
+      <h3>📈 Daily performance (last 14 days)</h3>
+      <canvas id="chartDaily" height="90"></canvas>
+    </div>
+    <div class="card">
+      <h3>🕒 Recent activity</h3>
+      <div class="tbl-wrap"><table class="tbl" id="recentTx"><thead><tr><th>Date</th><th>Type</th><th>Category</th><th>Amount</th><th>Description</th></tr></thead><tbody></tbody></table></div>
+    </div>`;
+  try {
+    const [pl, tx, daily] = await Promise.all([
+      api('/api/reports/profit-loss'),
+      api('/api/transactions'),
+      api('/api/reports/daily')
+    ]);
+    $('kpis').innerHTML = `
+      ${kpi('Total Income', fmt(pl.income), '↑ revenue')}
+      ${kpi('Total Expenses', fmt(pl.expense), '↓ costs', 'warn')}
+      ${kpi('Recorded Loss', fmt(pl.loss), 'loss events', 'warn')}
+      ${kpi('Net Profit', fmt(pl.net_profit), 'income − expenses − loss')}
+      ${kpi('Transactions', tx.length, 'records on file')}`;
+    const tbody = document.querySelector('#recentTx tbody');
+    tbody.innerHTML = tx.slice(0,8).map(t=>`
+      <tr><td>${esc((t.created_at||'').slice(0,16))}</td>
+          <td><span class="badge ${t.type==='income'||t.type==='sale'?'in':t.type==='loss'?'ls':'ex'}">${esc(t.type)}</span></td>
+          <td>${esc(t.category)}</td><td>${fmt(t.amount)}</td><td>${esc(t.description)}</td></tr>`).join('')
+      || '<tr><td colspan="5" style="text-align:center;color:#888;padding:20px">No transactions yet — try adding one!</td></tr>';
+    const labels = daily.map(d=>d.day).reverse();
+    const incomeData = daily.map(d=>d.income).reverse();
+    const expenseData = daily.map(d=>d.expense+d.loss).reverse();
+    new Chart($('chartDaily'),{
+      type:'line',
+      data:{ labels, datasets:[
+        { label:'Income', data:incomeData, borderColor:'#2e7d32', backgroundColor:'rgba(46,125,50,.18)', tension:.35, fill:true },
+        { label:'Expense + Loss', data:expenseData, borderColor:'#c62828', backgroundColor:'rgba(198,40,40,.15)', tension:.35, fill:true }
+      ]},
+      options:{ responsive:true, plugins:{ legend:{ position:'bottom' } } }
+    });
+  } catch(e){ console.error(e); toast('Failed to load dashboard: '+e.message,'err'); }
+};
+function kpi(label, value, delta, cls=''){
+  return `<div class="kpi ${cls}"><div class="label">${label}</div><div class="value">${value}</div><div class="delta">${delta}</div></div>`;
+}
+
+// ============================================================
+// USERS (Admin only)
+// ============================================================
+PAGES.users = async () => {
+  $('pageContent').innerHTML = `
+    <h2 class="section-title">User Management</h2>
+    <div class="section-sub">Create accounts, reset passwords, and manage all system users (admin only).</div>
+
+    <div class="card">
+      <h3>➕ Create new user account</h3>
+      <div class="row">
+        <div class="field"><label>Username</label><input id="nuUser" placeholder="e.g. john" /></div>
+        <div class="field"><label>Full name</label><input id="nuName" placeholder="John Doe" /></div>
+        <div class="field"><label>Role</label>
+          <select id="nuRole">
+            <option value="cost_controller">Cost Controller</option>
+            <option value="procurement">Procurement</option>
+            <option value="storekeeper">Storekeeper</option>
+            <option value="accounts">Accounts</option>
+            <option value="finance_manager">Finance Manager</option>
+            <option value="supervisor">Supervisor</option>
+            <option value="hr">HR</option>
+            <option value="director">Director</option>
+            <option value="auditor">Auditor</option>
+            <option value="admin">Admin</option>
+          </select>
+        </div>
+        <div class="field"><label>Initial password</label><input id="nuPass" placeholder="min 4 chars" /></div>
+        <button class="btn btn-ok" onclick="createUser()">Create User</button>
+      </div>
+      <div id="nuMsg" style="margin-top:8px"></div>
+    </div>
+
+    <div class="card">
+      <h3>🔑 Reset password</h3>
+      <div class="row">
+        <div class="field"><label>User</label><select id="resetUser"></select></div>
+        <div class="field"><label>New password</label><input id="resetPass" placeholder="New password" /></div>
+        <button class="btn" onclick="resetPwd()">Reset Password</button>
+      </div>
+      <div id="resetMsg" style="margin-top:8px"></div>
+    </div>
+
+    <div class="card">
+      <h3>👥 All accounts</h3>
+      <div class="tbl-wrap"><table class="tbl" id="usersTbl"><thead><tr><th>ID</th><th>Username</th><th>Role</th><th>Full name</th><th>Created</th><th></th></tr></thead><tbody></tbody></table></div>
+    </div>`;
+  await refreshUsers();
+};
+async function refreshUsers(){
+  const users = await api('/api/users');
+  const sel = $('resetUser');
+  if (sel) sel.innerHTML = users.filter(u=>u.username!==ME.username).map(u=>`<option value="${u.username}">${u.username} (${u.role})</option>`).join('');
+  document.querySelector('#usersTbl tbody').innerHTML = users.map(u=>`
+    <tr><td>${u.id}</td><td><strong>${esc(u.username)}</strong></td>
+        <td><span class="badge in">${esc(u.role)}</span></td>
+        <td>${esc(u.full_name)}</td>
+        <td>${esc((u.created_at||'').slice(0,10))}</td>
+        <td>${u.username!==ME.username?`<button class="btn btn-sm btn-danger" onclick="delUser(${u.id},'${esc(u.username)}')">🗑</button>`:'<em style="color:#888;font-size:11px">you</em>'}</td>
+    </tr>`).join('');
+}
+async function createUser(){
+  const username = $('nuUser').value.trim().toLowerCase();
+  const full_name = $('nuName').value.trim();
+  const role = $('nuRole').value;
+  const password = $('nuPass').value;
+  if (!username || !password || password.length<4) return $('nuMsg').innerHTML='<div class="alert err">Username and password (4+ chars) required.</div>';
+  try {
+    await api('/api/users',{ method:'POST', body: JSON.stringify({ username, full_name, role, password })});
+    $('nuMsg').innerHTML='<div class="alert ok">✓ User created.</div>';
+    ['nuUser','nuName','nuPass'].forEach(i=>$(i).value='');
+    toast('User created successfully');
+    refreshUsers();
+  } catch(e){ $('nuMsg').innerHTML='<div class="alert err">'+e.message+'</div>'; }
+}
+async function resetPwd(){
+  const username = $('resetUser').value;
+  const newPassword = $('resetPass').value;
+  if (!newPassword || newPassword.length<4) return $('resetMsg').innerHTML='<div class="alert err">Password must be 4+ characters.</div>';
+  try {
+    await api('/api/admin/reset-password',{ method:'POST', body: JSON.stringify({ username, newPassword })});
+    $('resetMsg').innerHTML='<div class="alert ok">✓ Password reset for '+username+'.</div>';
+    $('resetPass').value='';
+    toast('Password reset successfully');
+  } catch(e){ $('resetMsg').innerHTML='<div class="alert err">'+e.message+'</div>'; }
+}
+async function delUser(id, name){
+  if (!confirm('Delete user "'+name+'"? This cannot be undone.')) return;
+  await api('/api/users/'+id,{ method:'DELETE' });
+  toast('User deleted');
+  refreshUsers();
+}
+
+// ============================================================
+// RECORDS
+// ============================================================
+PAGES.records = async () => {
+  $('pageContent').innerHTML = `
+    <h2 class="section-title">Records</h2>
+    <div class="section-sub">Add data manually or scan an image (OCR). All data is stored permanently.</div>
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab(this,'manualR')">✍️ Manual Entry</button>
+      <button class="tab" onclick="switchTab(this,'scanR')">📷 Scan Image (OCR)</button>
+    </div>
+    <div id="manualR" class="card">
+      <h3>Add a record</h3>
+      <div class="row">
+        <div class="field"><label>Category</label>
+          <select id="rCat"><option>general</option><option>purchase</option><option>sale</option><option>expense</option><option>maintenance</option><option>damage</option><option>other</option></select>
+        </div>
+        <div class="field"><label>Title</label><input id="rTitle" placeholder="e.g. Office supplies" /></div>
+        <div class="field"><label>Amount (KES)</label><input id="rAmt" type="number" step="0.01" placeholder="0.00" /></div>
+      </div>
+      <div class="field" style="margin-top:10px"><label>Description</label><textarea id="rDesc" rows="2"></textarea></div>
+      <button class="btn" style="margin-top:10px" onclick="addRecord('manual')">💾 Save Record</button>
+      <div id="rMsg" style="margin-top:8px"></div>
+    </div>
+    <div id="scanR" class="card hidden">
+      <h3>📷 Scan a receipt or document</h3>
+      <p style="font-size:13px;color:#7a5a18;margin-bottom:10px">Take a picture or upload an image. We'll extract the text automatically.</p>
+      <label class="scan-zone" for="ocrFile">
+        <span class="ico">📷</span>
+        <div style="font-weight:700">Tap to take photo or upload image</div>
+        <div style="font-size:12px;color:#7a5a18;margin-top:4px">JPG, PNG up to 10 MB</div>
+        <input type="file" id="ocrFile" accept="image/*" capture="environment" style="display:none" onchange="runOCR(event)" />
+      </label>
+      <div class="scan-progress" id="ocrProg"><div></div></div>
+      <div id="ocrPreview" style="margin-top:12px"></div>
+    </div>
+    <div class="card">
+      <h3>📋 All records</h3>
+      <div class="tbl-wrap"><table class="tbl" id="recTbl"><thead><tr><th>ID</th><th>Category</th><th>Title</th><th>Amount</th><th>Source</th><th>By</th><th>When</th>${ME.role==='admin'?'<th></th>':''}</tr></thead><tbody></tbody></table></div>
+    </div>`;
+  refreshRecords();
+};
+function switchTab(btn, showId){
+  btn.parentElement.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  ['manualR','scanR','invManual','invScan'].forEach(id=>$(id)&&$(id).classList.toggle('hidden', id!==showId));
+}
+async function addRecord(source){
+  const body = {
+    category:$('rCat').value, title:$('rTitle').value,
+    description:$('rDesc').value, amount:$('rAmt').value||0, source
+  };
+  if (!body.title) return $('rMsg').innerHTML='<div class="alert err">Title is required.</div>';
+  try {
+    await api('/api/records',{ method:'POST', body: JSON.stringify(body)});
+    $('rMsg').innerHTML='<div class="alert ok">✓ Saved.</div>';
+    $('rTitle').value=''; $('rAmt').value=''; $('rDesc').value='';
+    toast('Record saved');
+    refreshRecords();
+  } catch(e){ $('rMsg').innerHTML='<div class="alert err">'+e.message+'</div>'; }
+}
+async function refreshRecords(){
+  const rows = await api('/api/records');
+  document.querySelector('#recTbl tbody').innerHTML = rows.map(r=>`
+    <tr><td>${r.id}</td><td>${esc(r.category)}</td><td>${esc(r.title)}</td>
+        <td>${fmt(r.amount)}</td><td><span class="badge ${r.source==='scan'?'ls':'in'}">${esc(r.source)}</span></td>
+        <td>${esc(r.created_by)}</td>
+        <td>${esc((r.created_at||'').slice(0,16))}</td>
+        ${ME.role==='admin'?`<td><button class="btn btn-sm btn-danger" onclick="delRec(${r.id})">🗑</button></td>`:''}
+    </tr>`).join('') || '<tr><td colspan="8" style="text-align:center;color:#888;padding:20px">No records yet</td></tr>';
+}
+async function delRec(id){ if(!confirm('Delete record #'+id+'?'))return; await api('/api/records/'+id,{method:'DELETE'}); toast('Record deleted'); refreshRecords(); }
+
+async function runOCR(ev){
+  const f = ev.target.files[0]; if(!f) return;
+  $('ocrProg').classList.add('show');
+  const bar = $('ocrProg').querySelector('div');
+  $('ocrPreview').innerHTML='<div style="font-size:13px;color:#7a5a18">📖 Reading image…</div>';
+  try {
+    const { data } = await Tesseract.recognize(f,'eng',{ logger:m=>{ if(m.progress) bar.style.width=(m.progress*100).toFixed(0)+'%'; } });
+    const txt = (data.text||'').trim();
+    const m = txt.match(/(\d{1,3}(?:[,.]\d{3})*(?:\.\d{1,2})?|\d+\.\d{1,2})/);
+    const amount = m ? Number(m[0].replace(/,/g,'')) : 0;
+    const titleLine = txt.split('\n').find(l=>l.trim().length>3) || 'Scanned document';
+    $('ocrPreview').innerHTML = `
+      <div class="card" style="margin:0">
+        <h3>🔎 Extracted text</h3>
+        <pre style="white-space:pre-wrap;font-size:12px;background:#fff8e7;padding:10px;border-radius:8px;max-height:180px;overflow:auto">${esc(txt)}</pre>
+        <div class="row" style="margin-top:10px">
+          <div class="field"><label>Title</label><input id="ocrTitle" value="${esc(titleLine.slice(0,80))}"/></div>
+          <div class="field"><label>Amount (auto)</label><input id="ocrAmt" value="${amount}" type="number" step="0.01"/></div>
+          <div class="field"><label>Category</label>
+            <select id="ocrCat"><option>purchase</option><option>expense</option><option>sale</option><option>general</option></select>
+          </div>
+        </div>
+        <button class="btn" style="margin-top:10px" onclick='saveOCR(${JSON.stringify(txt)})'>💾 Save scanned record</button>
+      </div>`;
+  } catch(e){ $('ocrPreview').innerHTML='<div class="alert err">OCR failed: '+e.message+'</div>'; }
+  finally { setTimeout(()=>$('ocrProg').classList.remove('show'),600); }
+}
+async function saveOCR(rawText){
+  await api('/api/records',{ method:'POST', body: JSON.stringify({
+    category:$('ocrCat').value, title:$('ocrTitle').value,
+    description:String(rawText).slice(0,500), amount:$('ocrAmt').value||0, source:'scan'
+  })});
+  toast('Scanned record saved');
+  refreshRecords();
+}
+
+// ============================================================
+// TRANSACTIONS
+// ============================================================
+PAGES.transactions = async () => {
+  $('pageContent').innerHTML = `
+    <h2 class="section-title">Transactions</h2>
+    <div class="section-sub">Income, expenses, losses — drives the P&L report.</div>
+    <div class="card">
+      <h3>Add transaction</h3>
+      <div class="row">
+        <div class="field"><label>Type</label>
+          <select id="txType">
+            <option value="income">Income</option>
+            <option value="sale">Sale</option>
+            <option value="expense">Expense</option>
+            <option value="purchase">Purchase</option>
+            <option value="loss">Loss</option>
+          </select>
+        </div>
+        <div class="field"><label>Category</label><input id="txCat" placeholder="e.g. food, rent" /></div>
+        <div class="field"><label>Amount (KES)</label><input id="txAmt" type="number" step="0.01" /></div>
+        <div class="field"><label>Reference</label><input id="txRef" placeholder="Invoice / ref no." /></div>
+      </div>
+      <div class="field" style="margin-top:10px"><label>Description</label><input id="txDesc" /></div>
+      <button class="btn" style="margin-top:10px" onclick="addTx()">💾 Save</button>
+    </div>
+    <div class="card">
+      <h3>Recent transactions</h3>
+      <div class="tbl-wrap"><table class="tbl" id="txTbl"><thead><tr><th>ID</th><th>Type</th><th>Cat</th><th>Amount</th><th>Ref</th><th>Description</th><th>By</th><th>When</th>${ME.role==='admin'?'<th></th>':''}</tr></thead><tbody></tbody></table></div>
+    </div>`;
+  refreshTx();
+};
+async function addTx(){
+  if (!$('txAmt').value) return toast('Amount is required','err');
+  await api('/api/transactions',{ method:'POST', body: JSON.stringify({
+    type:$('txType').value, category:$('txCat').value, amount:$('txAmt').value,
+    reference:$('txRef').value, description:$('txDesc').value
+  })});
+  $('txAmt').value=''; $('txDesc').value=''; $('txRef').value=''; $('txCat').value='';
+  toast('Transaction saved');
+  refreshTx();
+}
+async function refreshTx(){
+  const rows = await api('/api/transactions');
+  document.querySelector('#txTbl tbody').innerHTML = rows.map(t=>`
+    <tr><td>${t.id}</td>
+        <td><span class="badge ${t.type==='income'||t.type==='sale'?'in':t.type==='loss'?'ls':'ex'}">${esc(t.type)}</span></td>
+        <td>${esc(t.category)}</td><td>${fmt(t.amount)}</td>
+        <td>${esc(t.reference)}</td><td>${esc(t.description)}</td>
+        <td>${esc(t.created_by)}</td><td>${esc((t.created_at||'').slice(0,16))}</td>
+        ${ME.role==='admin'?`<td><button class="btn btn-sm btn-danger" onclick="delTx(${t.id})">🗑</button></td>`:''}
+    </tr>`).join('') || '<tr><td colspan="9" style="text-align:center;color:#888;padding:20px">No transactions yet</td></tr>';
+}
+async function delTx(id){ if(!confirm('Delete?'))return; await api('/api/transactions/'+id,{method:'DELETE'}); toast('Deleted'); refreshTx(); }
+
+// ============================================================
+// STAFF (HR)
+// ============================================================
+PAGES.staff = async () => {
+  $('pageContent').innerHTML = `
+    <h2 class="section-title">Staff & HR</h2>
+    <div class="section-sub">Behavior notes, code-of-conduct scores, and contact details.</div>
+    <div class="card">
+      <h3>Add staff member</h3>
+      <div class="row">
+        <div class="field"><label>Full name</label><input id="sName" /></div>
+        <div class="field"><label>Position</label><input id="sPos" /></div>
+        <div class="field"><label>Department</label><input id="sDept" /></div>
+        <div class="field"><label>Phone</label><input id="sPhone" /></div>
+        <div class="field"><label>Conduct score</label><input id="sScore" type="number" value="100" min="0" max="100" /></div>
+      </div>
+      <div class="field" style="margin-top:10px"><label>Behavior / conduct notes</label><textarea id="sNotes" rows="2"></textarea></div>
+      <button class="btn" style="margin-top:10px" onclick="addStaff()">💾 Save Staff</button>
+    </div>
+    <div class="card">
+      <h3>Staff list</h3>
+      <div class="tbl-wrap"><table class="tbl" id="stTbl"><thead><tr><th>ID</th><th>Name</th><th>Position</th><th>Dept</th><th>Phone</th><th>Conduct</th><th>Notes</th>${(ME.role==='hr'||ME.role==='admin')?'<th></th>':''}</tr></thead><tbody></tbody></table></div>
+    </div>`;
+  refreshStaff();
+};
+async function addStaff(){
+  if (!$('sName').value) return toast('Name is required','err');
+  await api('/api/staff',{ method:'POST', body: JSON.stringify({
+    full_name:$('sName').value, position:$('sPos').value, department:$('sDept').value,
+    phone:$('sPhone').value, behavior_notes:$('sNotes').value, conduct_score:$('sScore').value
+  })});
+  ['sName','sPos','sDept','sPhone','sNotes'].forEach(i=>$(i).value=''); $('sScore').value=100;
+  toast('Staff added');
+  refreshStaff();
+}
+async function refreshStaff(){
+  const rows = await api('/api/staff');
+  document.querySelector('#stTbl tbody').innerHTML = rows.map(s=>`
+    <tr><td>${s.id}</td><td>${esc(s.full_name)}</td><td>${esc(s.position)}</td><td>${esc(s.department)}</td>
+        <td>${esc(s.phone)}</td>
+        <td><span class="badge ${s.conduct_score>=70?'in':s.conduct_score>=40?'ls':'ex'}">${s.conduct_score}/100</span></td>
+        <td>${esc((s.behavior_notes||'').slice(0,60))}</td>
+        ${(ME.role==='hr'||ME.role==='admin')?`<td><button class="btn btn-sm btn-danger" onclick="delStaff(${s.id})">🗑</button></td>`:''}
+    </tr>`).join('') || '<tr><td colspan="8" style="text-align:center;color:#888;padding:20px">No staff yet</td></tr>';
+}
+async function delStaff(id){ if(!confirm('Delete?'))return; await api('/api/staff/'+id,{method:'DELETE'}); toast('Staff deleted'); refreshStaff(); }
+
+// ============================================================
+// INVENTORY
+// ============================================================
+PAGES.inventory = async () => {
+  $('pageContent').innerHTML = `
+    <h2 class="section-title">Inventory</h2>
+    <div class="section-sub">Stock tracking — add items manually or scan their label.</div>
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab(this,'invManual')">✍️ Manual</button>
+      <button class="tab" onclick="switchTab(this,'invScan')">📷 Scan label</button>
+    </div>
+    <div id="invManual" class="card">
+      <div class="row">
+        <div class="field"><label>Item name</label><input id="iName" /></div>
+        <div class="field"><label>SKU</label><input id="iSku" /></div>
+        <div class="field"><label>Qty</label><input id="iQty" type="number" /></div>
+        <div class="field"><label>Unit</label><input id="iUnit" value="pcs" /></div>
+        <div class="field"><label>Unit cost</label><input id="iCost" type="number" step="0.01" /></div>
+        <div class="field"><label>Supplier</label><input id="iSup" /></div>
+      </div>
+      <button class="btn" style="margin-top:10px" onclick="addInv()">💾 Save</button>
+    </div>
+    <div id="invScan" class="card hidden">
+      <label class="scan-zone" for="invFile">
+        <span class="ico">📷</span>
+        <div style="font-weight:700">Scan item label / barcode region</div>
+        <input type="file" id="invFile" accept="image/*" capture="environment" style="display:none" onchange="invOCR(event)" />
+      </label>
+      <div id="invOcrOut" style="margin-top:12px"></div>
+    </div>
+    <div class="card">
+      <h3>Stock list</h3>
+      <div class="tbl-wrap"><table class="tbl" id="invTbl"><thead><tr><th>ID</th><th>Item</th><th>SKU</th><th>Qty</th><th>Unit</th><th>Unit cost</th><th>Value</th><th>Supplier</th>${(ME.role==='storekeeper'||ME.role==='admin')?'<th></th>':''}</tr></thead><tbody></tbody></table></div>
+    </div>`;
+  refreshInv();
+};
+async function addInv(){
+  if (!$('iName').value) return toast('Item name required','err');
+  await api('/api/inventory',{ method:'POST', body: JSON.stringify({
+    item_name:$('iName').value, sku:$('iSku').value, quantity:$('iQty').value,
+    unit:$('iUnit').value, unit_cost:$('iCost').value, supplier:$('iSup').value
+  })});
+  ['iName','iSku','iQty','iCost','iSup'].forEach(i=>$(i).value=''); $('iUnit').value='pcs';
+  toast('Item added');
+  refreshInv();
+}
+async function refreshInv(){
+  const rows = await api('/api/inventory');
+  document.querySelector('#invTbl tbody').innerHTML = rows.map(i=>`
+    <tr><td>${i.id}</td><td>${esc(i.item_name)}</td><td>${esc(i.sku)}</td><td>${i.quantity}</td>
+        <td>${esc(i.unit)}</td><td>${fmt(i.unit_cost)}</td><td>${fmt(i.quantity*i.unit_cost)}</td><td>${esc(i.supplier)}</td>
+        ${(ME.role==='storekeeper'||ME.role==='admin')?`<td><button class="btn btn-sm btn-danger" onclick="delInv(${i.id})">🗑</button></td>`:''}
+    </tr>`).join('') || '<tr><td colspan="9" style="text-align:center;color:#888;padding:20px">No inventory</td></tr>';
+}
+async function delInv(id){ if(!confirm('Delete?'))return; await api('/api/inventory/'+id,{method:'DELETE'}); toast('Item deleted'); refreshInv(); }
+async function invOCR(ev){
+  const f = ev.target.files[0]; if(!f) return;
+  $('invOcrOut').innerHTML='<div style="font-size:13px;color:#7a5a18">📖 Scanning…</div>';
+  try {
+    const { data } = await Tesseract.recognize(f,'eng');
+    const txt = (data.text||'').trim();
+    const firstLine = txt.split('\n').find(l=>l.trim().length>2) || 'Scanned item';
+    $('invOcrOut').innerHTML = `<div class="card" style="margin:0">
+      <pre style="white-space:pre-wrap;font-size:12px;background:#fff8e7;padding:10px;border-radius:8px">${esc(txt)}</pre>
+      <div class="row" style="margin-top:8px">
+        <div class="field"><label>Item</label><input id="iSname" value="${esc(firstLine.slice(0,60))}"/></div>
+        <div class="field"><label>Qty</label><input id="iSqty" type="number" value="1"/></div>
+        <div class="field"><label>Unit cost</label><input id="iScost" type="number" step="0.01" value="0"/></div>
+      </div>
+      <button class="btn" style="margin-top:8px" onclick="saveScannedInv()">Save scanned item</button></div>`;
+  } catch(e){ $('invOcrOut').innerHTML='<div class="alert err">OCR failed: '+e.message+'</div>'; }
+}
+async function saveScannedInv(){
+  await api('/api/inventory',{ method:'POST', body: JSON.stringify({
+    item_name:$('iSname').value, quantity:$('iSqty').value, unit_cost:$('iScost').value, supplier:'scanned'
+  })});
+  toast('Saved'); refreshInv();
+}
+
+// ============================================================
+// REPORTS / RECEIPT
+// ============================================================
+PAGES.reports = async () => {
+  $('pageContent').innerHTML = `
+    <h2 class="section-title">Reports — Profit & Loss</h2>
+    <div class="section-sub">Generate financial reports with interest calculations.</div>
+    <div class="card">
+      <div class="row">
+        <div class="field"><label>From date</label><input id="repFrom" type="date" /></div>
+        <div class="field"><label>To date</label><input id="repTo" type="date" /></div>
+        <div class="field"><label>Interest rate (%)</label><input id="repInt" type="number" step="0.1" value="0" /></div>
+        <button class="btn" onclick="runReport()">📊 Generate</button>
+        <button class="btn btn-ok" onclick="downloadReceipt()">📄 Download Receipt PDF</button>
+      </div>
+    </div>
+    <div id="reportOut"></div>`;
+  runReport();
+};
+let LAST_REPORT = null;
+async function runReport(){
+  const from = $('repFrom').value, to = $('repTo').value, rate = $('repInt').value||0;
+  const qs = new URLSearchParams();
+  if (from) qs.set('from', from);
+  if (to) qs.set('to', to+'T23:59:59');
+  qs.set('interestRate', rate);
+  const r = await api('/api/reports/profit-loss?'+qs.toString());
+  LAST_REPORT = r;
+  $('reportOut').innerHTML = `
+    <div class="card">
+      <h3>Summary</h3>
+      <div class="kpis">
+        ${kpi('Income', fmt(r.income), 'gross revenue')}
+        ${kpi('Expenses', fmt(r.expense), 'operating costs', 'warn')}
+        ${kpi('Loss events', fmt(r.loss), '', 'warn')}
+        ${kpi('Net profit', fmt(r.net_profit), 'income − costs')}
+        ${kpi('Interest ('+r.interest_rate_percent+'%)', fmt(r.interest_amount), 'on net')}
+        ${kpi('Final balance', fmt(r.final_balance), 'net + interest')}
+      </div>
+      <p style="font-size:12px;color:#7a5a18;margin-top:8px">Generated ${new Date(r.generated_at).toLocaleString()}</p>
+    </div>`;
+}
+async function downloadReceipt(){
+  if (!LAST_REPORT) await runReport();
+  const r = LAST_REPORT;
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ unit:'mm', format:[80,200] });
+  let y = 8;
+  doc.setFont('courier','bold'); doc.setFontSize(13);
+  doc.text('LOCATIONROOFTOP', 40, y, {align:'center'}); y+=5;
+  doc.setFont('courier','normal'); doc.setFontSize(8);
+  doc.text('Profit & Loss Receipt', 40, y, {align:'center'}); y+=4;
+  doc.text('-------------------------------', 40, y, {align:'center'}); y+=4;
+  doc.text('Date: '+new Date().toLocaleString(), 5, y); y+=4;
+  doc.text('Cashier: '+(ME.fullName||ME.username), 5, y); y+=4;
+  doc.text('Period: '+r.period.from+' -> '+r.period.to, 5, y); y+=4;
+  doc.text('-------------------------------', 40, y, {align:'center'}); y+=5;
+  const line = (k,v)=>{ doc.text(k,5,y); doc.text(v,75,y,{align:'right'}); y+=4; };
+  line('Income:', fmt(r.income));
+  line('Expenses:', fmt(r.expense));
+  line('Loss events:', fmt(r.loss));
+  doc.text('-------------------------------', 40, y, {align:'center'}); y+=4;
+  doc.setFont('courier','bold'); line('NET PROFIT:', fmt(r.net_profit)); doc.setFont('courier','normal');
+  line('Interest %:', r.interest_rate_percent+'%');
+  line('Interest amt:', fmt(r.interest_amount));
+  doc.setFont('courier','bold'); line('FINAL:', fmt(r.final_balance)); doc.setFont('courier','normal');
+  y+=2; doc.text('-------------------------------', 40, y, {align:'center'}); y+=4;
+  doc.text('Thank you for using', 40, y, {align:'center'}); y+=4;
+  doc.text('LocationRooftop System', 40, y, {align:'center'}); y+=4;
+  doc.text('** PRINTED RECEIPT **', 40, y, {align:'center'});
+  doc.save('locationrooftop-receipt-'+Date.now()+'.pdf');
+  toast('Receipt downloaded');
+}
+PAGES.receipt = PAGES.reports;
+
+// ============================================================
+// AUDIT LOG
+// ============================================================
+PAGES.audit = async () => {
+  const rows = await api('/api/audit-log');
+  $('pageContent').innerHTML = `
+    <h2 class="section-title">Audit Log</h2>
+    <div class="section-sub">Every important action is recorded permanently.</div>
+    <div class="card"><div class="tbl-wrap"><table class="tbl"><thead><tr><th>ID</th><th>Actor</th><th>Action</th><th>Details</th><th>When</th></tr></thead><tbody>
+      ${rows.map(a=>`<tr><td>${a.id}</td><td><strong>${esc(a.actor)}</strong></td><td><span class="badge in">${esc(a.action)}</span></td><td style="font-size:12px;color:#666">${esc((a.details||'').slice(0,80))}</td><td>${esc((a.created_at||'').slice(0,19))}</td></tr>`).join('') || '<tr><td colspan="5" style="text-align:center;padding:20px;color:#888">No audit entries</td></tr>'}
+    </tbody></table></div></div>`;
+};
+
+// ============================================================
+// SETTINGS
+// ============================================================
+PAGES.settings = async () => {
+  const snapshots = JSON.parse(localStorage.getItem('lr_snapshots')||'[]');
+  $('pageContent').innerHTML = `
+    <h2 class="section-title">Settings</h2>
+    <div class="card">
+      <h3>🔐 Change my password</h3>
+      <div class="row">
+        <div class="field"><label>Old password</label><input id="oldP" type="password" /></div>
+        <div class="field"><label>New password</label><input id="newP" type="password" /></div>
+        <button class="btn" onclick="changeMyPwd()">Update</button>
+      </div>
+      <div id="cpMsg" style="margin-top:8px"></div>
+    </div>
+    <div class="card">
+      <h3>🌐 Backend API URL</h3>
+      <p style="font-size:13px;color:#7a5a18">Current: <code>${API}</code> · Mode: <strong>${DEMO_MODE?'🟡 DEMO (local)':'🟢 ONLINE'}</strong></p>
+      <div class="row">
+        <div class="field"><label>Override API URL</label><input id="apiOverride" placeholder="https://your-render-app.onrender.com" value="${localStorage.getItem('lr_api')||''}" /></div>
+        <button class="btn" onclick="saveApi()">Save & Reload</button>
+        <button class="btn btn-ghost" onclick="localStorage.removeItem('lr_api');location.reload()" style="color:#5a3e08;border-color:var(--line)">Reset to default</button>
+      </div>
+    </div>
+    <div class="card">
+      <h3>📸 Auto P&L Snapshots (every 12h)</h3>
+      <p style="font-size:13px;color:#7a5a18;margin-bottom:8px">${snapshots.length} snapshots saved locally.</p>
+      ${snapshots.length ? `<div class="tbl-wrap"><table class="tbl"><thead><tr><th>Captured</th><th>Income</th><th>Expenses</th><th>Net</th></tr></thead><tbody>
+        ${snapshots.slice(0,10).map(s=>`<tr><td>${new Date(s.at).toLocaleString()}</td><td>${fmt(s.income)}</td><td>${fmt(s.expense)}</td><td><strong>${fmt(s.net_profit)}</strong></td></tr>`).join('')}
+      </tbody></table></div>` : '<div style="color:#888;font-size:13px">No snapshots yet. They will be saved automatically.</div>'}
+    </div>
+    ${ME.role==='admin' ? `
+    <div class="card">
+      <h3>⚠️ Danger Zone</h3>
+      <p style="font-size:13px;color:#7a5a18;margin-bottom:10px">Reset all local demo data (does not affect online backend).</p>
+      <button class="btn btn-danger" onclick="if(confirm('Reset ALL local data? This cannot be undone!')){DB.reset();seedDemoData();toast('All demo data reset');setTimeout(()=>location.reload(),800);}">🗑 Reset Demo Data</button>
+    </div>` : ''}
+    <div class="card">
+      <h3>ℹ️ About LocationRooftop</h3>
+      <p style="font-size:13px;line-height:1.7">Premium Hospitality Management Suite v1.0 — modern multi-panel management with OCR data capture, P&L reports, audit logging, full role-based access control, and AI chatbot assistant. Works online with backend or fully offline in demo mode.</p>
+    </div>`;
+};
+async function changeMyPwd(){
+  try {
+    await api('/api/change-password',{ method:'POST', body: JSON.stringify({ oldPassword:$('oldP').value, newPassword:$('newP').value })});
+    $('cpMsg').innerHTML='<div class="alert ok">✓ Password changed.</div>';
+    $('oldP').value=''; $('newP').value='';
+    toast('Password updated');
+  } catch(e){ $('cpMsg').innerHTML='<div class="alert err">'+e.message+'</div>'; }
+}
+function saveApi(){ const v=$('apiOverride').value.trim(); if(v) localStorage.setItem('lr_api',v); else localStorage.removeItem('lr_api'); toast('Saved — reloading'); setTimeout(()=>location.reload(),600); }
+
+// ============================================================
+// CHATBOT
+// ============================================================
+function toggleChat(){
+  $('chatBox').classList.toggle('open');
+  $('chatFab').classList.remove('pulse');
+  if ($('chatBox').classList.contains('open')) setTimeout(()=>$('chatInput').focus(),100);
+}
+function quickChat(msg){ $('chatInput').value=msg; sendChat(); }
+async function sendChat(){
+  const inp = $('chatInput'); const msg = inp.value.trim(); if(!msg) return;
+  const now = new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+  $('chatBody').insertAdjacentHTML('beforeend',`<div class="msg me">${esc(msg)}<span class="ts">${now}</span></div>`);
+  inp.value=''; $('chatBody').scrollTop=$('chatBody').scrollHeight;
+  // Typing indicator
+  $('chatBody').insertAdjacentHTML('beforeend',`<div class="msg bot" id="typing">⏳ Thinking…</div>`);
+  $('chatBody').scrollTop=$('chatBody').scrollHeight;
+  try {
+    const r = await api('/api/chat',{ method:'POST', body: JSON.stringify({ message: msg })});
+    $('typing')?.remove();
+    const reply = String(r.reply||'').replace(/\n/g,'<br>');
+    $('chatBody').insertAdjacentHTML('beforeend',`<div class="msg bot">${reply}<span class="ts">${new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</span></div>`);
+  } catch(e){
+    $('typing')?.remove();
+    $('chatBody').insertAdjacentHTML('beforeend',`<div class="msg bot">⚠️ ${esc(e.message)}</div>`);
+  }
+  $('chatBody').scrollTop=$('chatBody').scrollHeight;
+}
+
+// ============================================================
+// AUTO 12h SNAPSHOT
+// ============================================================
+function scheduleAutoReport(){
+  const last = Number(localStorage.getItem('lr_last_report')||0);
+  const now = Date.now();
+  const TWELVE_H = 12*60*60*1000;
+  if (now - last > TWELVE_H && TOKEN){
+    api('/api/reports/profit-loss').then(r=>{
+      const snapshots = JSON.parse(localStorage.getItem('lr_snapshots')||'[]');
+      snapshots.unshift({ at:new Date().toISOString(), ...r });
+      localStorage.setItem('lr_snapshots', JSON.stringify(snapshots.slice(0,30)));
+      localStorage.setItem('lr_last_report', String(now));
+      console.log('Auto 12h snapshot saved');
+    }).catch(()=>{});
+  }
+}
+setInterval(scheduleAutoReport, 60*60*1000);
+
+// ============================================================
+// BOOT
+// ============================================================
+(async function boot(){
+  await detectMode();
+  if (DEMO_MODE) seedDemoData();
+  updateModeIndicator();
+  if (TOKEN && ME){
+    try {
+      await api('/api/health');
+      enterApp();
+    } catch(e){ logout(); }
+  }
+  scheduleAutoReport();
+  // Focus staff username by default
+  setTimeout(()=>$('staffUser')?.focus(), 200);
+})();
+</script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"4edd5f8ec12a48cfa682ab8261b80a79","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
+</html>
