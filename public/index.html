@@ -14,375 +14,188 @@
 :root{
   --gold-1:#fff4d0;
   --gold-2:#f4cf6f;
-  --gold-3:#d4a437;
+  --gold-3:#c9952b;
   --gold-4:#8a5a0b;
-  --gold-glow:#ffd86b;
-  --black-1:#0a0805;
-  --black-2:#13100a;
-  --black-3:#1f1810;
-  --ink:#f4cf6f;
-  --paper:#1a140c;
-  --line:rgba(212,164,55,.35);
-  --line-strong:rgba(212,164,55,.6);
-  --ok:#4caf50; --err:#e53935; --warn:#ff9800;
-  --shadow:0 18px 50px rgba(0,0,0,.6);
-  --shadow-gold:0 8px 30px rgba(212,164,55,.35);
+  --bg-deep:#1a1207;
+  --bg-soft:#241a0c;
+  --ink:#2b1f0c;
+  --paper:#fffaf0;
+  --line:rgba(201,149,43,.35);
+  --ok:#2e7d32; --err:#c62828; --warn:#ef6c00;
+  --shadow:0 18px 50px rgba(60,40,5,.35);
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%}
 body{
   font-family:'Inter',system-ui,sans-serif;
-  color:#e8d9a8;
+  color:var(--ink);
   background:
-    radial-gradient(1200px 800px at 10% 0%,rgba(212,164,55,.25) 0%,transparent 60%),
-    radial-gradient(1000px 700px at 100% 100%,rgba(212,164,55,.18) 0%,transparent 55%),
-    linear-gradient(135deg,#0a0805 0%,#13100a 50%,#1a1208 100%);
+    radial-gradient(1200px 800px at 10% 0%,#ffe9a8 0%,transparent 60%),
+    radial-gradient(1000px 700px at 100% 100%,#d4a23a 0%,transparent 55%),
+    linear-gradient(135deg,#fff4d0 0%,#f4cf6f 45%,#c9952b 100%);
   min-height:100vh;
   overflow-x:hidden;
 }
-h1,h2,h3{font-family:'Playfair Display',serif;color:var(--gold-glow)}
+h1,h2,h3{font-family:'Playfair Display',serif;color:#3a2607}
 button{font-family:inherit;cursor:pointer;border:none}
 input,select,textarea{font-family:inherit}
 .hidden{display:none !important}
 
-/* Decorative gold particles */
-body::before{
-  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
-  background:
-    radial-gradient(2px 2px at 20% 30%,rgba(255,216,107,.6),transparent),
-    radial-gradient(2px 2px at 60% 70%,rgba(255,216,107,.4),transparent),
-    radial-gradient(1px 1px at 80% 20%,rgba(255,216,107,.5),transparent),
-    radial-gradient(1px 1px at 40% 90%,rgba(255,216,107,.3),transparent);
-  background-size:300px 300px,500px 500px,200px 200px,400px 400px;
-  opacity:.4;
-}
-
-/* ============ LOGIN: Split Screen ============ */
-.login-wrap{
-  min-height:100vh;display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:0;position:relative;z-index:1;
-}
-@media (max-width:900px){
-  .login-wrap{grid-template-columns:1fr;}
-}
-
-.login-side{
-  padding:30px;display:flex;align-items:center;justify-content:center;
-  position:relative;overflow:hidden;
-}
-.login-side.admin-side{
-  background:
-    radial-gradient(circle at 30% 30%, rgba(212,164,55,.25),transparent 60%),
-    linear-gradient(135deg,#1a1208 0%,#0a0805 100%);
-  border-right:1px solid var(--line);
-}
-.login-side.staff-side{
-  background:
-    radial-gradient(circle at 70% 70%, rgba(244,207,111,.18),transparent 60%),
-    linear-gradient(135deg,#0a0805 0%,#13100a 100%);
-}
-.login-side::before{
-  content:'';position:absolute;inset:0;
-  background:linear-gradient(180deg,transparent 0%,rgba(212,164,55,.04) 100%);
-  pointer-events:none;
-}
-
+/* ---------- Login Screen ---------- */
+.login-wrap{min-height:100vh;display:grid;place-items:center;padding:24px}
 .login-card{
   width:min(440px,100%);
-  background:linear-gradient(145deg,rgba(31,24,16,.95),rgba(10,8,5,.95));
-  backdrop-filter:blur(20px);
-  border:1px solid var(--line-strong);
+  background:rgba(255,250,240,.92);
+  backdrop-filter:blur(18px);
+  border:1px solid var(--line);
   border-radius:24px;
   padding:36px 30px;
-  box-shadow:var(--shadow),inset 0 1px 0 rgba(212,164,55,.15);
-  position:relative;z-index:2;
+  box-shadow:var(--shadow);
 }
-.login-card.admin-card{
-  border-color:rgba(212,164,55,.6);
-  box-shadow:var(--shadow),0 0 60px rgba(212,164,55,.18),inset 0 1px 0 rgba(212,164,55,.2);
-}
-
-.panel-tag{
-  display:inline-flex;align-items:center;gap:8px;
-  padding:6px 14px;border-radius:99px;font-size:11px;font-weight:700;letter-spacing:2px;
-  text-transform:uppercase;margin-bottom:16px;
-}
-.panel-tag.admin{
-  background:linear-gradient(135deg,#d4a437,#8a5a0b);color:#fff;
-  box-shadow:0 4px 14px rgba(212,164,55,.4);
-}
-.panel-tag.staff{
-  background:rgba(212,164,55,.15);color:var(--gold-glow);
-  border:1px solid var(--line);
-}
-
-.brand{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+.brand{display:flex;align-items:center;gap:12px;margin-bottom:18px}
 .brand-logo{
-  width:58px;height:58px;border-radius:16px;
-  background:linear-gradient(135deg,#ffd86b,#d4a437 50%,#8a5a0b);
-  display:grid;place-items:center;color:#0a0805;font-weight:900;font-size:24px;
-  box-shadow:inset 0 0 0 2px rgba(255,255,255,.2),0 8px 20px rgba(212,164,55,.5);
-  font-family:'Playfair Display';
+  width:54px;height:54px;border-radius:14px;
+  background:linear-gradient(135deg,#c9952b,#8a5a0b);
+  display:grid;place-items:center;color:#fff;font-weight:900;font-size:22px;
+  box-shadow:inset 0 0 0 2px rgba(255,255,255,.25),0 8px 20px rgba(138,90,11,.4);
 }
-.brand-title{font-family:'Playfair Display';font-size:26px;line-height:1;color:var(--gold-glow);font-weight:900}
-.brand-sub{font-size:11px;letter-spacing:2px;color:#a88a4d;text-transform:uppercase;margin-top:4px}
-
-.login-card h2{font-size:22px;margin-bottom:6px;color:var(--gold-glow)}
-.login-card .hint{font-size:13px;color:#a88a4d;margin-bottom:20px;line-height:1.5}
+.brand-title{font-family:'Playfair Display';font-size:24px;line-height:1;color:#3a2607}
+.brand-sub{font-size:11px;letter-spacing:2px;color:#8a5a0b;text-transform:uppercase}
+.login-card h2{font-size:22px;margin-bottom:6px}
+.login-card .hint{font-size:13px;color:#6a4a10;margin-bottom:18px}
 
 .field{margin-bottom:14px}
-.field label{
-  display:block;font-size:11px;font-weight:600;color:var(--gold-3);
-  margin-bottom:6px;letter-spacing:1.5px;text-transform:uppercase;
+.field label{display:block;font-size:12px;font-weight:600;color:#5a3e08;margin-bottom:6px;letter-spacing:.5px;text-transform:uppercase}
+.field input,.field select{
+  width:100%;padding:12px 14px;border-radius:12px;border:1.5px solid var(--line);
+  background:#fffaf0;font-size:14px;color:var(--ink);outline:none;transition:.2s;
 }
-.field input,.field select,.field textarea{
-  width:100%;padding:13px 14px;border-radius:12px;
-  border:1.5px solid var(--line);
-  background:rgba(10,8,5,.6);
-  font-size:14px;color:#e8d9a8;outline:none;transition:.2s;
-}
-.field input::placeholder,.field textarea::placeholder{color:#6a553a}
-.field input:focus,.field select:focus,.field textarea:focus{
-  border-color:var(--gold-3);
-  box-shadow:0 0 0 4px rgba(212,164,55,.15);
-  background:rgba(10,8,5,.85);
-}
-.field select option{background:#13100a;color:#e8d9a8}
+.field input:focus,.field select:focus{border-color:var(--gold-3);box-shadow:0 0 0 4px rgba(201,149,43,.18)}
 
 .btn{
   display:inline-flex;align-items:center;justify-content:center;gap:8px;
-  padding:13px 20px;border-radius:12px;font-weight:600;font-size:14px;
-  background:linear-gradient(135deg,#ffd86b 0%,#d4a437 50%,#8a5a0b 100%);
-  color:#0a0805;
-  box-shadow:0 8px 22px rgba(212,164,55,.4),inset 0 1px 0 rgba(255,255,255,.3);
-  transition:.2s;letter-spacing:.3px;
+  padding:12px 18px;border-radius:12px;font-weight:600;font-size:14px;
+  background:linear-gradient(135deg,#c9952b,#8a5a0b);color:#fff;
+  box-shadow:0 8px 20px rgba(138,90,11,.35);transition:.2s;
 }
-.btn:hover{transform:translateY(-2px);box-shadow:0 14px 30px rgba(212,164,55,.55)}
-.btn:active{transform:translateY(0)}
+.btn:hover{transform:translateY(-1px);box-shadow:0 12px 28px rgba(138,90,11,.45)}
 .btn-block{width:100%}
-.btn-ghost{
-  background:transparent;color:var(--gold-glow);
-  box-shadow:none;border:1.5px solid var(--line-strong);
-}
-.btn-ghost:hover{background:rgba(212,164,55,.1)}
-.btn-danger{background:linear-gradient(135deg,#e53935,#7f1010);color:#fff}
-.btn-ok{background:linear-gradient(135deg,#66bb6a,#1b4d1e);color:#fff}
+.btn-ghost{background:transparent;color:#5a3e08;box-shadow:none;border:1.5px solid var(--line)}
+.btn-danger{background:linear-gradient(135deg,#c62828,#7f1010)}
+.btn-ok{background:linear-gradient(135deg,#2e7d32,#1b4d1e)}
 .btn-sm{padding:7px 12px;font-size:12px;border-radius:9px}
 
-.role-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.role-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
 .role-chip{
-  padding:10px 8px;border-radius:10px;border:1.5px solid var(--line);
-  background:rgba(10,8,5,.5);text-align:center;cursor:pointer;
-  font-size:11px;font-weight:600;color:#a88a4d;transition:.2s;
+  padding:10px;border-radius:10px;border:1.5px solid var(--line);
+  background:#fffaf0;text-align:center;cursor:pointer;font-size:12px;font-weight:600;color:#5a3e08;
+  transition:.2s;
 }
-.role-chip:hover{border-color:var(--gold-3);background:rgba(212,164,55,.1);color:var(--gold-glow)}
-.role-chip.active{
-  background:linear-gradient(135deg,#d4a437,#8a5a0b);color:#fff;
-  border-color:transparent;box-shadow:0 4px 12px rgba(212,164,55,.4);
-}
+.role-chip:hover{border-color:var(--gold-3);background:#fff4d0}
+.role-chip.active{background:linear-gradient(135deg,#c9952b,#8a5a0b);color:#fff;border-color:transparent}
 
 .alert{padding:10px 12px;border-radius:10px;font-size:13px;margin-bottom:12px}
-.alert.err{background:rgba(229,57,53,.15);color:#ff8a85;border:1px solid rgba(229,57,53,.3)}
-.alert.ok{background:rgba(76,175,80,.15);color:#a5d6a7;border:1px solid rgba(76,175,80,.3)}
+.alert.err{background:#ffe5e5;color:#7a1010;border:1px solid #f3b3b3}
+.alert.ok{background:#e3f5e6;color:#15521a;border:1px solid #b3d6b8}
 
-.divider{
-  display:flex;align-items:center;gap:10px;margin:18px 0;
-  font-size:11px;color:#6a553a;letter-spacing:2px;text-transform:uppercase;
-}
-.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--line)}
-
-/* ============ APP SHELL ============ */
-.app{display:none;min-height:100vh;position:relative;z-index:1}
+/* ---------- App Shell ---------- */
+.app{display:none;min-height:100vh}
 .app.active{display:grid;grid-template-columns:260px 1fr}
-
 .sidebar{
-  background:linear-gradient(180deg,#0a0805 0%,#13100a 100%);
-  color:#e8d9a8;padding:22px 14px;
-  position:sticky;top:0;height:100vh;overflow-y:auto;
-  border-right:1px solid var(--line);
+  background:linear-gradient(180deg,#241a0c 0%,#1a1207 100%);
+  color:#f7e8c4;padding:20px 14px;position:sticky;top:0;height:100vh;overflow-y:auto;
 }
-.sidebar .brand-title{color:var(--gold-glow);font-size:22px}
-.sidebar .brand-sub{color:var(--gold-3)}
-.nav{margin-top:20px;display:flex;flex-direction:column;gap:4px}
+.sidebar .brand-title{color:#fff}
+.sidebar .brand-sub{color:#c9952b}
+.nav{margin-top:18px;display:flex;flex-direction:column;gap:4px}
 .nav button{
-  text-align:left;background:transparent;color:#c4b283;padding:11px 12px;border-radius:10px;
+  text-align:left;background:transparent;color:#e6d5a4;padding:11px 12px;border-radius:10px;
   font-size:13px;font-weight:500;display:flex;align-items:center;gap:10px;transition:.18s;
-  width:100%;
 }
-.nav button:hover{background:rgba(212,164,55,.12);color:var(--gold-glow)}
-.nav button.active{
-  background:linear-gradient(135deg,#d4a437,#8a5a0b);color:#fff;
-  box-shadow:0 6px 14px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.2);
-}
+.nav button:hover{background:rgba(201,149,43,.15);color:#fff}
+.nav button.active{background:linear-gradient(135deg,#c9952b,#8a5a0b);color:#fff;box-shadow:0 6px 14px rgba(0,0,0,.3)}
 .nav .ico{width:18px;text-align:center}
-.sidebar-foot{
-  margin-top:24px;padding-top:16px;
-  border-top:1px solid var(--line);
-  font-size:11px;color:#6a553a;
-}
+.sidebar-foot{margin-top:24px;padding-top:16px;border-top:1px solid rgba(201,149,43,.25);font-size:12px;color:#a88a4d}
 
 .main{padding:24px 28px;overflow-x:hidden}
 .topbar{
   display:flex;align-items:center;justify-content:space-between;gap:14px;
-  background:linear-gradient(135deg,rgba(31,24,16,.85),rgba(10,8,5,.85));
-  backdrop-filter:blur(10px);
+  background:rgba(255,250,240,.85);backdrop-filter:blur(10px);
   border:1px solid var(--line);border-radius:16px;padding:12px 18px;margin-bottom:20px;
-  box-shadow:0 6px 18px rgba(0,0,0,.3);
+  box-shadow:0 6px 18px rgba(60,40,5,.08);
 }
-.topbar .user{display:flex;align-items:center;gap:10px;font-size:13px;color:#e8d9a8}
-.avatar{
-  width:38px;height:38px;border-radius:50%;
-  background:linear-gradient(135deg,#ffd86b,#d4a437,#8a5a0b);
-  color:#0a0805;display:grid;place-items:center;font-weight:800;font-size:15px;
-  box-shadow:0 4px 12px rgba(212,164,55,.4);
-}
+.topbar .user{display:flex;align-items:center;gap:10px;font-size:13px}
+.avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#c9952b,#8a5a0b);color:#fff;display:grid;place-items:center;font-weight:700}
 
-.section-title{font-size:28px;margin-bottom:6px;color:var(--gold-glow)}
-.section-sub{color:#a88a4d;font-size:14px;margin-bottom:18px}
+.section-title{font-size:26px;margin-bottom:6px}
+.section-sub{color:#7a5a18;font-size:14px;margin-bottom:18px}
 
 /* Cards & grids */
 .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin-bottom:20px}
 .kpi{
-  background:linear-gradient(135deg,rgba(31,24,16,.9),rgba(10,8,5,.9));
-  border:1px solid var(--line);border-radius:16px;padding:18px 20px;
-  box-shadow:0 6px 18px rgba(0,0,0,.3);
-  position:relative;overflow:hidden;
+  background:linear-gradient(135deg,#fffaf0 0%,#fff4d0 100%);
+  border:1px solid var(--line);border-radius:16px;padding:16px 18px;box-shadow:0 6px 18px rgba(60,40,5,.08);
 }
-.kpi::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:3px;
-  background:linear-gradient(90deg,#ffd86b,#d4a437,#8a5a0b);
-}
-.kpi .label{font-size:11px;text-transform:uppercase;letter-spacing:1.2px;color:var(--gold-3);font-weight:600}
-.kpi .value{font-family:'Playfair Display';font-size:28px;color:var(--gold-glow);margin-top:6px;font-weight:700}
-.kpi .delta{font-size:11px;color:#a5d6a7;margin-top:6px}
-.kpi.warn::before{background:linear-gradient(90deg,#ff9800,#e53935)}
-.kpi.warn .delta{color:#ffab91}
+.kpi .label{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#7a5a18;font-weight:600}
+.kpi .value{font-family:'Playfair Display';font-size:26px;color:#3a2607;margin-top:4px}
+.kpi .delta{font-size:11px;color:#2e7d32;margin-top:4px}
+.kpi.warn .delta{color:#c62828}
 
 .card{
-  background:linear-gradient(145deg,rgba(31,24,16,.85),rgba(10,8,5,.85));
-  border:1px solid var(--line);border-radius:16px;padding:20px;
-  box-shadow:0 6px 18px rgba(0,0,0,.3);margin-bottom:18px;
+  background:rgba(255,250,240,.92);
+  border:1px solid var(--line);border-radius:16px;padding:18px;
+  box-shadow:0 6px 18px rgba(60,40,5,.08);margin-bottom:18px;
 }
-.card h3{font-size:18px;margin-bottom:12px;display:flex;align-items:center;gap:8px;color:var(--gold-glow)}
+.card h3{font-size:18px;margin-bottom:10px;display:flex;align-items:center;gap:8px}
 .row{display:flex;flex-wrap:wrap;gap:10px;align-items:end}
 .row > .field{flex:1;min-width:160px;margin-bottom:0}
 
-.tbl{width:100%;border-collapse:collapse;font-size:13px;color:#e8d9a8}
-.tbl th,.tbl td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line)}
-.tbl th{
-  background:rgba(212,164,55,.1);font-weight:600;color:var(--gold-3);
-  text-transform:uppercase;letter-spacing:.6px;font-size:11px;
-}
-.tbl tr:hover{background:rgba(212,164,55,.06)}
-.tbl-wrap{overflow-x:auto;border-radius:12px;border:1px solid var(--line);background:rgba(10,8,5,.4)}
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th,.tbl td{padding:9px 10px;text-align:left;border-bottom:1px solid var(--line)}
+.tbl th{background:rgba(201,149,43,.12);font-weight:600;color:#5a3e08;text-transform:uppercase;letter-spacing:.5px;font-size:11px}
+.tbl tr:hover{background:rgba(201,149,43,.06)}
+.tbl-wrap{overflow-x:auto;border-radius:12px;border:1px solid var(--line)}
 
-.badge{display:inline-block;padding:4px 10px;border-radius:99px;font-size:11px;font-weight:600}
-.badge.in{background:rgba(76,175,80,.18);color:#a5d6a7;border:1px solid rgba(76,175,80,.3)}
-.badge.ex{background:rgba(229,57,53,.18);color:#ffab91;border:1px solid rgba(229,57,53,.3)}
-.badge.ls{background:rgba(255,152,0,.18);color:#ffcc80;border:1px solid rgba(255,152,0,.3)}
+.badge{display:inline-block;padding:3px 9px;border-radius:99px;font-size:11px;font-weight:600}
+.badge.in{background:#e3f5e6;color:#15521a}
+.badge.ex{background:#ffe5e5;color:#7a1010}
+.badge.ls{background:#fff0d6;color:#7a4a10}
 
 .tabs{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
-.tab{
-  padding:9px 16px;border-radius:10px;background:transparent;
-  border:1.5px solid var(--line);font-size:13px;font-weight:600;color:#a88a4d;
-}
-.tab.active{
-  background:linear-gradient(135deg,#d4a437,#8a5a0b);color:#fff;
-  border-color:transparent;box-shadow:0 4px 12px rgba(212,164,55,.3);
-}
+.tab{padding:8px 14px;border-radius:10px;background:transparent;border:1.5px solid var(--line);font-size:13px;font-weight:600;color:#5a3e08}
+.tab.active{background:linear-gradient(135deg,#c9952b,#8a5a0b);color:#fff;border-color:transparent}
 
 /* Chatbot */
 .chat-fab{
-  position:fixed;bottom:22px;right:22px;width:62px;height:62px;border-radius:50%;
-  background:linear-gradient(135deg,#ffd86b,#d4a437,#8a5a0b);color:#0a0805;font-size:28px;
-  display:grid;place-items:center;
-  box-shadow:0 12px 32px rgba(212,164,55,.6),inset 0 1px 0 rgba(255,255,255,.3);
-  cursor:pointer;z-index:100;
-  border:2px solid rgba(255,216,107,.4);
-  animation:pulse 2.5s infinite;
-}
-@keyframes pulse{
-  0%,100%{box-shadow:0 12px 32px rgba(212,164,55,.6),0 0 0 0 rgba(212,164,55,.5)}
-  50%{box-shadow:0 12px 32px rgba(212,164,55,.6),0 0 0 14px rgba(212,164,55,0)}
+  position:fixed;bottom:22px;right:22px;width:60px;height:60px;border-radius:50%;
+  background:linear-gradient(135deg,#c9952b,#8a5a0b);color:#fff;font-size:26px;
+  display:grid;place-items:center;box-shadow:0 12px 28px rgba(138,90,11,.5);cursor:pointer;z-index:100;
+  border:2px solid rgba(255,255,255,.4);
 }
 .chat-box{
-  position:fixed;bottom:96px;right:22px;width:min(380px,90vw);height:500px;
-  background:linear-gradient(145deg,#1f1810,#0a0805);
-  border-radius:18px;box-shadow:0 24px 60px rgba(0,0,0,.7);
-  display:none;flex-direction:column;z-index:100;
-  border:1px solid var(--line-strong);overflow:hidden;
+  position:fixed;bottom:92px;right:22px;width:min(360px,90vw);height:480px;
+  background:#fffaf0;border-radius:18px;box-shadow:0 24px 60px rgba(0,0,0,.3);
+  display:none;flex-direction:column;z-index:100;border:1px solid var(--line);overflow:hidden;
 }
 .chat-box.open{display:flex}
-.chat-head{
-  background:linear-gradient(135deg,#d4a437,#8a5a0b);color:#fff;
-  padding:14px 16px;font-weight:600;display:flex;justify-content:space-between;align-items:center;
-}
-.chat-body{flex:1;overflow-y:auto;padding:14px;background:linear-gradient(180deg,#0a0805,#13100a)}
-.msg{
-  padding:10px 14px;border-radius:14px;margin-bottom:8px;font-size:13px;
-  max-width:85%;line-height:1.5;white-space:pre-wrap;
-}
-.msg.bot{
-  background:rgba(31,24,16,.9);border:1px solid var(--line);color:#e8d9a8;
-}
-.msg.me{
-  background:linear-gradient(135deg,#d4a437,#8a5a0b);color:#fff;margin-left:auto;
-}
-.chat-foot{
-  display:flex;gap:6px;padding:10px;background:rgba(31,24,16,.95);
-  border-top:1px solid var(--line);
-}
-.chat-foot input{
-  flex:1;border:1px solid var(--line);border-radius:10px;
-  padding:10px 14px;font-size:13px;outline:none;
-  background:rgba(10,8,5,.6);color:#e8d9a8;
-}
-.chat-foot input:focus{border-color:var(--gold-3)}
-.chat-suggestions{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
-.chat-suggestion{
-  padding:6px 10px;border-radius:99px;font-size:11px;font-weight:600;
-  background:rgba(212,164,55,.15);color:var(--gold-glow);
-  border:1px solid var(--line);cursor:pointer;transition:.2s;
-}
-.chat-suggestion:hover{background:rgba(212,164,55,.3)}
+.chat-head{background:linear-gradient(135deg,#c9952b,#8a5a0b);color:#fff;padding:12px 14px;font-weight:600;display:flex;justify-content:space-between;align-items:center}
+.chat-body{flex:1;overflow-y:auto;padding:12px;background:linear-gradient(180deg,#fff4d0,#fffaf0)}
+.msg{padding:9px 12px;border-radius:12px;margin-bottom:8px;font-size:13px;max-width:85%;line-height:1.45}
+.msg.bot{background:#fff;border:1px solid var(--line);color:#3a2607}
+.msg.me{background:linear-gradient(135deg,#c9952b,#8a5a0b);color:#fff;margin-left:auto}
+.chat-foot{display:flex;gap:6px;padding:10px;background:#fff;border-top:1px solid var(--line)}
+.chat-foot input{flex:1;border:1px solid var(--line);border-radius:10px;padding:9px 12px;font-size:13px;outline:none}
 
 /* OCR scan */
 .scan-zone{
-  border:2px dashed var(--gold-3);border-radius:14px;padding:30px;text-align:center;
-  background:rgba(212,164,55,.05);transition:.2s;cursor:pointer;display:block;
+  border:2px dashed var(--gold-3);border-radius:14px;padding:24px;text-align:center;
+  background:rgba(255,244,208,.5);transition:.2s;cursor:pointer;
 }
-.scan-zone:hover{background:rgba(212,164,55,.12);border-color:var(--gold-glow)}
-.scan-zone .ico{font-size:42px;color:var(--gold-3);margin-bottom:8px}
-.scan-progress{height:8px;background:rgba(10,8,5,.5);border-radius:99px;overflow:hidden;margin-top:10px;display:none}
+.scan-zone:hover{background:rgba(255,244,208,.9)}
+.scan-zone .ico{font-size:40px;color:#8a5a0b;margin-bottom:8px}
+.scan-progress{height:8px;background:#eee;border-radius:99px;overflow:hidden;margin-top:10px;display:none}
 .scan-progress.show{display:block}
-.scan-progress > div{height:100%;background:linear-gradient(90deg,#d4a437,#ffd86b);width:0;transition:.3s}
-
-textarea{
-  width:100%;padding:12px 14px;border-radius:10px;
-  border:1.5px solid var(--line);background:rgba(10,8,5,.6);
-  color:#e8d9a8;outline:none;resize:vertical;
-}
-textarea:focus{border-color:var(--gold-3)}
-
-pre{color:#e8d9a8 !important;background:rgba(10,8,5,.7) !important}
-
-details summary{color:var(--gold-3);cursor:pointer;font-weight:600}
-
-/* Notification toast */
-.toast{
-  position:fixed;top:20px;right:20px;z-index:200;
-  background:linear-gradient(135deg,#1f1810,#0a0805);
-  border:1px solid var(--line-strong);
-  border-radius:12px;padding:14px 18px;
-  box-shadow:var(--shadow);
-  color:#e8d9a8;font-size:13px;
-  max-width:340px;
-  animation:slideIn .3s ease;
-}
-.toast.ok{border-left:3px solid #4caf50}
-.toast.err{border-left:3px solid #e53935}
-@keyframes slideIn{from{transform:translateX(110%);opacity:0}to{transform:translateX(0);opacity:1}}
+.scan-progress > div{height:100%;background:linear-gradient(90deg,#c9952b,#f4cf6f);width:0;transition:.3s}
 
 /* Responsive */
 @media (max-width: 900px){
@@ -392,119 +205,70 @@ details summary{color:var(--gold-3);cursor:pointer;font-weight:600}
   .menu-toggle{display:inline-flex !important}
   .main{padding:18px 14px}
 }
-.menu-toggle{display:none;background:transparent;color:var(--gold-glow);font-size:24px}
+.menu-toggle{display:none;background:transparent;color:#5a3e08;font-size:22px}
 @media (max-width: 560px){
   .role-grid{grid-template-columns:1fr 1fr}
   .section-title{font-size:22px}
   .kpi .value{font-size:22px}
 }
-
-/* Loader */
-.loader{
-  display:inline-block;width:18px;height:18px;
-  border:2.5px solid rgba(255,255,255,.3);
-  border-top-color:#fff;border-radius:50%;
-  animation:spin .8s linear infinite;
-}
-@keyframes spin{to{transform:rotate(360deg)}}
 </style>
 </head>
 <body>
 
-<!-- ============ LOGIN (Split Screen) ============ -->
+<!-- ============ LOGIN ============ -->
 <div id="loginScreen" class="login-wrap">
-
-  <!-- ADMIN SIDE -->
-  <div class="login-side admin-side">
-    <div class="login-card admin-card">
-      <span class="panel-tag admin">👑 Admin Panel</span>
-      <div class="brand">
-        <div class="brand-logo">LR</div>
-        <div>
-          <div class="brand-title">LocationRooftop</div>
-          <div class="brand-sub">Administrator Access</div>
-        </div>
+  <div class="login-card">
+    <div class="brand">
+      <div class="brand-logo">LR</div>
+      <div>
+        <div class="brand-title">LocationRooftop</div>
+        <div class="brand-sub">Management System</div>
       </div>
-      <h2>Admin Sign-In</h2>
-      <p class="hint">Full system control — manage users, reset staff passwords, view all data and audit logs.</p>
-
-      <div class="field">
-        <label>Admin Username</label>
-        <input id="adminUser" placeholder="admin" value="admin" autocomplete="username" />
-      </div>
-      <div class="field">
-        <label>Admin Password</label>
-        <input id="adminPass" type="password" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doAdminLogin()"/>
-      </div>
-
-      <div id="adminMsg"></div>
-      <button class="btn btn-block" onclick="doAdminLogin()" id="adminBtn">🔐 Sign In as Admin</button>
-
-      <details style="margin-top:16px;font-size:12px;color:#a88a4d">
-        <summary>Default admin credentials</summary>
-        <div style="margin-top:8px;line-height:1.7;font-family:'Courier New',monospace">
-          Username: <span style="color:var(--gold-glow)">admin</span><br>
-          Password: <span style="color:var(--gold-glow)">119722</span>
-        </div>
-      </details>
     </div>
-  </div>
+    <h2>Sign in to your panel</h2>
+    <p class="hint">Choose your role, then enter your credentials.</p>
 
-  <!-- STAFF SIDE -->
-  <div class="login-side staff-side">
-    <div class="login-card">
-      <span class="panel-tag staff">🧑‍💼 Staff Panel</span>
-      <div class="brand">
-        <div class="brand-logo">LR</div>
-        <div>
-          <div class="brand-title">LocationRooftop</div>
-          <div class="brand-sub">Staff Login Portal</div>
-        </div>
-      </div>
-      <h2>Staff Sign-In</h2>
-      <p class="hint">Select your role and enter the credentials provided by your admin.</p>
-
-      <div class="field">
-        <label>Select your role</label>
-        <div class="role-grid">
-          <div class="role-chip" data-role="cost_controller">Cost Ctrl</div>
-          <div class="role-chip" data-role="procurement">Procurement</div>
-          <div class="role-chip" data-role="storekeeper">Storekeeper</div>
-          <div class="role-chip" data-role="accounts">Accounts</div>
-          <div class="role-chip" data-role="finance_manager">Finance</div>
-          <div class="role-chip" data-role="supervisor">Supervisor</div>
-          <div class="role-chip" data-role="hr">HR</div>
-          <div class="role-chip" data-role="director">Director</div>
-          <div class="role-chip" data-role="auditor">Auditor</div>
-        </div>
-      </div>
-
-      <div class="field">
-        <label>Username</label>
-        <input id="staffUser" placeholder="e.g. hr, accounts, supervisor" autocomplete="username" />
-      </div>
-      <div class="field">
-        <label>Password</label>
-        <input id="staffPass" type="password" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doStaffLogin()"/>
-      </div>
-
-      <div id="staffMsg"></div>
-      <button class="btn btn-block" onclick="doStaffLogin()" id="staffBtn">🔐 Sign In as Staff</button>
-
-      <div style="margin-top:14px;text-align:center">
-        <a href="#" onclick="showForgot();return false" style="font-size:12px;color:var(--gold-3)">Forgot password? Contact your admin →</a>
-      </div>
-
-      <details style="margin-top:14px;font-size:12px;color:#a88a4d">
-        <summary>Default staff accounts (test mode)</summary>
-        <div style="margin-top:8px;line-height:1.7;font-family:'Courier New',monospace;font-size:11px">
-          cost / cost123 · procurement / proc123<br>
-          storekeeper / store123 · accounts / acc123<br>
-          finance / fin123 · supervisor / sup123<br>
-          hr / hr123 · director / dir123 · auditor / aud123
-        </div>
-      </details>
+    <div class="field">
+      <label>Login as</label>
+      <select id="roleSelect">
+        <option value="auto">— Auto-detect from username —</option>
+        <option value="admin">Login as Admin</option>
+        <option value="cost_controller">Login as Cost Controller</option>
+        <option value="procurement">Login as Procurement</option>
+        <option value="storekeeper">Login as Storekeeper</option>
+        <option value="accounts">Login as Accounts</option>
+        <option value="finance_manager">Login as Finance Manager</option>
+        <option value="supervisor">Login as Supervisor</option>
+        <option value="hr">Login as HR</option>
+        <option value="director">Login as Director</option>
+        <option value="auditor">Login as Auditor</option>
+      </select>
     </div>
+
+    <div class="field">
+      <label>Username</label>
+      <input id="loginUser" placeholder="e.g. admin" autocomplete="username" />
+    </div>
+    <div class="field">
+      <label>Password</label>
+      <input id="loginPass" type="password" placeholder="••••••••" autocomplete="current-password" />
+    </div>
+
+    <div id="loginMsg"></div>
+    <button class="btn btn-block" onclick="doLogin()">🔐 Sign In Securely</button>
+
+    <div style="margin-top:14px;text-align:center">
+      <a href="#" onclick="showForgot();return false" style="font-size:12px;color:#8a5a0b">Forgot password?</a>
+    </div>
+
+    <details style="margin-top:18px;font-size:12px;color:#7a5a18">
+      <summary style="cursor:pointer;font-weight:600">Default test accounts</summary>
+      <div style="margin-top:8px;line-height:1.7">
+        admin / 119722<br>cost / cost123<br>procurement / proc123<br>
+        storekeeper / store123<br>accounts / acc123<br>finance / fin123<br>
+        supervisor / sup123<br>hr / hr123<br>director / dir123<br>auditor / aud123
+      </div>
+    </details>
   </div>
 </div>
 
@@ -521,19 +285,19 @@ details summary{color:var(--gold-3);cursor:pointer;font-weight:600}
     <div class="nav" id="navList"></div>
     <div class="sidebar-foot">
       <div>v1.0.0 · © LocationRooftop</div>
-      <div style="margin-top:4px;color:#4caf50" id="serverStatus">● Connected</div>
+      <div style="margin-top:4px;opacity:.7" id="serverStatus">●  Connected</div>
     </div>
   </aside>
 
   <main class="main">
     <div class="topbar">
       <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('show')">☰</button>
-      <div style="font-weight:600;font-size:14px;color:var(--gold-glow)" id="pageTitle">Dashboard</div>
+      <div style="font-weight:600;font-size:14px;color:#5a3e08" id="pageTitle">Dashboard</div>
       <div class="user">
         <div class="avatar" id="avatar">?</div>
         <div>
-          <div style="font-weight:600;color:var(--gold-glow)" id="userName">—</div>
-          <div style="font-size:11px;color:var(--gold-3)" id="userRole">—</div>
+          <div style="font-weight:600" id="userName">—</div>
+          <div style="font-size:11px;color:#7a5a18" id="userRole">—</div>
         </div>
         <button class="btn btn-sm btn-ghost" onclick="logout()">Logout</button>
       </div>
@@ -548,21 +312,13 @@ details summary{color:var(--gold-3);cursor:pointer;font-weight:600}
 <div class="chat-box" id="chatBox">
   <div class="chat-head">
     <div>🤖 LocationRooftop AI Assistant</div>
-    <span style="cursor:pointer;font-size:20px" onclick="toggleChat()">✕</span>
+    <span style="cursor:pointer" onclick="toggleChat()">✕</span>
   </div>
   <div class="chat-body" id="chatBody">
-    <div class="msg bot">Hello! I'm your AI assistant. I can answer questions about your business in real-time.</div>
-    <div class="chat-suggestions">
-      <div class="chat-suggestion" onclick="quickChat('Show profit')">📊 Show profit</div>
-      <div class="chat-suggestion" onclick="quickChat('Low stock items')">📦 Low stock</div>
-      <div class="chat-suggestion" onclick="quickChat('Staff count')">🧑‍💼 Staff</div>
-      <div class="chat-suggestion" onclick="quickChat('Recent transactions')">💰 Recent tx</div>
-      <div class="chat-suggestion" onclick="quickChat('How to reset password')">🔑 Password help</div>
-      <div class="chat-suggestion" onclick="quickChat('Help')">❓ Help</div>
-    </div>
+    <div class="msg bot">Hello! I'm your AI assistant. Ask me about reports, inventory, staff, password resets, or deployment.</div>
   </div>
   <div class="chat-foot">
-    <input id="chatInput" placeholder="Type your question…" onkeydown="if(event.key==='Enter')sendChat()" />
+    <input id="chatInput" placeholder="Type a question…" onkeydown="if(event.key==='Enter')sendChat()" />
     <button class="btn btn-sm" onclick="sendChat()">Send</button>
   </div>
 </div>
@@ -572,17 +328,17 @@ details summary{color:var(--gold-3);cursor:pointer;font-weight:600}
    LocationRooftop Frontend
    ============================================================ */
 
+// Auto-detect API base URL
 const API = (() => {
   const saved = localStorage.getItem('lr_api');
   if (saved) return saved;
   const host = location.hostname;
   if (host === 'localhost' || host === '127.0.0.1') return 'http://localhost:10000';
-  return location.origin;
+  return location.origin;   // same origin when frontend served by backend
 })();
 
 let TOKEN = localStorage.getItem('lr_token') || '';
 let ME = JSON.parse(localStorage.getItem('lr_me') || 'null');
-let SELECTED_ROLE = '';
 
 function api(path, opts = {}) {
   opts.headers = Object.assign({ 'Content-Type': 'application/json' }, opts.headers || {});
@@ -594,83 +350,38 @@ function api(path, opts = {}) {
   });
 }
 
-function toast(text, type = 'ok') {
-  const el = document.createElement('div');
-  el.className = 'toast ' + type;
-  el.textContent = text;
-  document.body.appendChild(el);
-  setTimeout(() => { el.style.animation = 'slideIn .3s reverse'; setTimeout(() => el.remove(), 300); }, 3000);
-}
-
 /* ---------- LOGIN ---------- */
-document.querySelectorAll('.role-chip').forEach(chip => {
-  chip.onclick = () => {
-    document.querySelectorAll('.role-chip').forEach(c => c.classList.remove('active'));
-    chip.classList.add('active');
-    SELECTED_ROLE = chip.dataset.role;
-  };
-});
-
-function showMsg(elId, text, type = 'err') {
-  document.getElementById(elId).innerHTML = `<div class="alert ${type}">${text}</div>`;
+function showMsg(text, type = 'err') {
+  document.getElementById('loginMsg').innerHTML = `<div class="alert ${type}">${text}</div>`;
 }
 
-async function doAdminLogin() {
-  const username = document.getElementById('adminUser').value.trim();
-  const password = document.getElementById('adminPass').value;
-  const btn = document.getElementById('adminBtn');
-  if (!username || !password) return showMsg('adminMsg', 'Please enter username and password.');
-  btn.disabled = true; btn.innerHTML = '<span class="loader"></span> Signing in...';
+async function doLogin() {
+  const username = document.getElementById('loginUser').value.trim();
+  const password = document.getElementById('loginPass').value;
+  const role = document.getElementById('roleSelect').value;
+  if (!username || !password) return showMsg('Please enter username and password.');
   try {
-    const r = await api('/api/login', { method: 'POST', body: JSON.stringify({ username, password, role: 'admin' }) });
+    const r = await api('/api/login', { method: 'POST', body: JSON.stringify({ username, password, role }) });
     TOKEN = r.token; ME = r.user;
     localStorage.setItem('lr_token', TOKEN);
     localStorage.setItem('lr_me', JSON.stringify(ME));
-    showMsg('adminMsg', '✓ Welcome ' + (ME.fullName || ME.username) + '!', 'ok');
-    setTimeout(enterApp, 400);
+    showMsg('Welcome ' + (ME.fullName || ME.username) + '!', 'ok');
+    setTimeout(enterApp, 300);
   } catch (e) {
-    showMsg('adminMsg', e.message || 'Login failed');
-    btn.disabled = false; btn.innerHTML = '🔐 Sign In as Admin';
-  }
-}
-
-async function doStaffLogin() {
-  const username = document.getElementById('staffUser').value.trim();
-  const password = document.getElementById('staffPass').value;
-  const btn = document.getElementById('staffBtn');
-  if (!username || !password) return showMsg('staffMsg', 'Please enter username and password.');
-  btn.disabled = true; btn.innerHTML = '<span class="loader"></span> Signing in...';
-  try {
-    const r = await api('/api/login', { method: 'POST', body: JSON.stringify({ username, password, role: SELECTED_ROLE || 'auto' }) });
-    TOKEN = r.token; ME = r.user;
-    if (ME.role === 'admin') {
-      showMsg('staffMsg', 'This is an admin account — please use the Admin Panel on the left.');
-      TOKEN = ''; ME = null;
-      btn.disabled = false; btn.innerHTML = '🔐 Sign In as Staff';
-      return;
-    }
-    localStorage.setItem('lr_token', TOKEN);
-    localStorage.setItem('lr_me', JSON.stringify(ME));
-    showMsg('staffMsg', '✓ Welcome ' + (ME.fullName || ME.username) + '!', 'ok');
-    setTimeout(enterApp, 400);
-  } catch (e) {
-    showMsg('staffMsg', e.message || 'Login failed');
-    btn.disabled = false; btn.innerHTML = '🔐 Sign In as Staff';
+    showMsg(e.message || 'Login failed');
   }
 }
 
 function showForgot() {
-  alert('🔑 Password Reset\n\nOnly the system Admin can reset staff passwords.\n\nContact your administrator, who will:\n1. Log in to the Admin Panel\n2. Go to User Management\n3. Reset your password\n4. Provide you with the new password');
+  alert('Password resets are performed by the Admin.\n\nLog in as admin (password: 119722) → User Management → Reset Password.');
 }
 
 function logout() {
   TOKEN = ''; ME = null;
-  localStorage.removeItem('lr_token');
-  localStorage.removeItem('lr_me');
+  localStorage.removeItem('lr_token'); localStorage.removeItem('lr_me');
   document.getElementById('app').classList.remove('active');
   document.getElementById('loginScreen').style.display = 'grid';
   document.getElementById('chatFab').style.display = 'none';
-  document.getElementById('chatBox').classList.remove('open');
 }
 
 /* ---------- APP SHELL ---------- */
@@ -684,15 +395,15 @@ const ROLE_LABEL = {
 
 const MENUS = {
   admin:           ['dashboard','users','records','transactions','staff','inventory','reports','audit','settings'],
-  director:        ['dashboard','records','transactions','staff','inventory','reports','audit','settings'],
-  cost_controller: ['dashboard','records','transactions','reports','settings'],
-  procurement:     ['dashboard','inventory','records','transactions','settings'],
-  storekeeper:     ['dashboard','inventory','records','settings'],
-  accounts:        ['dashboard','transactions','records','staff','reports','receipt','settings'],
-  finance_manager: ['dashboard','transactions','records','reports','audit','settings'],
-  supervisor:      ['dashboard','records','staff','inventory','settings'],
-  hr:              ['dashboard','staff','records','settings'],
-  auditor:         ['dashboard','transactions','records','reports','audit','settings']
+  director:        ['dashboard','records','transactions','staff','inventory','reports','audit'],
+  cost_controller: ['dashboard','records','transactions','reports'],
+  procurement:     ['dashboard','inventory','records','transactions'],
+  storekeeper:     ['dashboard','inventory','records'],
+  accounts:        ['dashboard','transactions','records','staff','reports','receipt'],
+  finance_manager: ['dashboard','transactions','records','reports','audit'],
+  supervisor:      ['dashboard','records','staff','inventory'],
+  hr:              ['dashboard','staff','records'],
+  auditor:         ['dashboard','transactions','records','reports','audit']
 };
 
 const PAGE_META = {
@@ -737,13 +448,11 @@ function loadPage(key) {
   document.querySelectorAll('.nav button').forEach(b => b.classList.toggle('active', b.dataset.key === key));
   document.getElementById('pageTitle').textContent = (PAGE_META[key] || {}).label || key;
   document.getElementById('sidebar').classList.remove('show');
-  const fn = PAGES[key];
-  if (fn) fn();
-  else document.getElementById('pageContent').innerHTML = '<div class="card">Coming soon.</div>';
+  const fn = PAGES[key]; if (fn) fn(); else document.getElementById('pageContent').innerHTML = '<div class="card">Coming soon.</div>';
 }
 
 /* ============================================================
-   PAGES
+   PAGE RENDERERS
    ============================================================ */
 const PAGES = {};
 const $ = (id) => document.getElementById(id);
@@ -782,31 +491,19 @@ PAGES.dashboard = async () => {
       <tr><td>${esc(t.created_at?.slice(0,16))}</td>
           <td><span class="badge ${t.type==='income'||t.type==='sale'?'in':t.type==='loss'?'ls':'ex'}">${esc(t.type)}</span></td>
           <td>${esc(t.category)}</td><td>${fmt(t.amount)}</td><td>${esc(t.description)}</td></tr>`).join('') || '<tr><td colspan="5" style="text-align:center;color:#888;padding:20px">No transactions yet</td></tr>';
-
     const labels = daily.map(d => d.day).reverse();
     const incomeData = daily.map(d => d.income).reverse();
     const expenseData = daily.map(d => d.expense + d.loss).reverse();
-    if (labels.length) {
-      new Chart($('chartDaily'), {
-        type:'line',
-        data:{ labels, datasets:[
-          { label:'Income', data:incomeData, borderColor:'#4caf50', backgroundColor:'rgba(76,175,80,.2)', tension:.35, fill:true },
-          { label:'Expense + Loss', data:expenseData, borderColor:'#e53935', backgroundColor:'rgba(229,57,53,.15)', tension:.35, fill:true }
-        ]},
-        options:{ responsive:true,
-          plugins:{ legend:{ position:'bottom', labels:{color:'#e8d9a8'} } },
-          scales:{
-            x:{ ticks:{color:'#a88a4d'}, grid:{color:'rgba(212,164,55,.1)'} },
-            y:{ ticks:{color:'#a88a4d'}, grid:{color:'rgba(212,164,55,.1)'} }
-          }
-        }
-      });
-    } else {
-      $('chartDaily').parentElement.innerHTML += '<p style="text-align:center;color:#a88a4d;padding:20px">No data yet — add transactions to see the chart.</p>';
-    }
-  } catch (e) { console.error(e); toast('Failed to load dashboard: ' + e.message, 'err'); }
+    new Chart($('chartDaily'), {
+      type:'line',
+      data:{ labels, datasets:[
+        { label:'Income', data:incomeData, borderColor:'#2e7d32', backgroundColor:'rgba(46,125,50,.18)', tension:.35, fill:true },
+        { label:'Expense + Loss', data:expenseData, borderColor:'#c62828', backgroundColor:'rgba(198,40,40,.15)', tension:.35, fill:true }
+      ]},
+      options:{ responsive:true, plugins:{ legend:{ position:'bottom' } } }
+    });
+  } catch (e) { console.error(e); }
 };
-
 function kpi(label, value, delta, cls = '') {
   return `<div class="kpi ${cls}"><div class="label">${label}</div><div class="value">${value}</div><div class="delta">${delta}</div></div>`;
 }
@@ -814,33 +511,8 @@ function kpi(label, value, delta, cls = '') {
 /* ---------- USERS (admin) ---------- */
 PAGES.users = async () => {
   $('pageContent').innerHTML = `
-    <h2 class="section-title">👥 User Management</h2>
-    <div class="section-sub">Create new staff accounts, reset passwords, and manage all panel users.</div>
-
-    <div class="card">
-      <h3>➕ Create a new user account</h3>
-      <div class="row">
-        <div class="field"><label>Username</label><input id="newUser" placeholder="e.g. john.k" /></div>
-        <div class="field"><label>Full name</label><input id="newName" placeholder="Full name" /></div>
-        <div class="field"><label>Role</label>
-          <select id="newRole">
-            <option value="cost_controller">Cost Controller</option>
-            <option value="procurement">Procurement</option>
-            <option value="storekeeper">Storekeeper</option>
-            <option value="accounts">Accounts</option>
-            <option value="finance_manager">Finance Manager</option>
-            <option value="supervisor">Supervisor</option>
-            <option value="hr">HR</option>
-            <option value="director">Director</option>
-            <option value="auditor">Auditor</option>
-          </select>
-        </div>
-        <div class="field"><label>Password</label><input id="newPass" placeholder="Min 4 chars" /></div>
-        <button class="btn btn-ok" onclick="createUser()">➕ Create</button>
-      </div>
-      <div id="createMsg" style="margin-top:8px"></div>
-    </div>
-
+    <h2 class="section-title">User Management</h2>
+    <div class="section-sub">Reset passwords and view all panel accounts (admin only).</div>
     <div class="card">
       <h3>🔑 Reset a user's password</h3>
       <div class="row">
@@ -850,66 +522,31 @@ PAGES.users = async () => {
       </div>
       <div id="resetMsg" style="margin-top:8px"></div>
     </div>
-
     <div class="card">
       <h3>👥 All accounts</h3>
-      <div class="tbl-wrap"><table class="tbl" id="usersTbl"><thead><tr><th>ID</th><th>Username</th><th>Role</th><th>Full name</th><th>Created</th><th></th></tr></thead><tbody></tbody></table></div>
+      <div class="tbl-wrap"><table class="tbl" id="usersTbl"><thead><tr><th>ID</th><th>Username</th><th>Role</th><th>Full name</th><th>Created</th></tr></thead><tbody></tbody></table></div>
     </div>`;
-  refreshUsers();
-};
-
-async function refreshUsers() {
   const users = await api('/api/users');
   const sel = $('resetUser');
   sel.innerHTML = users.map(u => `<option value="${u.username}">${u.username} (${u.role})</option>`).join('');
   document.querySelector('#usersTbl tbody').innerHTML = users.map(u => `
-    <tr>
-      <td>${u.id}</td>
-      <td>${esc(u.username)}</td>
-      <td><span class="badge in">${esc(u.role)}</span></td>
-      <td>${esc(u.full_name)}</td>
-      <td>${esc((u.created_at||'').slice(0,10))}</td>
-      <td>${u.username !== 'admin' ? `<button class="btn btn-sm btn-danger" onclick="delUser(${u.id})">🗑</button>` : '<em style="color:#a88a4d">primary</em>'}</td>
-    </tr>`).join('');
-}
-
-async function createUser() {
-  const username = $('newUser').value.trim();
-  const fullName = $('newName').value.trim();
-  const role = $('newRole').value;
-  const password = $('newPass').value;
-  if (!username || !password || password.length < 4) return $('createMsg').innerHTML = '<div class="alert err">Username and password (4+ chars) required.</div>';
-  try {
-    await api('/api/admin/create-user', { method:'POST', body: JSON.stringify({ username, password, role, fullName })});
-    $('createMsg').innerHTML = '<div class="alert ok">✓ User created. They can now log in with the password you set.</div>';
-    $('newUser').value=''; $('newName').value=''; $('newPass').value='';
-    refreshUsers();
-    toast('User created: ' + username);
-  } catch (e) { $('createMsg').innerHTML = '<div class="alert err">' + e.message + '</div>'; }
-}
-
+    <tr><td>${u.id}</td><td>${esc(u.username)}</td><td><span class="badge in">${esc(u.role)}</span></td><td>${esc(u.full_name)}</td><td>${esc((u.created_at||'').slice(0,10))}</td></tr>`).join('');
+};
 async function resetPwd() {
   const username = $('resetUser').value;
   const newPassword = $('resetPass').value;
   if (!newPassword || newPassword.length < 4) return $('resetMsg').innerHTML = '<div class="alert err">Password must be 4+ characters.</div>';
   try {
     await api('/api/admin/reset-password', { method: 'POST', body: JSON.stringify({ username, newPassword }) });
-    $('resetMsg').innerHTML = '<div class="alert ok">✓ Password reset for ' + username + '. Tell them their new password: <strong>' + esc(newPassword) + '</strong></div>';
+    $('resetMsg').innerHTML = '<div class="alert ok">Password reset for ' + username + '.</div>';
     $('resetPass').value = '';
-    toast('Password reset for ' + username);
   } catch (e) { $('resetMsg').innerHTML = '<div class="alert err">' + e.message + '</div>'; }
-}
-
-async function delUser(id) {
-  if (!confirm('Permanently delete this user?')) return;
-  try { await api('/api/admin/users/' + id, { method: 'DELETE' }); refreshUsers(); toast('User deleted'); }
-  catch (e) { toast(e.message, 'err'); }
 }
 
 /* ---------- RECORDS ---------- */
 PAGES.records = async () => {
   $('pageContent').innerHTML = `
-    <h2 class="section-title">📋 Records</h2>
+    <h2 class="section-title">Records</h2>
     <div class="section-sub">Add data manually or scan an image (OCR). All data is stored permanently.</div>
     <div class="tabs">
       <button class="tab active" onclick="switchTab(this,'manualR')">✍️ Manual Entry</button>
@@ -924,17 +561,17 @@ PAGES.records = async () => {
         <div class="field"><label>Title</label><input id="rTitle" placeholder="e.g. Office supplies" /></div>
         <div class="field"><label>Amount (KES)</label><input id="rAmt" type="number" step="0.01" placeholder="0.00" /></div>
       </div>
-      <div class="field" style="margin-top:10px"><label>Description</label><textarea id="rDesc" rows="2"></textarea></div>
+      <div class="field" style="margin-top:10px"><label>Description</label><textarea id="rDesc" rows="2" style="width:100%;padding:10px;border-radius:10px;border:1.5px solid var(--line);background:#fffaf0"></textarea></div>
       <button class="btn" style="margin-top:10px" onclick="addRecord('manual')">💾 Save Record</button>
       <div id="rMsg" style="margin-top:8px"></div>
     </div>
     <div id="scanR" class="card hidden">
       <h3>📷 Scan a receipt or document</h3>
-      <p style="font-size:13px;color:#a88a4d;margin-bottom:10px">Take a picture or upload an image. We'll extract the text automatically.</p>
+      <p style="font-size:13px;color:#7a5a18;margin-bottom:10px">Take a picture or upload an image. We'll extract the text automatically.</p>
       <label class="scan-zone" for="ocrFile">
         <div class="ico">📷</div>
-        <div style="font-weight:600;color:var(--gold-glow)">Tap to take photo or upload image</div>
-        <div style="font-size:12px;color:#a88a4d;margin-top:4px">JPG, PNG up to 10 MB</div>
+        <div style="font-weight:600">Tap to take photo or upload image</div>
+        <div style="font-size:12px;color:#7a5a18;margin-top:4px">JPG, PNG up to 10 MB</div>
         <input type="file" id="ocrFile" accept="image/*" capture="environment" style="display:none" onchange="runOCR(event)" />
       </label>
       <div class="scan-progress" id="ocrProg"><div></div></div>
@@ -942,61 +579,56 @@ PAGES.records = async () => {
     </div>
     <div class="card">
       <h3>📋 All records</h3>
-      <div class="tbl-wrap"><table class="tbl" id="recTbl"><thead><tr><th>ID</th><th>Category</th><th>Title</th><th>Amount</th><th>Source</th><th>By</th><th>When</th>${(ME.role==='admin'||ME.role==='director')?'<th></th>':''}</tr></thead><tbody></tbody></table></div>
+      <div class="tbl-wrap"><table class="tbl" id="recTbl"><thead><tr><th>ID</th><th>Category</th><th>Title</th><th>Amount</th><th>Source</th><th>By</th><th>When</th>${ME.role==='admin'?'<th></th>':''}</tr></thead><tbody></tbody></table></div>
     </div>`;
   refreshRecords();
 };
-
 function switchTab(btn, showId) {
   btn.parentElement.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
-  ['manualR','scanR','invManual','invScan'].forEach(id => $(id) && $(id).classList.toggle('hidden', id !== showId));
+  ['manualR','scanR'].forEach(id => $(id) && $(id).classList.toggle('hidden', id !== showId));
 }
-
 async function addRecord(source) {
   const body = {
     category: $('rCat').value, title: $('rTitle').value,
     description: $('rDesc').value, amount: $('rAmt').value || 0, source
   };
-  if (!body.title) return $('rMsg').innerHTML = '<div class="alert err">Title required.</div>';
   try {
     await api('/api/records', { method:'POST', body: JSON.stringify(body) });
-    $('rMsg').innerHTML = '<div class="alert ok">✓ Saved.</div>';
+    $('rMsg').innerHTML = '<div class="alert ok">Saved.</div>';
     $('rTitle').value=''; $('rAmt').value=''; $('rDesc').value='';
-    refreshRecords(); toast('Record saved');
+    refreshRecords();
   } catch (e) { $('rMsg').innerHTML = '<div class="alert err">'+e.message+'</div>'; }
 }
-
 async function refreshRecords() {
   const rows = await api('/api/records');
   document.querySelector('#recTbl tbody').innerHTML = rows.map(r => `
     <tr><td>${r.id}</td><td>${esc(r.category)}</td><td>${esc(r.title)}</td>
         <td>${fmt(r.amount)}</td><td>${esc(r.source)}</td><td>${esc(r.created_by)}</td>
         <td>${esc((r.created_at||'').slice(0,16))}</td>
-        ${(ME.role==='admin'||ME.role==='director')?`<td><button class="btn btn-sm btn-danger" onclick="delRec(${r.id})">🗑</button></td>`:''}
-    </tr>`).join('') || '<tr><td colspan="8" style="text-align:center;color:#888;padding:20px">No records yet</td></tr>';
+        ${ME.role==='admin'?`<td><button class="btn btn-sm btn-danger" onclick="delRec(${r.id})">🗑</button></td>`:''}
+    </tr>`).join('') || '<tr><td colspan="8" style="text-align:center;color:#888;padding:20px">No records</td></tr>';
 }
-
 async function delRec(id) {
   if (!confirm('Delete record #' + id + '?')) return;
-  await api('/api/records/'+id, { method:'DELETE' }); refreshRecords(); toast('Deleted');
+  await api('/api/records/'+id, { method:'DELETE' }); refreshRecords();
 }
-
 async function runOCR(ev) {
   const f = ev.target.files[0]; if (!f) return;
   $('ocrProg').classList.add('show');
   const bar = $('ocrProg').querySelector('div');
-  $('ocrPreview').innerHTML = '<div style="font-size:13px;color:#a88a4d">Reading image…</div>';
+  $('ocrPreview').innerHTML = '<div style="font-size:13px;color:#7a5a18">Reading image…</div>';
   try {
     const { data } = await Tesseract.recognize(f, 'eng', { logger: m => { if(m.progress) bar.style.width = (m.progress*100).toFixed(0)+'%'; } });
     const txt = (data.text || '').trim();
+    // Extract first number that looks like an amount
     const m = txt.match(/(\d{1,3}(?:[,.]\d{3})*(?:\.\d{1,2})?|\d+\.\d{1,2})/);
     const amount = m ? Number(m[0].replace(/,/g,'')) : 0;
     const titleLine = txt.split('\n').find(l => l.trim().length > 3) || 'Scanned document';
     $('ocrPreview').innerHTML = `
       <div class="card" style="margin:0">
         <h3>🔎 Extracted text</h3>
-        <pre style="white-space:pre-wrap;font-size:12px;padding:10px;border-radius:8px;max-height:180px;overflow:auto;border:1px solid var(--line)">${esc(txt)}</pre>
+        <pre style="white-space:pre-wrap;font-size:12px;background:#fff8e7;padding:10px;border-radius:8px;max-height:180px;overflow:auto">${esc(txt)}</pre>
         <div class="row" style="margin-top:10px">
           <div class="field"><label>Title</label><input id="ocrTitle" value="${esc(titleLine.slice(0,80))}"/></div>
           <div class="field"><label>Amount (auto)</label><input id="ocrAmt" value="${amount}" type="number" step="0.01"/></div>
@@ -1004,25 +636,24 @@ async function runOCR(ev) {
             <select id="ocrCat"><option>purchase</option><option>expense</option><option>sale</option><option>general</option></select>
           </div>
         </div>
-        <button class="btn" style="margin-top:10px" onclick='saveOCR(${JSON.stringify(txt)})'>💾 Save scanned record</button>
+        <button class="btn" style="margin-top:10px" onclick="saveOCR(\`${txt.replace(/`/g,"'")}\`)">💾 Save scanned record</button>
       </div>`;
   } catch (e) {
     $('ocrPreview').innerHTML = '<div class="alert err">OCR failed: '+e.message+'</div>';
   } finally { setTimeout(()=>$('ocrProg').classList.remove('show'), 600); }
 }
-
 async function saveOCR(rawText) {
   await api('/api/records', { method:'POST', body: JSON.stringify({
     category: $('ocrCat').value, title: $('ocrTitle').value,
     description: rawText.slice(0,500), amount: $('ocrAmt').value || 0, source:'scan'
   })});
-  toast('Scanned record saved!'); refreshRecords();
+  alert('Scanned record saved!'); refreshRecords();
 }
 
 /* ---------- TRANSACTIONS ---------- */
 PAGES.transactions = async () => {
   $('pageContent').innerHTML = `
-    <h2 class="section-title">💰 Transactions</h2>
+    <h2 class="section-title">Transactions</h2>
     <div class="section-sub">Income, expenses, losses — drives the P&L report.</div>
     <div class="card">
       <h3>Add transaction</h3>
@@ -1039,20 +670,17 @@ PAGES.transactions = async () => {
     </div>
     <div class="card">
       <h3>Recent transactions</h3>
-      <div class="tbl-wrap"><table class="tbl" id="txTbl"><thead><tr><th>ID</th><th>Type</th><th>Cat</th><th>Amount</th><th>Ref</th><th>Description</th><th>By</th><th>When</th>${(ME.role==='admin'||ME.role==='director'||ME.role==='finance_manager')?'<th></th>':''}</tr></thead><tbody></tbody></table></div>
+      <div class="tbl-wrap"><table class="tbl" id="txTbl"><thead><tr><th>ID</th><th>Type</th><th>Cat</th><th>Amount</th><th>Ref</th><th>Description</th><th>By</th><th>When</th>${ME.role==='admin'?'<th></th>':''}</tr></thead><tbody></tbody></table></div>
     </div>`;
   refreshTx();
 };
-
 async function addTx() {
-  if (!$('txAmt').value) return toast('Amount required', 'err');
   await api('/api/transactions', { method:'POST', body: JSON.stringify({
     type:$('txType').value, category:$('txCat').value, amount:$('txAmt').value,
     reference:$('txRef').value, description:$('txDesc').value
   })});
-  $('txAmt').value=''; $('txDesc').value=''; $('txRef').value=''; refreshTx(); toast('Transaction saved');
+  $('txAmt').value=''; $('txDesc').value=''; $('txRef').value=''; refreshTx();
 }
-
 async function refreshTx() {
   const rows = await api('/api/transactions');
   document.querySelector('#txTbl tbody').innerHTML = rows.map(t => `
@@ -1061,16 +689,15 @@ async function refreshTx() {
         <td>${esc(t.category)}</td><td>${fmt(t.amount)}</td>
         <td>${esc(t.reference)}</td><td>${esc(t.description)}</td>
         <td>${esc(t.created_by)}</td><td>${esc((t.created_at||'').slice(0,16))}</td>
-        ${(ME.role==='admin'||ME.role==='director'||ME.role==='finance_manager')?`<td><button class="btn btn-sm btn-danger" onclick="delTx(${t.id})">🗑</button></td>`:''}
+        ${ME.role==='admin'?`<td><button class="btn btn-sm btn-danger" onclick="delTx(${t.id})">🗑</button></td>`:''}
     </tr>`).join('') || '<tr><td colspan="9" style="text-align:center;color:#888;padding:20px">No transactions yet</td></tr>';
 }
-
-async function delTx(id) { if(!confirm('Delete?'))return; await api('/api/transactions/'+id,{method:'DELETE'}); refreshTx(); toast('Deleted'); }
+async function delTx(id) { if(!confirm('Delete?'))return; await api('/api/transactions/'+id,{method:'DELETE'}); refreshTx(); }
 
 /* ---------- STAFF (HR) ---------- */
 PAGES.staff = async () => {
   $('pageContent').innerHTML = `
-    <h2 class="section-title">🧑‍💼 Staff & HR</h2>
+    <h2 class="section-title">Staff & HR</h2>
     <div class="section-sub">Behavior notes, code-of-conduct scores, and contact details.</div>
     <div class="card">
       <h3>Add staff member</h3>
@@ -1081,7 +708,7 @@ PAGES.staff = async () => {
         <div class="field"><label>Phone</label><input id="sPhone" /></div>
         <div class="field"><label>Conduct score</label><input id="sScore" type="number" value="100" min="0" max="100" /></div>
       </div>
-      <div class="field" style="margin-top:10px"><label>Behavior / conduct notes</label><textarea id="sNotes" rows="2"></textarea></div>
+      <div class="field" style="margin-top:10px"><label>Behavior / conduct notes</label><textarea id="sNotes" rows="2" style="width:100%;padding:10px;border-radius:10px;border:1.5px solid var(--line);background:#fffaf0"></textarea></div>
       <button class="btn" style="margin-top:10px" onclick="addStaff()">💾 Save Staff</button>
     </div>
     <div class="card">
@@ -1090,17 +717,14 @@ PAGES.staff = async () => {
     </div>`;
   refreshStaff();
 };
-
 async function addStaff() {
-  if (!$('sName').value) return toast('Name required', 'err');
   await api('/api/staff', { method:'POST', body: JSON.stringify({
     full_name:$('sName').value, position:$('sPos').value, department:$('sDept').value,
     phone:$('sPhone').value, behavior_notes:$('sNotes').value, conduct_score:$('sScore').value
   })});
   ['sName','sPos','sDept','sPhone','sNotes'].forEach(i=>$(i).value=''); $('sScore').value=100;
-  refreshStaff(); toast('Staff added');
+  refreshStaff();
 }
-
 async function refreshStaff() {
   const rows = await api('/api/staff');
   document.querySelector('#stTbl tbody').innerHTML = rows.map(s => `
@@ -1110,13 +734,12 @@ async function refreshStaff() {
     ${(ME.role==='hr'||ME.role==='admin')?`<td><button class="btn btn-sm btn-danger" onclick="delStaff(${s.id})">🗑</button></td>`:''}
     </tr>`).join('') || '<tr><td colspan="8" style="text-align:center;color:#888;padding:20px">No staff yet</td></tr>';
 }
-
-async function delStaff(id){if(!confirm('Delete?'))return;await api('/api/staff/'+id,{method:'DELETE'});refreshStaff();toast('Deleted');}
+async function delStaff(id){if(!confirm('Delete?'))return;await api('/api/staff/'+id,{method:'DELETE'});refreshStaff();}
 
 /* ---------- INVENTORY ---------- */
 PAGES.inventory = async () => {
   $('pageContent').innerHTML = `
-    <h2 class="section-title">📦 Inventory</h2>
+    <h2 class="section-title">Inventory</h2>
     <div class="section-sub">Stock tracking — add items manually or scan their label.</div>
     <div class="tabs">
       <button class="tab active" onclick="switchTab(this,'invManual')">✍️ Manual</button>
@@ -1135,7 +758,7 @@ PAGES.inventory = async () => {
     </div>
     <div id="invScan" class="card hidden">
       <label class="scan-zone" for="invFile">
-        <div class="ico">📷</div><div style="font-weight:600;color:var(--gold-glow)">Scan item label / barcode region</div>
+        <div class="ico">📷</div><div style="font-weight:600">Scan item label / barcode region</div>
         <input type="file" id="invFile" accept="image/*" capture="environment" style="display:none" onchange="invOCR(event)" />
       </label>
       <div id="invOcrOut"></div>
@@ -1146,35 +769,30 @@ PAGES.inventory = async () => {
     </div>`;
   refreshInv();
 };
-
 async function addInv() {
-  if (!$('iName').value) return toast('Item name required', 'err');
   await api('/api/inventory', { method:'POST', body: JSON.stringify({
     item_name:$('iName').value, sku:$('iSku').value, quantity:$('iQty').value,
     unit:$('iUnit').value, unit_cost:$('iCost').value, supplier:$('iSup').value
   })});
-  ['iName','iSku','iQty','iCost','iSup'].forEach(i=>$(i).value=''); refreshInv(); toast('Item added');
+  ['iName','iSku','iQty','iCost','iSup'].forEach(i=>$(i).value=''); refreshInv();
 }
-
 async function refreshInv() {
   const rows = await api('/api/inventory');
   document.querySelector('#invTbl tbody').innerHTML = rows.map(i=>`
     <tr><td>${i.id}</td><td>${esc(i.item_name)}</td><td>${esc(i.sku)}</td><td>${i.quantity}</td>
     <td>${esc(i.unit)}</td><td>${fmt(i.unit_cost)}</td><td>${fmt(i.quantity*i.unit_cost)}</td><td>${esc(i.supplier)}</td>
     ${(ME.role==='storekeeper'||ME.role==='admin')?`<td><button class="btn btn-sm btn-danger" onclick="delInv(${i.id})">🗑</button></td>`:''}
-    </tr>`).join('') || '<tr><td colspan="9" style="text-align:center;color:#888;padding:20px">No inventory yet</td></tr>';
+    </tr>`).join('') || '<tr><td colspan="9" style="text-align:center;color:#888;padding:20px">No inventory</td></tr>';
 }
-
-async function delInv(id){if(!confirm('Delete?'))return;await api('/api/inventory/'+id,{method:'DELETE'});refreshInv();toast('Deleted');}
-
+async function delInv(id){if(!confirm('Delete?'))return;await api('/api/inventory/'+id,{method:'DELETE'});refreshInv();}
 async function invOCR(ev){
   const f=ev.target.files[0]; if(!f)return;
-  $('invOcrOut').innerHTML='<div style="font-size:13px;color:#a88a4d">Scanning…</div>';
+  $('invOcrOut').innerHTML='<div style="font-size:13px;color:#7a5a18">Scanning…</div>';
   const { data } = await Tesseract.recognize(f,'eng');
   const txt=(data.text||'').trim();
   const firstLine=txt.split('\n').find(l=>l.trim().length>2)||'Scanned item';
-  $('invOcrOut').innerHTML=`<div class="card" style="margin-top:10px">
-    <pre style="white-space:pre-wrap;font-size:12px;padding:10px;border-radius:8px;border:1px solid var(--line)">${esc(txt)}</pre>
+  $('invOcrOut').innerHTML=`<div class="card" style="margin:0">
+    <pre style="white-space:pre-wrap;font-size:12px;background:#fff8e7;padding:10px;border-radius:8px">${esc(txt)}</pre>
     <div class="row" style="margin-top:8px">
       <div class="field"><label>Item</label><input id="iSname" value="${esc(firstLine.slice(0,60))}"/></div>
       <div class="field"><label>Qty</label><input id="iSqty" type="number" value="1"/></div>
@@ -1182,18 +800,17 @@ async function invOCR(ev){
     </div>
     <button class="btn" style="margin-top:8px" onclick="saveScannedInv()">Save scanned item</button></div>`;
 }
-
 async function saveScannedInv(){
   await api('/api/inventory',{method:'POST',body:JSON.stringify({
     item_name:$('iSname').value,quantity:$('iSqty').value,unit_cost:$('iScost').value,supplier:'scanned'
   })});
-  toast('Saved!'); refreshInv();
+  alert('Saved!'); refreshInv();
 }
 
 /* ---------- REPORTS ---------- */
 PAGES.reports = async () => {
   $('pageContent').innerHTML = `
-    <h2 class="section-title">📈 Reports — Profit & Loss</h2>
+    <h2 class="section-title">Reports — Profit & Loss</h2>
     <div class="section-sub">Generate financial reports with interest calculations.</div>
     <div class="card">
       <div class="row">
@@ -1207,7 +824,6 @@ PAGES.reports = async () => {
     <div id="reportOut"></div>`;
   runReport();
 };
-
 let LAST_REPORT = null;
 async function runReport() {
   const from = $('repFrom').value, to = $('repTo').value, rate = $('repInt').value || 0;
@@ -1224,15 +840,14 @@ async function runReport() {
         ${kpi('Interest ('+r.interest_rate_percent+'%)', fmt(r.interest_amount), 'on net')}
         ${kpi('Final balance', fmt(r.final_balance), 'net + interest')}
       </div>
-      <p style="font-size:12px;color:#a88a4d;margin-top:10px">Generated ${new Date(r.generated_at).toLocaleString()}</p>
+      <p style="font-size:12px;color:#7a5a18;margin-top:8px">Generated ${new Date(r.generated_at).toLocaleString()}</p>
     </div>`;
 }
-
 async function downloadReceipt() {
   if (!LAST_REPORT) await runReport();
   const r = LAST_REPORT;
   const { jsPDF } = window.jspdf;
-  const doc = new jsPDF({ unit:'mm', format:[80,200] });
+  const doc = new jsPDF({ unit:'mm', format:[80,200] }); // receipt size
   let y = 8;
   doc.setFont('courier','bold'); doc.setFontSize(13);
   doc.text('LOCATIONROOFTOP', 40, y, {align:'center'}); y+=5;
@@ -1241,7 +856,7 @@ async function downloadReceipt() {
   doc.text('-------------------------------', 40, y, {align:'center'}); y+=4;
   doc.text('Date: ' + new Date().toLocaleString(), 5, y); y+=4;
   doc.text('Cashier: ' + (ME.fullName||ME.username), 5, y); y+=4;
-  doc.text('Period: ' + r.period.from + ' - ' + r.period.to, 5, y); y+=4;
+  doc.text('Period: ' + r.period.from + ' → ' + r.period.to, 5, y); y+=4;
   doc.text('-------------------------------', 40, y, {align:'center'}); y+=5;
   const line = (k,v) => { doc.text(k, 5, y); doc.text(v, 75, y, {align:'right'}); y+=4; };
   line('Income:',         fmt(r.income));
@@ -1257,7 +872,6 @@ async function downloadReceipt() {
   doc.text('LocationRooftop System', 40, y, {align:'center'}); y+=4;
   doc.text('** PRINTED RECEIPT **', 40, y, {align:'center'});
   doc.save('locationrooftop-receipt-'+Date.now()+'.pdf');
-  toast('Receipt downloaded');
 }
 
 PAGES.receipt = PAGES.reports;
@@ -1266,17 +880,17 @@ PAGES.receipt = PAGES.reports;
 PAGES.audit = async () => {
   const rows = await api('/api/audit-log');
   $('pageContent').innerHTML = `
-    <h2 class="section-title">🔍 Audit Log</h2>
-    <div class="section-sub">Every important action is recorded permanently. Last 500 entries.</div>
+    <h2 class="section-title">Audit Log</h2>
+    <div class="section-sub">Every important action is recorded permanently.</div>
     <div class="card"><div class="tbl-wrap"><table class="tbl"><thead><tr><th>ID</th><th>Actor</th><th>Action</th><th>Details</th><th>When</th></tr></thead><tbody>
-      ${rows.map(a=>`<tr><td>${a.id}</td><td>${esc(a.actor)}</td><td><span class="badge in">${esc(a.action)}</span></td><td style="font-size:12px;color:#a88a4d">${esc((a.details||'').slice(0,80))}</td><td>${esc((a.created_at||'').slice(0,19))}</td></tr>`).join('') || '<tr><td colspan="5" style="text-align:center;padding:20px;color:#888">No audit entries</td></tr>'}
+      ${rows.map(a=>`<tr><td>${a.id}</td><td>${esc(a.actor)}</td><td><span class="badge in">${esc(a.action)}</span></td><td style="font-size:12px;color:#666">${esc((a.details||'').slice(0,80))}</td><td>${esc((a.created_at||'').slice(0,19))}</td></tr>`).join('') || '<tr><td colspan="5" style="text-align:center;padding:20px;color:#888">No audit entries</td></tr>'}
     </tbody></table></div></div>`;
 };
 
 /* ---------- SETTINGS ---------- */
 PAGES.settings = async () => {
   $('pageContent').innerHTML = `
-    <h2 class="section-title">⚙️ Settings</h2>
+    <h2 class="section-title">Settings</h2>
     <div class="card">
       <h3>🔐 Change my password</h3>
       <div class="row">
@@ -1288,7 +902,7 @@ PAGES.settings = async () => {
     </div>
     <div class="card">
       <h3>🌐 Backend API URL</h3>
-      <p style="font-size:13px;color:#a88a4d">Current: <code style="color:var(--gold-glow)">${API}</code></p>
+      <p style="font-size:13px;color:#7a5a18">Current: <code>${API}</code></p>
       <div class="row">
         <div class="field"><label>Override API URL</label><input id="apiOverride" placeholder="https://your-render-app.onrender.com" value="${localStorage.getItem('lr_api')||''}" /></div>
         <button class="btn" onclick="saveApi()">Save</button>
@@ -1296,45 +910,32 @@ PAGES.settings = async () => {
     </div>
     <div class="card">
       <h3>ℹ️ About</h3>
-      <p style="font-size:13px;line-height:1.7;color:#c4b283">LocationRooftop v1.0 — modern multi-panel management with OCR data capture, P&L reports, audit logging, PDF receipts, AI chatbot, and full role-based access control. Data persists permanently in the backend database.</p>
-      <p style="font-size:13px;line-height:1.7;color:#c4b283;margin-top:8px">Built with Node.js + Express + SQLite + Tesseract OCR + Chart.js + jsPDF.</p>
+      <p style="font-size:13px;line-height:1.7">LocationRooftop v1.0 — modern multi-panel management with OCR data capture, P&L reports, audit logging, and full role-based access control. Data persists permanently in the backend database.</p>
     </div>`;
 };
-
 async function changeMyPwd() {
   try {
     await api('/api/change-password', { method:'POST', body: JSON.stringify({ oldPassword:$('oldP').value, newPassword:$('newP').value })});
-    $('cpMsg').innerHTML = '<div class="alert ok">✓ Password changed successfully.</div>';
-    $('oldP').value=''; $('newP').value='';
-    toast('Password updated');
+    $('cpMsg').innerHTML = '<div class="alert ok">Password changed.</div>';
   } catch(e){ $('cpMsg').innerHTML = '<div class="alert err">'+e.message+'</div>'; }
 }
-
 function saveApi(){ const v=$('apiOverride').value.trim(); if(v) localStorage.setItem('lr_api',v); else localStorage.removeItem('lr_api'); alert('Saved — reloading.'); location.reload(); }
 
 /* ---------- CHATBOT ---------- */
 function toggleChat(){ $('chatBox').classList.toggle('open'); }
-function quickChat(text){ $('chatInput').value=text; sendChat(); }
-
 async function sendChat(){
   const inp=$('chatInput'); const msg=inp.value.trim(); if(!msg)return;
   $('chatBody').insertAdjacentHTML('beforeend',`<div class="msg me">${esc(msg)}</div>`);
   inp.value=''; $('chatBody').scrollTop=$('chatBody').scrollHeight;
-  // Show typing indicator
-  $('chatBody').insertAdjacentHTML('beforeend',`<div class="msg bot" id="typingMsg"><span class="loader" style="border-color:rgba(212,164,55,.3);border-top-color:var(--gold-3);width:14px;height:14px"></span> thinking…</div>`);
-  $('chatBody').scrollTop=$('chatBody').scrollHeight;
   try{
     const r=await api('/api/chat',{method:'POST',body:JSON.stringify({message:msg})});
-    $('typingMsg').remove();
     $('chatBody').insertAdjacentHTML('beforeend',`<div class="msg bot">${esc(r.reply)}</div>`);
-  }catch(e){
-    $('typingMsg')?.remove();
-    $('chatBody').insertAdjacentHTML('beforeend',`<div class="msg bot">⚠️ ${esc(e.message)}</div>`);
-  }
+  }catch(e){ $('chatBody').insertAdjacentHTML('beforeend',`<div class="msg bot">⚠️ ${e.message}</div>`);}
   $('chatBody').scrollTop=$('chatBody').scrollHeight;
 }
 
 /* ---------- AUTO 12h REPORT ---------- */
+// Generates a snapshot in localStorage every 12 hours so it survives logouts.
 function scheduleAutoReport(){
   const last = Number(localStorage.getItem('lr_last_report') || 0);
   const now = Date.now();
@@ -1349,10 +950,11 @@ function scheduleAutoReport(){
     }).catch(()=>{});
   }
 }
-setInterval(scheduleAutoReport, 60 * 60 * 1000);
+setInterval(scheduleAutoReport, 60 * 60 * 1000); // check every hour
 
 /* ---------- BOOT ---------- */
 if (TOKEN && ME) {
+  // verify token still valid
   api('/api/health').then(enterApp).catch(logout);
 }
 scheduleAutoReport();
