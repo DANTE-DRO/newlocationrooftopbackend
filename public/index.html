@@ -2,1126 +2,1360 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>LocationRooftop — Management System</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.0.4/dist/tesseract.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
 :root{
-  --gold-1:#d4af37; --gold-2:#f5d97a; --gold-3:#b8860b; --gold-deep:#8b6914;
-  --bg-1:#1a1408; --bg-2:#2a1f0e; --bg-3:#3a2c14;
-  --card:#fffdf5; --card-dark:rgba(255,253,245,0.07);
-  --text:#1a1408; --text-light:#fff8e1; --text-mute:#a89968;
-  --danger:#c0392b; --success:#27ae60; --info:#2980b9;
-  --shadow: 0 10px 40px rgba(0,0,0,0.35);
-  --border-gold: 1px solid rgba(212,175,55,0.35);
+  --gold-1:#fff4d0;
+  --gold-2:#f4cf6f;
+  --gold-3:#d4a437;
+  --gold-4:#8a5a0b;
+  --gold-glow:#ffd86b;
+  --black-1:#0a0805;
+  --black-2:#13100a;
+  --black-3:#1f1810;
+  --ink:#f4cf6f;
+  --paper:#1a140c;
+  --line:rgba(212,164,55,.35);
+  --line-strong:rgba(212,164,55,.6);
+  --ok:#4caf50; --err:#e53935; --warn:#ff9800;
+  --shadow:0 18px 50px rgba(0,0,0,.6);
+  --shadow-gold:0 8px 30px rgba(212,164,55,.35);
 }
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+*{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%}
 body{
-  font-family:'Inter',-apple-system,sans-serif;
-  color:var(--text-light);
+  font-family:'Inter',system-ui,sans-serif;
+  color:#e8d9a8;
   background:
-    radial-gradient(circle at 20% 10%, rgba(212,175,55,.22), transparent 50%),
-    radial-gradient(circle at 80% 90%, rgba(184,134,11,.18), transparent 50%),
-    linear-gradient(135deg,#0d0904 0%,#1a1408 40%,#2a1f0e 100%);
-  background-attachment:fixed;
+    radial-gradient(1200px 800px at 10% 0%,rgba(212,164,55,.25) 0%,transparent 60%),
+    radial-gradient(1000px 700px at 100% 100%,rgba(212,164,55,.18) 0%,transparent 55%),
+    linear-gradient(135deg,#0a0805 0%,#13100a 50%,#1a1208 100%);
   min-height:100vh;
   overflow-x:hidden;
 }
-h1,h2,h3,.brand{font-family:'Playfair Display',serif}
-button{font-family:inherit;cursor:pointer;border:none;outline:none}
-input,select,textarea{font-family:inherit;outline:none}
+h1,h2,h3{font-family:'Playfair Display',serif;color:var(--gold-glow)}
+button{font-family:inherit;cursor:pointer;border:none}
+input,select,textarea{font-family:inherit}
+.hidden{display:none !important}
 
-/* ---------- Login ---------- */
+/* Decorative gold particles */
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(2px 2px at 20% 30%,rgba(255,216,107,.6),transparent),
+    radial-gradient(2px 2px at 60% 70%,rgba(255,216,107,.4),transparent),
+    radial-gradient(1px 1px at 80% 20%,rgba(255,216,107,.5),transparent),
+    radial-gradient(1px 1px at 40% 90%,rgba(255,216,107,.3),transparent);
+  background-size:300px 300px,500px 500px,200px 200px,400px 400px;
+  opacity:.4;
+}
+
+/* ============ LOGIN: Split Screen ============ */
 .login-wrap{
-  min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;
+  min-height:100vh;display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:0;position:relative;z-index:1;
 }
-.login-card{
-  width:100%;max-width:440px;background:linear-gradient(160deg,rgba(26,20,8,.92),rgba(58,44,20,.92));
-  border:1px solid rgba(212,175,55,.5);border-radius:24px;padding:40px 32px;
-  box-shadow:var(--shadow), 0 0 60px rgba(212,175,55,0.15);
-  backdrop-filter:blur(20px);position:relative;overflow:hidden;
+@media (max-width:900px){
+  .login-wrap{grid-template-columns:1fr;}
 }
-.login-card::before{
-  content:'';position:absolute;top:-2px;left:-2px;right:-2px;bottom:-2px;
-  background:linear-gradient(135deg,var(--gold-1),transparent,var(--gold-1));
-  border-radius:24px;z-index:-1;opacity:.4;
-}
-.brand-hero{text-align:center;margin-bottom:28px}
-.brand-hero .logo{
-  width:80px;height:80px;margin:0 auto 14px;border-radius:50%;
-  background:linear-gradient(135deg,var(--gold-2),var(--gold-3));
-  display:flex;align-items:center;justify-content:center;font-size:38px;
-  box-shadow:0 8px 28px rgba(212,175,55,0.5);
-}
-.brand-hero h1{font-size:32px;background:linear-gradient(135deg,var(--gold-2),var(--gold-1));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:.5px}
-.brand-hero p{color:var(--text-mute);margin-top:6px;font-size:14px}
 
-.form-group{margin-bottom:16px}
-.form-group label{display:block;font-size:13px;margin-bottom:8px;color:var(--gold-2);font-weight:500;letter-spacing:.3px}
-.form-control{
-  width:100%;padding:14px 16px;background:rgba(255,253,245,0.06);
-  border:1px solid rgba(212,175,55,0.25);border-radius:12px;color:#fff;font-size:15px;
-  transition:all .2s;
-}
-.form-control:focus{border-color:var(--gold-1);background:rgba(255,253,245,0.1);box-shadow:0 0 0 3px rgba(212,175,55,0.15)}
-.form-control option{background:#2a1f0e;color:#fff}
-
-.btn{
-  width:100%;padding:14px 20px;border-radius:12px;font-weight:600;font-size:15px;
-  transition:all .2s;letter-spacing:.3px;
-}
-.btn-gold{
-  background:linear-gradient(135deg,var(--gold-2) 0%,var(--gold-1) 50%,var(--gold-3) 100%);
-  color:#1a1408;box-shadow:0 6px 20px rgba(212,175,55,0.4);
-}
-.btn-gold:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(212,175,55,0.55)}
-.btn-ghost{background:transparent;border:1px solid rgba(212,175,55,0.4);color:var(--gold-2)}
-.btn-ghost:hover{background:rgba(212,175,55,0.1)}
-.btn-danger{background:linear-gradient(135deg,#e74c3c,#c0392b);color:#fff}
-.btn-sm{padding:8px 14px;font-size:13px;width:auto}
-
-.login-tabs{display:flex;gap:8px;margin-bottom:20px;background:rgba(255,253,245,0.05);padding:6px;border-radius:14px}
-.login-tabs button{flex:1;padding:10px;background:transparent;color:var(--text-mute);border-radius:10px;font-weight:500;transition:all .2s}
-.login-tabs button.active{background:linear-gradient(135deg,var(--gold-2),var(--gold-1));color:#1a1408}
-
-.alert{padding:12px 16px;border-radius:10px;margin-bottom:14px;font-size:14px}
-.alert-error{background:rgba(192,57,43,0.2);border:1px solid rgba(192,57,43,0.5);color:#ff9b8e}
-.alert-success{background:rgba(39,174,96,0.18);border:1px solid rgba(39,174,96,0.5);color:#86e8a8}
-
-.hint{text-align:center;margin-top:18px;font-size:12px;color:var(--text-mute)}
-.hint a{color:var(--gold-2);text-decoration:none;cursor:pointer}
-
-/* ---------- App ---------- */
-.app{display:none;min-height:100vh}
-.app.active{display:flex;flex-direction:column}
-
-.topbar{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:14px 24px;background:rgba(13,9,4,0.85);
-  border-bottom:1px solid rgba(212,175,55,0.25);backdrop-filter:blur(20px);
-  position:sticky;top:0;z-index:50;
-}
-.topbar .brand{display:flex;align-items:center;gap:12px;font-size:22px;color:var(--gold-2)}
-.topbar .brand .logo-sm{width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,var(--gold-2),var(--gold-3));display:flex;align-items:center;justify-content:center;font-size:20px}
-.user-chip{display:flex;align-items:center;gap:10px;background:rgba(212,175,55,0.12);padding:8px 14px;border-radius:30px;cursor:pointer;border:1px solid rgba(212,175,55,0.3)}
-.user-chip .avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--gold-2),var(--gold-1));display:flex;align-items:center;justify-content:center;color:#1a1408;font-weight:700}
-.user-chip .info{font-size:13px;line-height:1.2}
-.user-chip .info b{color:var(--gold-2)}
-.user-chip .info span{color:var(--text-mute);text-transform:capitalize}
-
-.layout{display:flex;flex:1}
-.sidebar{
-  width:260px;background:rgba(13,9,4,0.6);border-right:1px solid rgba(212,175,55,0.18);
-  padding:20px 14px;display:flex;flex-direction:column;gap:6px;
-  position:sticky;top:67px;height:calc(100vh - 67px);overflow-y:auto;
-}
-.nav-item{
-  display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:10px;
-  color:var(--text-light);cursor:pointer;transition:all .2s;font-size:14px;font-weight:500;
-}
-.nav-item:hover{background:rgba(212,175,55,0.1);color:var(--gold-2)}
-.nav-item.active{background:linear-gradient(135deg,rgba(212,175,55,0.25),rgba(212,175,55,0.1));color:var(--gold-2);border-left:3px solid var(--gold-1)}
-.nav-item .ico{font-size:18px;width:24px;text-align:center}
-
-.main{flex:1;padding:24px;overflow-x:hidden}
-.page-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;flex-wrap:wrap;gap:14px}
-.page-head h2{font-size:28px;color:var(--gold-2)}
-.page-head p{color:var(--text-mute);font-size:14px;margin-top:4px}
-
-.cards-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;margin-bottom:24px}
-.stat-card{
-  background:linear-gradient(135deg,rgba(255,253,245,0.08),rgba(255,253,245,0.03));
-  border:1px solid rgba(212,175,55,0.25);border-radius:18px;padding:20px;
+.login-side{
+  padding:30px;display:flex;align-items:center;justify-content:center;
   position:relative;overflow:hidden;
 }
-.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--gold-2),var(--gold-1))}
-.stat-card .label{font-size:13px;color:var(--text-mute);margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px}
-.stat-card .value{font-size:28px;font-weight:700;color:var(--gold-2);font-family:'Playfair Display',serif}
-.stat-card .sub{font-size:12px;color:var(--text-mute);margin-top:6px}
-.stat-card.income .value{color:#86e8a8}
-.stat-card.expense .value{color:#ff9b8e}
-.stat-card.profit .value{color:var(--gold-2)}
-
-.panel{
-  background:linear-gradient(135deg,rgba(255,253,245,0.05),rgba(255,253,245,0.02));
-  border:1px solid rgba(212,175,55,0.2);border-radius:18px;padding:22px;margin-bottom:22px;
+.login-side.admin-side{
+  background:
+    radial-gradient(circle at 30% 30%, rgba(212,164,55,.25),transparent 60%),
+    linear-gradient(135deg,#1a1208 0%,#0a0805 100%);
+  border-right:1px solid var(--line);
 }
-.panel h3{color:var(--gold-2);margin-bottom:16px;font-size:18px;display:flex;align-items:center;gap:10px}
-
-.row{display:flex;gap:14px;flex-wrap:wrap}
-.row > *{flex:1;min-width:200px}
-
-.table-wrap{overflow-x:auto;border-radius:12px;border:1px solid rgba(212,175,55,0.2)}
-table{width:100%;border-collapse:collapse;font-size:14px}
-th,td{padding:12px 14px;text-align:left;border-bottom:1px solid rgba(212,175,55,0.12)}
-th{background:rgba(212,175,55,0.12);color:var(--gold-2);font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:.5px}
-tr:hover td{background:rgba(212,175,55,0.05)}
-td .badge{display:inline-block;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;text-transform:uppercase}
-.badge.income,.badge.sale{background:rgba(39,174,96,0.2);color:#86e8a8}
-.badge.expense,.badge.purchase{background:rgba(192,57,43,0.2);color:#ff9b8e}
-.badge.stock_in,.badge.stock_out{background:rgba(41,128,185,0.2);color:#82c4f1}
-
-.tabs{display:flex;gap:6px;margin-bottom:16px;background:rgba(255,253,245,0.04);padding:5px;border-radius:12px;overflow-x:auto}
-.tabs button{padding:9px 16px;background:transparent;color:var(--text-mute);border-radius:8px;font-weight:500;white-space:nowrap;font-size:13px}
-.tabs button.active{background:linear-gradient(135deg,var(--gold-2),var(--gold-1));color:#1a1408}
-
-.scan-zone{
-  border:2px dashed rgba(212,175,55,0.4);border-radius:14px;padding:30px;text-align:center;
-  background:rgba(212,175,55,0.05);cursor:pointer;transition:all .2s;
+.login-side.staff-side{
+  background:
+    radial-gradient(circle at 70% 70%, rgba(244,207,111,.18),transparent 60%),
+    linear-gradient(135deg,#0a0805 0%,#13100a 100%);
 }
-.scan-zone:hover{background:rgba(212,175,55,0.1);border-color:var(--gold-1)}
-.scan-zone .ico{font-size:42px;margin-bottom:8px}
+.login-side::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(180deg,transparent 0%,rgba(212,164,55,.04) 100%);
+  pointer-events:none;
+}
 
-.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;z-index:1000;padding:20px}
-.modal-bg.show{display:flex}
-.modal{background:linear-gradient(160deg,#1a1408,#2a1f0e);border:1px solid rgba(212,175,55,0.4);border-radius:20px;padding:28px;max-width:520px;width:100%;box-shadow:var(--shadow);max-height:90vh;overflow-y:auto}
-.modal h3{color:var(--gold-2);margin-bottom:18px;font-size:22px}
-.modal-close{position:absolute;top:16px;right:16px;background:none;color:var(--text-mute);font-size:22px;width:32px;height:32px;border-radius:50%}
-.modal-close:hover{background:rgba(255,255,255,0.1);color:#fff}
+.login-card{
+  width:min(440px,100%);
+  background:linear-gradient(145deg,rgba(31,24,16,.95),rgba(10,8,5,.95));
+  backdrop-filter:blur(20px);
+  border:1px solid var(--line-strong);
+  border-radius:24px;
+  padding:36px 30px;
+  box-shadow:var(--shadow),inset 0 1px 0 rgba(212,164,55,.15);
+  position:relative;z-index:2;
+}
+.login-card.admin-card{
+  border-color:rgba(212,164,55,.6);
+  box-shadow:var(--shadow),0 0 60px rgba(212,164,55,.18),inset 0 1px 0 rgba(212,164,55,.2);
+}
+
+.panel-tag{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:6px 14px;border-radius:99px;font-size:11px;font-weight:700;letter-spacing:2px;
+  text-transform:uppercase;margin-bottom:16px;
+}
+.panel-tag.admin{
+  background:linear-gradient(135deg,#d4a437,#8a5a0b);color:#fff;
+  box-shadow:0 4px 14px rgba(212,164,55,.4);
+}
+.panel-tag.staff{
+  background:rgba(212,164,55,.15);color:var(--gold-glow);
+  border:1px solid var(--line);
+}
+
+.brand{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+.brand-logo{
+  width:58px;height:58px;border-radius:16px;
+  background:linear-gradient(135deg,#ffd86b,#d4a437 50%,#8a5a0b);
+  display:grid;place-items:center;color:#0a0805;font-weight:900;font-size:24px;
+  box-shadow:inset 0 0 0 2px rgba(255,255,255,.2),0 8px 20px rgba(212,164,55,.5);
+  font-family:'Playfair Display';
+}
+.brand-title{font-family:'Playfair Display';font-size:26px;line-height:1;color:var(--gold-glow);font-weight:900}
+.brand-sub{font-size:11px;letter-spacing:2px;color:#a88a4d;text-transform:uppercase;margin-top:4px}
+
+.login-card h2{font-size:22px;margin-bottom:6px;color:var(--gold-glow)}
+.login-card .hint{font-size:13px;color:#a88a4d;margin-bottom:20px;line-height:1.5}
+
+.field{margin-bottom:14px}
+.field label{
+  display:block;font-size:11px;font-weight:600;color:var(--gold-3);
+  margin-bottom:6px;letter-spacing:1.5px;text-transform:uppercase;
+}
+.field input,.field select,.field textarea{
+  width:100%;padding:13px 14px;border-radius:12px;
+  border:1.5px solid var(--line);
+  background:rgba(10,8,5,.6);
+  font-size:14px;color:#e8d9a8;outline:none;transition:.2s;
+}
+.field input::placeholder,.field textarea::placeholder{color:#6a553a}
+.field input:focus,.field select:focus,.field textarea:focus{
+  border-color:var(--gold-3);
+  box-shadow:0 0 0 4px rgba(212,164,55,.15);
+  background:rgba(10,8,5,.85);
+}
+.field select option{background:#13100a;color:#e8d9a8}
+
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  padding:13px 20px;border-radius:12px;font-weight:600;font-size:14px;
+  background:linear-gradient(135deg,#ffd86b 0%,#d4a437 50%,#8a5a0b 100%);
+  color:#0a0805;
+  box-shadow:0 8px 22px rgba(212,164,55,.4),inset 0 1px 0 rgba(255,255,255,.3);
+  transition:.2s;letter-spacing:.3px;
+}
+.btn:hover{transform:translateY(-2px);box-shadow:0 14px 30px rgba(212,164,55,.55)}
+.btn:active{transform:translateY(0)}
+.btn-block{width:100%}
+.btn-ghost{
+  background:transparent;color:var(--gold-glow);
+  box-shadow:none;border:1.5px solid var(--line-strong);
+}
+.btn-ghost:hover{background:rgba(212,164,55,.1)}
+.btn-danger{background:linear-gradient(135deg,#e53935,#7f1010);color:#fff}
+.btn-ok{background:linear-gradient(135deg,#66bb6a,#1b4d1e);color:#fff}
+.btn-sm{padding:7px 12px;font-size:12px;border-radius:9px}
+
+.role-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.role-chip{
+  padding:10px 8px;border-radius:10px;border:1.5px solid var(--line);
+  background:rgba(10,8,5,.5);text-align:center;cursor:pointer;
+  font-size:11px;font-weight:600;color:#a88a4d;transition:.2s;
+}
+.role-chip:hover{border-color:var(--gold-3);background:rgba(212,164,55,.1);color:var(--gold-glow)}
+.role-chip.active{
+  background:linear-gradient(135deg,#d4a437,#8a5a0b);color:#fff;
+  border-color:transparent;box-shadow:0 4px 12px rgba(212,164,55,.4);
+}
+
+.alert{padding:10px 12px;border-radius:10px;font-size:13px;margin-bottom:12px}
+.alert.err{background:rgba(229,57,53,.15);color:#ff8a85;border:1px solid rgba(229,57,53,.3)}
+.alert.ok{background:rgba(76,175,80,.15);color:#a5d6a7;border:1px solid rgba(76,175,80,.3)}
+
+.divider{
+  display:flex;align-items:center;gap:10px;margin:18px 0;
+  font-size:11px;color:#6a553a;letter-spacing:2px;text-transform:uppercase;
+}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--line)}
+
+/* ============ APP SHELL ============ */
+.app{display:none;min-height:100vh;position:relative;z-index:1}
+.app.active{display:grid;grid-template-columns:260px 1fr}
+
+.sidebar{
+  background:linear-gradient(180deg,#0a0805 0%,#13100a 100%);
+  color:#e8d9a8;padding:22px 14px;
+  position:sticky;top:0;height:100vh;overflow-y:auto;
+  border-right:1px solid var(--line);
+}
+.sidebar .brand-title{color:var(--gold-glow);font-size:22px}
+.sidebar .brand-sub{color:var(--gold-3)}
+.nav{margin-top:20px;display:flex;flex-direction:column;gap:4px}
+.nav button{
+  text-align:left;background:transparent;color:#c4b283;padding:11px 12px;border-radius:10px;
+  font-size:13px;font-weight:500;display:flex;align-items:center;gap:10px;transition:.18s;
+  width:100%;
+}
+.nav button:hover{background:rgba(212,164,55,.12);color:var(--gold-glow)}
+.nav button.active{
+  background:linear-gradient(135deg,#d4a437,#8a5a0b);color:#fff;
+  box-shadow:0 6px 14px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.2);
+}
+.nav .ico{width:18px;text-align:center}
+.sidebar-foot{
+  margin-top:24px;padding-top:16px;
+  border-top:1px solid var(--line);
+  font-size:11px;color:#6a553a;
+}
+
+.main{padding:24px 28px;overflow-x:hidden}
+.topbar{
+  display:flex;align-items:center;justify-content:space-between;gap:14px;
+  background:linear-gradient(135deg,rgba(31,24,16,.85),rgba(10,8,5,.85));
+  backdrop-filter:blur(10px);
+  border:1px solid var(--line);border-radius:16px;padding:12px 18px;margin-bottom:20px;
+  box-shadow:0 6px 18px rgba(0,0,0,.3);
+}
+.topbar .user{display:flex;align-items:center;gap:10px;font-size:13px;color:#e8d9a8}
+.avatar{
+  width:38px;height:38px;border-radius:50%;
+  background:linear-gradient(135deg,#ffd86b,#d4a437,#8a5a0b);
+  color:#0a0805;display:grid;place-items:center;font-weight:800;font-size:15px;
+  box-shadow:0 4px 12px rgba(212,164,55,.4);
+}
+
+.section-title{font-size:28px;margin-bottom:6px;color:var(--gold-glow)}
+.section-sub{color:#a88a4d;font-size:14px;margin-bottom:18px}
+
+/* Cards & grids */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin-bottom:20px}
+.kpi{
+  background:linear-gradient(135deg,rgba(31,24,16,.9),rgba(10,8,5,.9));
+  border:1px solid var(--line);border-radius:16px;padding:18px 20px;
+  box-shadow:0 6px 18px rgba(0,0,0,.3);
+  position:relative;overflow:hidden;
+}
+.kpi::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,#ffd86b,#d4a437,#8a5a0b);
+}
+.kpi .label{font-size:11px;text-transform:uppercase;letter-spacing:1.2px;color:var(--gold-3);font-weight:600}
+.kpi .value{font-family:'Playfair Display';font-size:28px;color:var(--gold-glow);margin-top:6px;font-weight:700}
+.kpi .delta{font-size:11px;color:#a5d6a7;margin-top:6px}
+.kpi.warn::before{background:linear-gradient(90deg,#ff9800,#e53935)}
+.kpi.warn .delta{color:#ffab91}
+
+.card{
+  background:linear-gradient(145deg,rgba(31,24,16,.85),rgba(10,8,5,.85));
+  border:1px solid var(--line);border-radius:16px;padding:20px;
+  box-shadow:0 6px 18px rgba(0,0,0,.3);margin-bottom:18px;
+}
+.card h3{font-size:18px;margin-bottom:12px;display:flex;align-items:center;gap:8px;color:var(--gold-glow)}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:end}
+.row > .field{flex:1;min-width:160px;margin-bottom:0}
+
+.tbl{width:100%;border-collapse:collapse;font-size:13px;color:#e8d9a8}
+.tbl th,.tbl td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line)}
+.tbl th{
+  background:rgba(212,164,55,.1);font-weight:600;color:var(--gold-3);
+  text-transform:uppercase;letter-spacing:.6px;font-size:11px;
+}
+.tbl tr:hover{background:rgba(212,164,55,.06)}
+.tbl-wrap{overflow-x:auto;border-radius:12px;border:1px solid var(--line);background:rgba(10,8,5,.4)}
+
+.badge{display:inline-block;padding:4px 10px;border-radius:99px;font-size:11px;font-weight:600}
+.badge.in{background:rgba(76,175,80,.18);color:#a5d6a7;border:1px solid rgba(76,175,80,.3)}
+.badge.ex{background:rgba(229,57,53,.18);color:#ffab91;border:1px solid rgba(229,57,53,.3)}
+.badge.ls{background:rgba(255,152,0,.18);color:#ffcc80;border:1px solid rgba(255,152,0,.3)}
+
+.tabs{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+.tab{
+  padding:9px 16px;border-radius:10px;background:transparent;
+  border:1.5px solid var(--line);font-size:13px;font-weight:600;color:#a88a4d;
+}
+.tab.active{
+  background:linear-gradient(135deg,#d4a437,#8a5a0b);color:#fff;
+  border-color:transparent;box-shadow:0 4px 12px rgba(212,164,55,.3);
+}
 
 /* Chatbot */
-.chat-fab{position:fixed;bottom:24px;right:24px;width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,var(--gold-2),var(--gold-1));font-size:28px;box-shadow:0 8px 24px rgba(212,175,55,0.5);z-index:100;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s}
-.chat-fab:hover{transform:scale(1.1)}
-.chat-box{position:fixed;bottom:96px;right:24px;width:360px;max-width:calc(100vw - 32px);height:480px;max-height:70vh;background:linear-gradient(160deg,#1a1408,#2a1f0e);border:1px solid rgba(212,175,55,0.4);border-radius:18px;display:none;flex-direction:column;z-index:99;box-shadow:var(--shadow);overflow:hidden}
-.chat-box.show{display:flex}
-.chat-head{padding:14px 18px;background:linear-gradient(135deg,var(--gold-2),var(--gold-1));color:#1a1408;font-weight:600;display:flex;align-items:center;gap:10px}
-.chat-body{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px}
-.chat-msg{padding:10px 14px;border-radius:14px;max-width:85%;font-size:14px;line-height:1.4}
-.chat-msg.bot{background:rgba(212,175,55,0.15);align-self:flex-start;border-bottom-left-radius:4px}
-.chat-msg.me{background:linear-gradient(135deg,var(--gold-2),var(--gold-1));color:#1a1408;align-self:flex-end;border-bottom-right-radius:4px}
-.chat-input{display:flex;gap:8px;padding:12px;border-top:1px solid rgba(212,175,55,0.2)}
-.chat-input input{flex:1;background:rgba(255,253,245,0.06);border:1px solid rgba(212,175,55,0.25);color:#fff;padding:10px 14px;border-radius:24px;font-size:14px}
-.chat-input button{background:linear-gradient(135deg,var(--gold-2),var(--gold-1));color:#1a1408;border-radius:50%;width:40px;height:40px;font-size:18px}
-
-/* mobile */
-@media (max-width: 880px){
-  .layout{flex-direction:column}
-  .sidebar{width:100%;height:auto;position:relative;top:0;flex-direction:row;overflow-x:auto;padding:10px;gap:8px;border-right:none;border-bottom:1px solid rgba(212,175,55,0.18)}
-  .nav-item{flex-shrink:0;padding:9px 12px;font-size:13px}
-  .nav-item .ico{font-size:16px;width:auto}
-  .main{padding:16px}
-  .topbar{padding:12px 14px}
-  .topbar .brand{font-size:18px}
-  .user-chip .info{display:none}
-  .page-head h2{font-size:22px}
-  .stat-card .value{font-size:22px}
-  .chat-box{width:calc(100vw - 24px);right:12px;bottom:90px;height:60vh}
-  .chat-fab{right:14px;bottom:14px}
-  th,td{padding:9px 8px;font-size:12.5px}
+.chat-fab{
+  position:fixed;bottom:22px;right:22px;width:62px;height:62px;border-radius:50%;
+  background:linear-gradient(135deg,#ffd86b,#d4a437,#8a5a0b);color:#0a0805;font-size:28px;
+  display:grid;place-items:center;
+  box-shadow:0 12px 32px rgba(212,164,55,.6),inset 0 1px 0 rgba(255,255,255,.3);
+  cursor:pointer;z-index:100;
+  border:2px solid rgba(255,216,107,.4);
+  animation:pulse 2.5s infinite;
 }
-@media (max-width: 480px){
-  .cards-grid{grid-template-columns:1fr 1fr}
-  .login-card{padding:28px 22px}
+@keyframes pulse{
+  0%,100%{box-shadow:0 12px 32px rgba(212,164,55,.6),0 0 0 0 rgba(212,164,55,.5)}
+  50%{box-shadow:0 12px 32px rgba(212,164,55,.6),0 0 0 14px rgba(212,164,55,0)}
+}
+.chat-box{
+  position:fixed;bottom:96px;right:22px;width:min(380px,90vw);height:500px;
+  background:linear-gradient(145deg,#1f1810,#0a0805);
+  border-radius:18px;box-shadow:0 24px 60px rgba(0,0,0,.7);
+  display:none;flex-direction:column;z-index:100;
+  border:1px solid var(--line-strong);overflow:hidden;
+}
+.chat-box.open{display:flex}
+.chat-head{
+  background:linear-gradient(135deg,#d4a437,#8a5a0b);color:#fff;
+  padding:14px 16px;font-weight:600;display:flex;justify-content:space-between;align-items:center;
+}
+.chat-body{flex:1;overflow-y:auto;padding:14px;background:linear-gradient(180deg,#0a0805,#13100a)}
+.msg{
+  padding:10px 14px;border-radius:14px;margin-bottom:8px;font-size:13px;
+  max-width:85%;line-height:1.5;white-space:pre-wrap;
+}
+.msg.bot{
+  background:rgba(31,24,16,.9);border:1px solid var(--line);color:#e8d9a8;
+}
+.msg.me{
+  background:linear-gradient(135deg,#d4a437,#8a5a0b);color:#fff;margin-left:auto;
+}
+.chat-foot{
+  display:flex;gap:6px;padding:10px;background:rgba(31,24,16,.95);
+  border-top:1px solid var(--line);
+}
+.chat-foot input{
+  flex:1;border:1px solid var(--line);border-radius:10px;
+  padding:10px 14px;font-size:13px;outline:none;
+  background:rgba(10,8,5,.6);color:#e8d9a8;
+}
+.chat-foot input:focus{border-color:var(--gold-3)}
+.chat-suggestions{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.chat-suggestion{
+  padding:6px 10px;border-radius:99px;font-size:11px;font-weight:600;
+  background:rgba(212,164,55,.15);color:var(--gold-glow);
+  border:1px solid var(--line);cursor:pointer;transition:.2s;
+}
+.chat-suggestion:hover{background:rgba(212,164,55,.3)}
+
+/* OCR scan */
+.scan-zone{
+  border:2px dashed var(--gold-3);border-radius:14px;padding:30px;text-align:center;
+  background:rgba(212,164,55,.05);transition:.2s;cursor:pointer;display:block;
+}
+.scan-zone:hover{background:rgba(212,164,55,.12);border-color:var(--gold-glow)}
+.scan-zone .ico{font-size:42px;color:var(--gold-3);margin-bottom:8px}
+.scan-progress{height:8px;background:rgba(10,8,5,.5);border-radius:99px;overflow:hidden;margin-top:10px;display:none}
+.scan-progress.show{display:block}
+.scan-progress > div{height:100%;background:linear-gradient(90deg,#d4a437,#ffd86b);width:0;transition:.3s}
+
+textarea{
+  width:100%;padding:12px 14px;border-radius:10px;
+  border:1.5px solid var(--line);background:rgba(10,8,5,.6);
+  color:#e8d9a8;outline:none;resize:vertical;
+}
+textarea:focus{border-color:var(--gold-3)}
+
+pre{color:#e8d9a8 !important;background:rgba(10,8,5,.7) !important}
+
+details summary{color:var(--gold-3);cursor:pointer;font-weight:600}
+
+/* Notification toast */
+.toast{
+  position:fixed;top:20px;right:20px;z-index:200;
+  background:linear-gradient(135deg,#1f1810,#0a0805);
+  border:1px solid var(--line-strong);
+  border-radius:12px;padding:14px 18px;
+  box-shadow:var(--shadow);
+  color:#e8d9a8;font-size:13px;
+  max-width:340px;
+  animation:slideIn .3s ease;
+}
+.toast.ok{border-left:3px solid #4caf50}
+.toast.err{border-left:3px solid #e53935}
+@keyframes slideIn{from{transform:translateX(110%);opacity:0}to{transform:translateX(0);opacity:1}}
+
+/* Responsive */
+@media (max-width: 900px){
+  .app.active{grid-template-columns:1fr}
+  .sidebar{position:fixed;left:-280px;top:0;width:260px;z-index:200;transition:.3s;height:100vh}
+  .sidebar.show{left:0}
+  .menu-toggle{display:inline-flex !important}
+  .main{padding:18px 14px}
+}
+.menu-toggle{display:none;background:transparent;color:var(--gold-glow);font-size:24px}
+@media (max-width: 560px){
+  .role-grid{grid-template-columns:1fr 1fr}
+  .section-title{font-size:22px}
+  .kpi .value{font-size:22px}
 }
 
-.fade-in{animation:fadeIn .3s ease}
-@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-
-.spinner{display:inline-block;width:18px;height:18px;border:2px solid rgba(255,255,255,0.3);border-top-color:#1a1408;border-radius:50%;animation:spin .8s linear infinite}
+/* Loader */
+.loader{
+  display:inline-block;width:18px;height:18px;
+  border:2.5px solid rgba(255,255,255,.3);
+  border-top-color:#fff;border-radius:50%;
+  animation:spin .8s linear infinite;
+}
 @keyframes spin{to{transform:rotate(360deg)}}
-
-.muted{color:var(--text-mute)}
-.text-success{color:#86e8a8}
-.text-danger{color:#ff9b8e}
-.text-gold{color:var(--gold-2)}
-
-hr.gold-sep{border:none;border-top:1px solid rgba(212,175,55,0.2);margin:18px 0}
 </style>
 </head>
 <body>
 
-<!-- ================ LOGIN ================ -->
+<!-- ============ LOGIN (Split Screen) ============ -->
 <div id="loginScreen" class="login-wrap">
-  <div class="login-card">
-    <div class="brand-hero">
-      <div class="logo">🏛️</div>
-      <h1>LocationRooftop</h1>
-      <p>Premium Hospitality Management Suite</p>
-    </div>
 
-    <div class="login-tabs">
-      <button id="tabStaff" class="active" onclick="switchTab('staff')">Staff Login</button>
-      <button id="tabAdmin" onclick="switchTab('admin')">Admin</button>
-    </div>
-
-    <div id="alertBox"></div>
-
-    <form id="staffLoginForm">
-      <div class="form-group">
-        <label>Login as</label>
-        <select id="loginRole" class="form-control" required>
-          <option value="">— Select your role —</option>
-          <option value="cost_controller">Login as Cost Controller</option>
-          <option value="procurement">Login as Procurement</option>
-          <option value="storekeeper">Login as Storekeeper</option>
-          <option value="accounts">Login as Accounts</option>
-          <option value="finance_manager">Login as Finance Manager</option>
-          <option value="supervisor">Login as Supervisor</option>
-          <option value="hr">Login as HR</option>
-          <option value="director">Login as Director</option>
-          <option value="auditor">Login as Auditor</option>
-        </select>
+  <!-- ADMIN SIDE -->
+  <div class="login-side admin-side">
+    <div class="login-card admin-card">
+      <span class="panel-tag admin">👑 Admin Panel</span>
+      <div class="brand">
+        <div class="brand-logo">LR</div>
+        <div>
+          <div class="brand-title">LocationRooftop</div>
+          <div class="brand-sub">Administrator Access</div>
+        </div>
       </div>
-      <div class="form-group">
+      <h2>Admin Sign-In</h2>
+      <p class="hint">Full system control — manage users, reset staff passwords, view all data and audit logs.</p>
+
+      <div class="field">
+        <label>Admin Username</label>
+        <input id="adminUser" placeholder="admin" value="admin" autocomplete="username" />
+      </div>
+      <div class="field">
+        <label>Admin Password</label>
+        <input id="adminPass" type="password" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doAdminLogin()"/>
+      </div>
+
+      <div id="adminMsg"></div>
+      <button class="btn btn-block" onclick="doAdminLogin()" id="adminBtn">🔐 Sign In as Admin</button>
+
+      <details style="margin-top:16px;font-size:12px;color:#a88a4d">
+        <summary>Default admin credentials</summary>
+        <div style="margin-top:8px;line-height:1.7;font-family:'Courier New',monospace">
+          Username: <span style="color:var(--gold-glow)">admin</span><br>
+          Password: <span style="color:var(--gold-glow)">119722</span>
+        </div>
+      </details>
+    </div>
+  </div>
+
+  <!-- STAFF SIDE -->
+  <div class="login-side staff-side">
+    <div class="login-card">
+      <span class="panel-tag staff">🧑‍💼 Staff Panel</span>
+      <div class="brand">
+        <div class="brand-logo">LR</div>
+        <div>
+          <div class="brand-title">LocationRooftop</div>
+          <div class="brand-sub">Staff Login Portal</div>
+        </div>
+      </div>
+      <h2>Staff Sign-In</h2>
+      <p class="hint">Select your role and enter the credentials provided by your admin.</p>
+
+      <div class="field">
+        <label>Select your role</label>
+        <div class="role-grid">
+          <div class="role-chip" data-role="cost_controller">Cost Ctrl</div>
+          <div class="role-chip" data-role="procurement">Procurement</div>
+          <div class="role-chip" data-role="storekeeper">Storekeeper</div>
+          <div class="role-chip" data-role="accounts">Accounts</div>
+          <div class="role-chip" data-role="finance_manager">Finance</div>
+          <div class="role-chip" data-role="supervisor">Supervisor</div>
+          <div class="role-chip" data-role="hr">HR</div>
+          <div class="role-chip" data-role="director">Director</div>
+          <div class="role-chip" data-role="auditor">Auditor</div>
+        </div>
+      </div>
+
+      <div class="field">
         <label>Username</label>
-        <input type="text" id="loginUser" class="form-control" placeholder="Enter username" required autocomplete="username">
+        <input id="staffUser" placeholder="e.g. hr, accounts, supervisor" autocomplete="username" />
       </div>
-      <div class="form-group">
+      <div class="field">
         <label>Password</label>
-        <input type="password" id="loginPass" class="form-control" placeholder="Enter password" required autocomplete="current-password">
+        <input id="staffPass" type="password" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doStaffLogin()"/>
       </div>
-      <button type="submit" class="btn btn-gold"><span id="loginBtnText">Sign In Securely</span></button>
-      <div class="hint"><a onclick="showResetHelp()">Forgot password? Ask admin to reset</a></div>
-    </form>
 
-    <form id="adminLoginForm" style="display:none">
-      <div class="form-group">
-        <label>Administrator Password</label>
-        <input type="password" id="adminPass" class="form-control" placeholder="Enter admin password" required>
+      <div id="staffMsg"></div>
+      <button class="btn btn-block" onclick="doStaffLogin()" id="staffBtn">🔐 Sign In as Staff</button>
+
+      <div style="margin-top:14px;text-align:center">
+        <a href="#" onclick="showForgot();return false" style="font-size:12px;color:var(--gold-3)">Forgot password? Contact your admin →</a>
       </div>
-      <button type="submit" class="btn btn-gold">Enter Admin Panel</button>
-      <div class="hint">Admin can reset all user passwords and manage records</div>
-    </form>
+
+      <details style="margin-top:14px;font-size:12px;color:#a88a4d">
+        <summary>Default staff accounts (test mode)</summary>
+        <div style="margin-top:8px;line-height:1.7;font-family:'Courier New',monospace;font-size:11px">
+          cost / cost123 · procurement / proc123<br>
+          storekeeper / store123 · accounts / acc123<br>
+          finance / fin123 · supervisor / sup123<br>
+          hr / hr123 · director / dir123 · auditor / aud123
+        </div>
+      </details>
+    </div>
   </div>
 </div>
 
-<!-- ================ APP ================ -->
+<!-- ============ APP ============ -->
 <div id="app" class="app">
-  <div class="topbar">
-    <div class="brand"><div class="logo-sm">🏛️</div><span>LocationRooftop</span></div>
-    <div class="user-chip" onclick="toggleUserMenu()">
-      <div class="avatar" id="userAvatar">A</div>
-      <div class="info"><b id="userName">User</b><br><span id="userRole">role</span></div>
-      <button class="btn btn-sm btn-ghost" onclick="event.stopPropagation();logout()">Logout</button>
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="brand-logo">LR</div>
+      <div>
+        <div class="brand-title">LocationRooftop</div>
+        <div class="brand-sub" id="sideRole">—</div>
+      </div>
     </div>
-  </div>
+    <div class="nav" id="navList"></div>
+    <div class="sidebar-foot">
+      <div>v1.0.0 · © LocationRooftop</div>
+      <div style="margin-top:4px;color:#4caf50" id="serverStatus">● Connected</div>
+    </div>
+  </aside>
 
-  <div class="layout">
-    <aside class="sidebar" id="sidebar"></aside>
-    <main class="main" id="mainContent"></main>
-  </div>
+  <main class="main">
+    <div class="topbar">
+      <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('show')">☰</button>
+      <div style="font-weight:600;font-size:14px;color:var(--gold-glow)" id="pageTitle">Dashboard</div>
+      <div class="user">
+        <div class="avatar" id="avatar">?</div>
+        <div>
+          <div style="font-weight:600;color:var(--gold-glow)" id="userName">—</div>
+          <div style="font-size:11px;color:var(--gold-3)" id="userRole">—</div>
+        </div>
+        <button class="btn btn-sm btn-ghost" onclick="logout()">Logout</button>
+      </div>
+    </div>
+
+    <div id="pageContent"></div>
+  </main>
 </div>
 
 <!-- Chatbot -->
 <div class="chat-fab" id="chatFab" onclick="toggleChat()" style="display:none">💬</div>
 <div class="chat-box" id="chatBox">
-  <div class="chat-head"><span>🤖</span> AI Assistant</div>
+  <div class="chat-head">
+    <div>🤖 LocationRooftop AI Assistant</div>
+    <span style="cursor:pointer;font-size:20px" onclick="toggleChat()">✕</span>
+  </div>
   <div class="chat-body" id="chatBody">
-    <div class="chat-msg bot">Hello! I'm your LocationRooftop AI assistant. Ask me about profit, stock, staff, reports or how to use the system.</div>
+    <div class="msg bot">Hello! I'm your AI assistant. I can answer questions about your business in real-time.</div>
+    <div class="chat-suggestions">
+      <div class="chat-suggestion" onclick="quickChat('Show profit')">📊 Show profit</div>
+      <div class="chat-suggestion" onclick="quickChat('Low stock items')">📦 Low stock</div>
+      <div class="chat-suggestion" onclick="quickChat('Staff count')">🧑‍💼 Staff</div>
+      <div class="chat-suggestion" onclick="quickChat('Recent transactions')">💰 Recent tx</div>
+      <div class="chat-suggestion" onclick="quickChat('How to reset password')">🔑 Password help</div>
+      <div class="chat-suggestion" onclick="quickChat('Help')">❓ Help</div>
+    </div>
   </div>
-  <div class="chat-input">
-    <input type="text" id="chatInput" placeholder="Ask anything..." onkeydown="if(event.key==='Enter')sendChat()">
-    <button onclick="sendChat()">➤</button>
-  </div>
-</div>
-
-<!-- Modal -->
-<div class="modal-bg" id="modalBg" onclick="if(event.target.id==='modalBg')closeModal()">
-  <div class="modal" id="modalContent" style="position:relative">
-    <button class="modal-close" onclick="closeModal()">✕</button>
-    <div id="modalBody"></div>
+  <div class="chat-foot">
+    <input id="chatInput" placeholder="Type your question…" onkeydown="if(event.key==='Enter')sendChat()" />
+    <button class="btn btn-sm" onclick="sendChat()">Send</button>
   </div>
 </div>
 
 <script>
 /* ============================================================
-   LocationRooftop — Frontend
-   Configure your backend URL below (leave empty for same-origin)
-============================================================ */
-const API_BASE = localStorage.getItem('apiBase') || 'http://localhost:10000';
-// After Render deploy, run in DevTools:
-//   localStorage.setItem('apiBase','https://YOUR-RENDER-URL.onrender.com')
+   LocationRooftop Frontend
+   ============================================================ */
 
-let TOKEN = localStorage.getItem('token') || null;
-let USER  = JSON.parse(localStorage.getItem('user') || 'null');
-let CURRENT_PAGE = 'dashboard';
-let CHARTS = {};
+const API = (() => {
+  const saved = localStorage.getItem('lr_api');
+  if (saved) return saved;
+  const host = location.hostname;
+  if (host === 'localhost' || host === '127.0.0.1') return 'http://localhost:10000';
+  return location.origin;
+})();
 
-const ROLE_LABELS = {
-  cost_controller:'Cost Controller', procurement:'Procurement', storekeeper:'Storekeeper',
-  accounts:'Accounts', finance_manager:'Finance Manager', supervisor:'Supervisor',
-  hr:'HR Manager', director:'Director', auditor:'Auditor', admin:'Administrator'
+let TOKEN = localStorage.getItem('lr_token') || '';
+let ME = JSON.parse(localStorage.getItem('lr_me') || 'null');
+let SELECTED_ROLE = '';
+
+function api(path, opts = {}) {
+  opts.headers = Object.assign({ 'Content-Type': 'application/json' }, opts.headers || {});
+  if (TOKEN) opts.headers.Authorization = 'Bearer ' + TOKEN;
+  return fetch(API + path, opts).then(async r => {
+    const data = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(data.error || ('HTTP ' + r.status));
+    return data;
+  });
+}
+
+function toast(text, type = 'ok') {
+  const el = document.createElement('div');
+  el.className = 'toast ' + type;
+  el.textContent = text;
+  document.body.appendChild(el);
+  setTimeout(() => { el.style.animation = 'slideIn .3s reverse'; setTimeout(() => el.remove(), 300); }, 3000);
+}
+
+/* ---------- LOGIN ---------- */
+document.querySelectorAll('.role-chip').forEach(chip => {
+  chip.onclick = () => {
+    document.querySelectorAll('.role-chip').forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+    SELECTED_ROLE = chip.dataset.role;
+  };
+});
+
+function showMsg(elId, text, type = 'err') {
+  document.getElementById(elId).innerHTML = `<div class="alert ${type}">${text}</div>`;
+}
+
+async function doAdminLogin() {
+  const username = document.getElementById('adminUser').value.trim();
+  const password = document.getElementById('adminPass').value;
+  const btn = document.getElementById('adminBtn');
+  if (!username || !password) return showMsg('adminMsg', 'Please enter username and password.');
+  btn.disabled = true; btn.innerHTML = '<span class="loader"></span> Signing in...';
+  try {
+    const r = await api('/api/login', { method: 'POST', body: JSON.stringify({ username, password, role: 'admin' }) });
+    TOKEN = r.token; ME = r.user;
+    localStorage.setItem('lr_token', TOKEN);
+    localStorage.setItem('lr_me', JSON.stringify(ME));
+    showMsg('adminMsg', '✓ Welcome ' + (ME.fullName || ME.username) + '!', 'ok');
+    setTimeout(enterApp, 400);
+  } catch (e) {
+    showMsg('adminMsg', e.message || 'Login failed');
+    btn.disabled = false; btn.innerHTML = '🔐 Sign In as Admin';
+  }
+}
+
+async function doStaffLogin() {
+  const username = document.getElementById('staffUser').value.trim();
+  const password = document.getElementById('staffPass').value;
+  const btn = document.getElementById('staffBtn');
+  if (!username || !password) return showMsg('staffMsg', 'Please enter username and password.');
+  btn.disabled = true; btn.innerHTML = '<span class="loader"></span> Signing in...';
+  try {
+    const r = await api('/api/login', { method: 'POST', body: JSON.stringify({ username, password, role: SELECTED_ROLE || 'auto' }) });
+    TOKEN = r.token; ME = r.user;
+    if (ME.role === 'admin') {
+      showMsg('staffMsg', 'This is an admin account — please use the Admin Panel on the left.');
+      TOKEN = ''; ME = null;
+      btn.disabled = false; btn.innerHTML = '🔐 Sign In as Staff';
+      return;
+    }
+    localStorage.setItem('lr_token', TOKEN);
+    localStorage.setItem('lr_me', JSON.stringify(ME));
+    showMsg('staffMsg', '✓ Welcome ' + (ME.fullName || ME.username) + '!', 'ok');
+    setTimeout(enterApp, 400);
+  } catch (e) {
+    showMsg('staffMsg', e.message || 'Login failed');
+    btn.disabled = false; btn.innerHTML = '🔐 Sign In as Staff';
+  }
+}
+
+function showForgot() {
+  alert('🔑 Password Reset\n\nOnly the system Admin can reset staff passwords.\n\nContact your administrator, who will:\n1. Log in to the Admin Panel\n2. Go to User Management\n3. Reset your password\n4. Provide you with the new password');
+}
+
+function logout() {
+  TOKEN = ''; ME = null;
+  localStorage.removeItem('lr_token');
+  localStorage.removeItem('lr_me');
+  document.getElementById('app').classList.remove('active');
+  document.getElementById('loginScreen').style.display = 'grid';
+  document.getElementById('chatFab').style.display = 'none';
+  document.getElementById('chatBox').classList.remove('open');
+}
+
+/* ---------- APP SHELL ---------- */
+const ROLE_LABEL = {
+  admin: 'Administrator', cost_controller: 'Cost Controller',
+  procurement: 'Procurement', storekeeper: 'Storekeeper',
+  accounts: 'Accounts', finance_manager: 'Finance Manager',
+  supervisor: 'Supervisor', hr: 'Human Resources',
+  director: 'Director', auditor: 'Auditor'
 };
 
-/* ---------- API helper ---------- */
-async function api(path, opts={}){
-  const headers = { 'Content-Type':'application/json', ...(opts.headers||{}) };
-  if (TOKEN) headers.Authorization = 'Bearer ' + TOKEN;
-  const res = await fetch(API_BASE + path, { ...opts, headers });
-  const data = await res.json().catch(()=>({}));
-  if (!res.ok) throw new Error(data.error || 'Request failed');
-  return data;
-}
+const MENUS = {
+  admin:           ['dashboard','users','records','transactions','staff','inventory','reports','audit','settings'],
+  director:        ['dashboard','records','transactions','staff','inventory','reports','audit','settings'],
+  cost_controller: ['dashboard','records','transactions','reports','settings'],
+  procurement:     ['dashboard','inventory','records','transactions','settings'],
+  storekeeper:     ['dashboard','inventory','records','settings'],
+  accounts:        ['dashboard','transactions','records','staff','reports','receipt','settings'],
+  finance_manager: ['dashboard','transactions','records','reports','audit','settings'],
+  supervisor:      ['dashboard','records','staff','inventory','settings'],
+  hr:              ['dashboard','staff','records','settings'],
+  auditor:         ['dashboard','transactions','records','reports','audit','settings']
+};
 
-/* ---------- Login UI ---------- */
-function switchTab(t){
-  document.getElementById('tabStaff').classList.toggle('active', t==='staff');
-  document.getElementById('tabAdmin').classList.toggle('active', t==='admin');
-  document.getElementById('staffLoginForm').style.display = t==='staff'?'':'none';
-  document.getElementById('adminLoginForm').style.display = t==='admin'?'':'none';
-  document.getElementById('alertBox').innerHTML='';
-}
-function showAlert(type, msg){
-  document.getElementById('alertBox').innerHTML = `<div class="alert alert-${type}">${msg}</div>`;
-}
-function showResetHelp(){
-  showAlert('error', 'Please contact your administrator. Admin password is required to reset user credentials from the Admin Panel.');
-}
+const PAGE_META = {
+  dashboard:    { icon:'📊', label:'Dashboard' },
+  users:        { icon:'👥', label:'User Management' },
+  records:      { icon:'📋', label:'Records' },
+  transactions: { icon:'💰', label:'Transactions' },
+  staff:        { icon:'🧑‍💼', label:'Staff (HR)' },
+  inventory:    { icon:'📦', label:'Inventory' },
+  reports:      { icon:'📈', label:'Reports & P&L' },
+  receipt:      { icon:'🧾', label:'Receipt PDF' },
+  audit:        { icon:'🔍', label:'Audit Log' },
+  settings:     { icon:'⚙️', label:'Settings' }
+};
 
-document.getElementById('staffLoginForm').addEventListener('submit', async e=>{
-  e.preventDefault();
-  const role = document.getElementById('loginRole').value;
-  const username = document.getElementById('loginUser').value.trim();
-  const password = document.getElementById('loginPass').value;
-  if (!role){ showAlert('error','Please select your role'); return; }
-  document.getElementById('loginBtnText').innerHTML = '<span class="spinner"></span>';
-  try{
-    const r = await api('/api/login', { method:'POST', body: JSON.stringify({ username, password, role }) });
-    TOKEN = r.token; USER = r.user;
-    localStorage.setItem('token', TOKEN);
-    localStorage.setItem('user', JSON.stringify(USER));
-    enterApp();
-  }catch(err){ showAlert('error', err.message); }
-  document.getElementById('loginBtnText').textContent = 'Sign In Securely';
-});
-
-document.getElementById('adminLoginForm').addEventListener('submit', async e=>{
-  e.preventDefault();
-  const password = document.getElementById('adminPass').value;
-  try{
-    const r = await api('/api/admin-login', { method:'POST', body: JSON.stringify({ password }) });
-    TOKEN = r.token; USER = r.user;
-    localStorage.setItem('token', TOKEN);
-    localStorage.setItem('user', JSON.stringify(USER));
-    enterApp();
-  }catch(err){ showAlert('error', err.message); }
-});
-
-/* ---------- App entry ---------- */
-function enterApp(){
+function enterApp() {
   document.getElementById('loginScreen').style.display = 'none';
   document.getElementById('app').classList.add('active');
-  document.getElementById('chatFab').style.display = 'flex';
-  document.getElementById('userName').textContent = USER.full_name || USER.username;
-  document.getElementById('userRole').textContent = ROLE_LABELS[USER.role] || USER.role;
-  document.getElementById('userAvatar').textContent = (USER.full_name||USER.username||'U')[0].toUpperCase();
-  buildSidebar();
-  navigate('dashboard');
-}
-function logout(){
-  localStorage.removeItem('token'); localStorage.removeItem('user');
-  TOKEN = null; USER = null;
-  document.getElementById('app').classList.remove('active');
-  document.getElementById('loginScreen').style.display = 'flex';
-  document.getElementById('chatFab').style.display = 'none';
-  document.getElementById('chatBox').classList.remove('show');
+  document.getElementById('chatFab').style.display = 'grid';
+  document.getElementById('userName').textContent = ME.fullName || ME.username;
+  document.getElementById('userRole').textContent = ROLE_LABEL[ME.role] || ME.role;
+  document.getElementById('sideRole').textContent = ROLE_LABEL[ME.role] || ME.role;
+  document.getElementById('avatar').textContent = (ME.fullName || ME.username).charAt(0).toUpperCase();
+  buildNav();
+  loadPage('dashboard');
 }
 
-/* ---------- Role-based menu ---------- */
-function getMenu(){
-  const r = USER.role;
-  const all = [
-    {key:'dashboard', label:'Dashboard', ico:'📊', roles:'*'},
-    {key:'transactions', label:'Transactions', ico:'💰', roles:['cost_controller','procurement','accounts','finance_manager','supervisor','director','auditor','admin']},
-    {key:'add_data', label:'Add / Scan Data', ico:'📷', roles:['cost_controller','procurement','storekeeper','accounts','supervisor','admin']},
-    {key:'stock', label:'Stock & Inventory', ico:'📦', roles:['storekeeper','procurement','cost_controller','accounts','finance_manager','supervisor','director','auditor','admin']},
-    {key:'staff', label:'Staff (HR)', ico:'👥', roles:['hr','director','accounts','finance_manager','admin']},
-    {key:'conduct', label:'Conduct Reports', ico:'📋', roles:['hr','director','supervisor','admin']},
-    {key:'reports', label:'Reports & Analytics', ico:'📈', roles:'*'},
-    {key:'receipt', label:'Print Receipt (PDF)', ico:'🧾', roles:['accounts','finance_manager','director','admin']},
-    {key:'admin', label:'Admin Panel', ico:'🛡️', roles:['admin']},
-    {key:'audit', label:'Audit Log', ico:'🔍', roles:['auditor','director','admin']},
-    {key:'settings', label:'Settings', ico:'⚙️', roles:'*'}
-  ];
-  return all.filter(m => m.roles==='*' || m.roles.includes(r));
+function buildNav() {
+  const list = MENUS[ME.role] || MENUS.supervisor;
+  const nav = document.getElementById('navList'); nav.innerHTML = '';
+  list.forEach(key => {
+    const m = PAGE_META[key];
+    const btn = document.createElement('button');
+    btn.innerHTML = `<span class="ico">${m.icon}</span> ${m.label}`;
+    btn.onclick = () => loadPage(key);
+    btn.dataset.key = key;
+    nav.appendChild(btn);
+  });
 }
-function buildSidebar(){
-  const items = getMenu();
-  document.getElementById('sidebar').innerHTML = items.map(m =>
-    `<div class="nav-item ${m.key===CURRENT_PAGE?'active':''}" onclick="navigate('${m.key}')"><span class="ico">${m.ico}</span> ${m.label}</div>`
-  ).join('');
-}
-function navigate(page){
-  CURRENT_PAGE = page;
-  buildSidebar();
-  const fn = PAGES[page] || PAGES.dashboard;
-  fn();
+
+function loadPage(key) {
+  document.querySelectorAll('.nav button').forEach(b => b.classList.toggle('active', b.dataset.key === key));
+  document.getElementById('pageTitle').textContent = (PAGE_META[key] || {}).label || key;
+  document.getElementById('sidebar').classList.remove('show');
+  const fn = PAGES[key];
+  if (fn) fn();
+  else document.getElementById('pageContent').innerHTML = '<div class="card">Coming soon.</div>';
 }
 
 /* ============================================================
    PAGES
-============================================================ */
+   ============================================================ */
 const PAGES = {};
+const $ = (id) => document.getElementById(id);
+const fmt = (n) => 'KES ' + (Number(n) || 0).toLocaleString('en-KE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c]));
 
-/* ---------- Dashboard ---------- */
-PAGES.dashboard = async function(){
-  const m = document.getElementById('mainContent');
-  m.innerHTML = `
-    <div class="page-head">
-      <div><h2>Welcome, ${USER.full_name || USER.username} ✨</h2><p>${ROLE_LABELS[USER.role]} dashboard — ${new Date().toLocaleDateString('en-GB',{weekday:'long',year:'numeric',month:'long',day:'numeric'})}</p></div>
+/* ---------- DASHBOARD ---------- */
+PAGES.dashboard = async () => {
+  $('pageContent').innerHTML = `
+    <h2 class="section-title">Welcome back, ${esc((ME.fullName || ME.username).split(' ')[0])} ✨</h2>
+    <div class="section-sub">Here's an overview of your operations as ${ROLE_LABEL[ME.role]}.</div>
+    <div class="kpis" id="kpis"></div>
+    <div class="card">
+      <h3>📈 Daily performance (last 14 days)</h3>
+      <canvas id="chartDaily" height="90"></canvas>
     </div>
-    <div class="cards-grid" id="statCards">
-      <div class="stat-card"><div class="label">Loading…</div></div>
-    </div>
-    <div class="panel">
-      <h3>📈 Last 30 Days — Income vs Expense</h3>
-      <canvas id="chartDaily" height="100"></canvas>
-    </div>
-    <div class="row">
-      <div class="panel">
-        <h3>🥧 Revenue Breakdown</h3>
-        <canvas id="chartBreakdown" height="200"></canvas>
-      </div>
-      <div class="panel">
-        <h3>⚡ Quick Actions</h3>
-        <div style="display:grid;gap:10px">
-          <button class="btn btn-gold" onclick="navigate('add_data')">📷 Scan or Add Transaction</button>
-          <button class="btn btn-ghost" onclick="navigate('reports')">📑 View Reports</button>
-          <button class="btn btn-ghost" onclick="navigate('receipt')">🧾 Generate Receipt PDF</button>
-        </div>
-        <hr class="gold-sep">
-        <p class="muted" style="font-size:13px">⏰ Auto-reports generated every 12 hours. Last sync: <b class="text-gold">${new Date().toLocaleTimeString()}</b></p>
-      </div>
-    </div>
-  `;
-  try{
-    const s = await api('/api/reports/summary');
-    document.getElementById('statCards').innerHTML = `
-      <div class="stat-card income"><div class="label">Total Income</div><div class="value">KES ${fmt(s.income)}</div><div class="sub">All time revenue</div></div>
-      <div class="stat-card expense"><div class="label">Total Expense</div><div class="value">KES ${fmt(s.expense)}</div><div class="sub">All time spending</div></div>
-      <div class="stat-card profit"><div class="label">${s.profit>=0?'Net Profit':'Net Loss'}</div><div class="value">KES ${fmt(Math.abs(s.profit))}</div><div class="sub">Margin: ${s.margin.toFixed(1)}%</div></div>
-      <div class="stat-card"><div class="label">Interest (5% Reinvest)</div><div class="value">KES ${fmt(s.interest)}</div><div class="sub">Projected reinvestment</div></div>
+    <div class="card">
+      <h3>🕒 Recent activity</h3>
+      <div class="tbl-wrap"><table class="tbl" id="recentTx"><thead><tr><th>Date</th><th>Type</th><th>Category</th><th>Amount</th><th>Description</th></tr></thead><tbody></tbody></table></div>
+    </div>`;
+  try {
+    const [pl, tx, daily] = await Promise.all([
+      api('/api/reports/profit-loss'),
+      api('/api/transactions'),
+      api('/api/reports/daily')
+    ]);
+    $('kpis').innerHTML = `
+      ${kpi('Total Income', fmt(pl.income), '↑ revenue')}
+      ${kpi('Total Expenses', fmt(pl.expense), '↓ costs', 'warn')}
+      ${kpi('Recorded Loss', fmt(pl.loss), 'loss events', 'warn')}
+      ${kpi('Net Profit', fmt(pl.net_profit), 'income − expenses − loss')}
+      ${kpi('Transactions', tx.length, 'records on file')}
     `;
-    const daily = await api('/api/reports/daily');
-    const days = daily.days.reverse();
-    drawChart('chartDaily','line',{
-      labels: days.map(d=>d.day),
-      datasets:[
-        {label:'Income',data:days.map(d=>d.income),borderColor:'#86e8a8',backgroundColor:'rgba(134,232,168,0.15)',tension:.3,fill:true},
-        {label:'Expense',data:days.map(d=>d.expense),borderColor:'#ff9b8e',backgroundColor:'rgba(255,155,142,0.15)',tension:.3,fill:true}
-      ]
-    });
-    drawChart('chartBreakdown','doughnut',{
-      labels: s.breakdown.map(b=>b.type.toUpperCase()),
-      datasets:[{data:s.breakdown.map(b=>b.total),backgroundColor:['#d4af37','#f5d97a','#b8860b','#27ae60','#c0392b','#2980b9']}]
-    });
-  }catch(e){ showToast(e.message); }
-};
+    const tbody = document.querySelector('#recentTx tbody');
+    tbody.innerHTML = tx.slice(0, 8).map(t => `
+      <tr><td>${esc(t.created_at?.slice(0,16))}</td>
+          <td><span class="badge ${t.type==='income'||t.type==='sale'?'in':t.type==='loss'?'ls':'ex'}">${esc(t.type)}</span></td>
+          <td>${esc(t.category)}</td><td>${fmt(t.amount)}</td><td>${esc(t.description)}</td></tr>`).join('') || '<tr><td colspan="5" style="text-align:center;color:#888;padding:20px">No transactions yet</td></tr>';
 
-/* ---------- Transactions ---------- */
-PAGES.transactions = async function(){
-  const m = document.getElementById('mainContent');
-  m.innerHTML = `
-    <div class="page-head">
-      <div><h2>💰 Transactions</h2><p>All financial movements</p></div>
-      <div><button class="btn btn-gold btn-sm" onclick="navigate('add_data')">+ Add New</button></div>
-    </div>
-    <div class="panel">
-      <div class="tabs" id="txTabs">
-        <button class="active" data-f="all">All</button>
-        <button data-f="income">Income</button>
-        <button data-f="sale">Sales</button>
-        <button data-f="expense">Expense</button>
-        <button data-f="purchase">Purchases</button>
-        <button data-f="stock_in">Stock In</button>
-        <button data-f="stock_out">Stock Out</button>
-      </div>
-      <div class="table-wrap"><table id="txTable"><thead><tr><th>ID</th><th>Date</th><th>Type</th><th>Category</th><th>Description</th><th>Amount (KES)</th><th>By</th></tr></thead><tbody><tr><td colspan="7" class="muted" style="text-align:center;padding:20px">Loading...</td></tr></tbody></table></div>
-    </div>
-  `;
-  const data = await api('/api/transactions');
-  function render(filter){
-    const list = filter==='all' ? data.transactions : data.transactions.filter(t=>t.type===filter);
-    document.querySelector('#txTable tbody').innerHTML = list.length ? list.map(t=>`
-      <tr><td>#${t.id}</td><td>${new Date(t.created_at).toLocaleString()}</td>
-      <td><span class="badge ${t.type}">${t.type}</span></td>
-      <td>${t.category||'-'}</td><td>${t.description||'-'}</td>
-      <td><b>${fmt(t.amount)}</b></td><td class="muted">${t.created_by} (${t.created_role})</td></tr>
-    `).join('') : '<tr><td colspan="7" class="muted" style="text-align:center;padding:30px">No transactions yet</td></tr>';
-  }
-  render('all');
-  document.querySelectorAll('#txTabs button').forEach(b=>b.onclick=()=>{
-    document.querySelectorAll('#txTabs button').forEach(x=>x.classList.remove('active'));
-    b.classList.add('active'); render(b.dataset.f);
-  });
-};
-
-/* ---------- Add / Scan Data ---------- */
-PAGES.add_data = async function(){
-  const m = document.getElementById('mainContent');
-  m.innerHTML = `
-    <div class="page-head"><div><h2>📷 Add / Scan Data</h2><p>Scan receipts with your camera, upload images, or enter manually</p></div></div>
-
-    <div class="panel">
-      <div class="tabs" id="addTabs">
-        <button class="active" data-t="scan">📸 Scan Receipt (OCR)</button>
-        <button data-t="manual">✍️ Manual Entry</button>
-        <button data-t="voice">🎙️ Voice Input</button>
-      </div>
-
-      <div id="paneScan">
-        <div class="scan-zone" onclick="document.getElementById('scanInput').click()">
-          <div class="ico">📸</div>
-          <p><b>Tap to scan or upload a receipt photo</b></p>
-          <p class="muted" style="font-size:13px;margin-top:6px">We extract text automatically using on-device AI (Tesseract.js)</p>
-        </div>
-        <input type="file" id="scanInput" accept="image/*" capture="environment" style="display:none" onchange="handleScan(this)">
-        <div id="scanResult"></div>
-      </div>
-
-      <div id="paneManual" style="display:none">
-        <form id="manualForm">
-          <div class="row">
-            <div class="form-group"><label>Type</label>
-              <select id="mfType" class="form-control" required>
-                <option value="sale">Sale (Income)</option>
-                <option value="income">Other Income</option>
-                <option value="expense">Expense</option>
-                <option value="purchase">Purchase</option>
-                <option value="stock_in">Stock In</option>
-                <option value="stock_out">Stock Out</option>
-              </select>
-            </div>
-            <div class="form-group"><label>Category</label>
-              <input id="mfCat" class="form-control" placeholder="e.g. Drinks, Food, Cleaning">
-            </div>
-          </div>
-          <div class="form-group"><label>Description</label>
-            <input id="mfDesc" class="form-control" placeholder="Brief description">
-          </div>
-          <div class="row">
-            <div class="form-group"><label>Amount (KES)</label>
-              <input id="mfAmt" type="number" step="0.01" class="form-control" required>
-            </div>
-            <div class="form-group"><label>Quantity</label>
-              <input id="mfQty" type="number" step="0.01" class="form-control" value="1">
-            </div>
-            <div class="form-group"><label>Unit</label>
-              <input id="mfUnit" class="form-control" placeholder="pc / kg / ltr">
-            </div>
-          </div>
-          <div class="form-group"><label>Reference / Invoice No.</label>
-            <input id="mfRef" class="form-control" placeholder="Optional">
-          </div>
-          <button type="submit" class="btn btn-gold">💾 Save Transaction</button>
-        </form>
-      </div>
-
-      <div id="paneVoice" style="display:none">
-        <div class="scan-zone" onclick="startVoice()">
-          <div class="ico">🎙️</div>
-          <p><b>Tap to speak</b></p>
-          <p class="muted" style="font-size:13px">e.g. "Sale of two beers 500 shillings"</p>
-        </div>
-        <div id="voiceResult"></div>
-      </div>
-    </div>
-  `;
-
-  document.querySelectorAll('#addTabs button').forEach(b=>b.onclick=()=>{
-    document.querySelectorAll('#addTabs button').forEach(x=>x.classList.remove('active'));
-    b.classList.add('active');
-    ['scan','manual','voice'].forEach(t=>document.getElementById('pane'+t.charAt(0).toUpperCase()+t.slice(1)).style.display = t===b.dataset.t?'':'none');
-  });
-
-  document.getElementById('manualForm').onsubmit = async e=>{
-    e.preventDefault();
-    try{
-      await api('/api/transactions', { method:'POST', body: JSON.stringify({
-        type: mfType.value, category: mfCat.value, description: mfDesc.value,
-        amount: mfAmt.value, quantity: mfQty.value, unit: mfUnit.value, reference: mfRef.value
-      })});
-      showToast('✅ Transaction saved');
-      e.target.reset();
-    }catch(err){ showToast(err.message); }
-  };
-};
-
-async function handleScan(input){
-  const file = input.files[0]; if (!file) return;
-  const result = document.getElementById('scanResult');
-  result.innerHTML = `<div class="panel"><p>🔍 Scanning... <span class="spinner"></span></p><div id="scanProgress" class="muted" style="font-size:12px;margin-top:8px"></div></div>`;
-  try{
-    const reader = new FileReader();
-    reader.onload = async ev=>{
-      const dataUrl = ev.target.result;
-      const { data:{ text } } = await Tesseract.recognize(dataUrl, 'eng', {
-        logger: msg => { document.getElementById('scanProgress').textContent = `${msg.status} ${(msg.progress*100).toFixed(0)}%`; }
+    const labels = daily.map(d => d.day).reverse();
+    const incomeData = daily.map(d => d.income).reverse();
+    const expenseData = daily.map(d => d.expense + d.loss).reverse();
+    if (labels.length) {
+      new Chart($('chartDaily'), {
+        type:'line',
+        data:{ labels, datasets:[
+          { label:'Income', data:incomeData, borderColor:'#4caf50', backgroundColor:'rgba(76,175,80,.2)', tension:.35, fill:true },
+          { label:'Expense + Loss', data:expenseData, borderColor:'#e53935', backgroundColor:'rgba(229,57,53,.15)', tension:.35, fill:true }
+        ]},
+        options:{ responsive:true,
+          plugins:{ legend:{ position:'bottom', labels:{color:'#e8d9a8'} } },
+          scales:{
+            x:{ ticks:{color:'#a88a4d'}, grid:{color:'rgba(212,164,55,.1)'} },
+            y:{ ticks:{color:'#a88a4d'}, grid:{color:'rgba(212,164,55,.1)'} }
+          }
+        }
       });
-      // Extract amount candidates
-      const amounts = (text.match(/(?:KES|Ksh|\$)?\s*([0-9]{1,3}(?:[,.][0-9]{3})*(?:\.[0-9]{1,2})?)/gi) || [])
-        .map(s=>parseFloat(s.replace(/[^\d.]/g,''))).filter(n=>!isNaN(n) && n>0).sort((a,b)=>b-a);
-      const guessedAmount = amounts[0] || '';
-      const firstLine = text.split('\n').map(s=>s.trim()).filter(Boolean)[0] || '';
+    } else {
+      $('chartDaily').parentElement.innerHTML += '<p style="text-align:center;color:#a88a4d;padding:20px">No data yet — add transactions to see the chart.</p>';
+    }
+  } catch (e) { console.error(e); toast('Failed to load dashboard: ' + e.message, 'err'); }
+};
 
-      result.innerHTML = `
-        <div class="panel">
-          <h3>✅ Scan Complete</h3>
-          <p class="muted" style="font-size:13px;margin-bottom:10px">Review and edit the extracted data below, then save.</p>
-          <div class="row">
-            <img src="${dataUrl}" style="max-width:160px;border-radius:10px;border:1px solid rgba(212,175,55,0.3)">
-            <div style="flex:2">
-              <details><summary class="muted" style="cursor:pointer;font-size:13px">📄 View extracted text</summary>
-                <pre style="background:rgba(0,0,0,0.3);padding:10px;border-radius:8px;font-size:11px;max-height:160px;overflow:auto;margin-top:8px;white-space:pre-wrap">${escapeHtml(text)}</pre>
-              </details>
-            </div>
+function kpi(label, value, delta, cls = '') {
+  return `<div class="kpi ${cls}"><div class="label">${label}</div><div class="value">${value}</div><div class="delta">${delta}</div></div>`;
+}
+
+/* ---------- USERS (admin) ---------- */
+PAGES.users = async () => {
+  $('pageContent').innerHTML = `
+    <h2 class="section-title">👥 User Management</h2>
+    <div class="section-sub">Create new staff accounts, reset passwords, and manage all panel users.</div>
+
+    <div class="card">
+      <h3>➕ Create a new user account</h3>
+      <div class="row">
+        <div class="field"><label>Username</label><input id="newUser" placeholder="e.g. john.k" /></div>
+        <div class="field"><label>Full name</label><input id="newName" placeholder="Full name" /></div>
+        <div class="field"><label>Role</label>
+          <select id="newRole">
+            <option value="cost_controller">Cost Controller</option>
+            <option value="procurement">Procurement</option>
+            <option value="storekeeper">Storekeeper</option>
+            <option value="accounts">Accounts</option>
+            <option value="finance_manager">Finance Manager</option>
+            <option value="supervisor">Supervisor</option>
+            <option value="hr">HR</option>
+            <option value="director">Director</option>
+            <option value="auditor">Auditor</option>
+          </select>
+        </div>
+        <div class="field"><label>Password</label><input id="newPass" placeholder="Min 4 chars" /></div>
+        <button class="btn btn-ok" onclick="createUser()">➕ Create</button>
+      </div>
+      <div id="createMsg" style="margin-top:8px"></div>
+    </div>
+
+    <div class="card">
+      <h3>🔑 Reset a user's password</h3>
+      <div class="row">
+        <div class="field"><label>User</label><select id="resetUser"></select></div>
+        <div class="field"><label>New password</label><input id="resetPass" placeholder="New password" /></div>
+        <button class="btn" onclick="resetPwd()">Reset Password</button>
+      </div>
+      <div id="resetMsg" style="margin-top:8px"></div>
+    </div>
+
+    <div class="card">
+      <h3>👥 All accounts</h3>
+      <div class="tbl-wrap"><table class="tbl" id="usersTbl"><thead><tr><th>ID</th><th>Username</th><th>Role</th><th>Full name</th><th>Created</th><th></th></tr></thead><tbody></tbody></table></div>
+    </div>`;
+  refreshUsers();
+};
+
+async function refreshUsers() {
+  const users = await api('/api/users');
+  const sel = $('resetUser');
+  sel.innerHTML = users.map(u => `<option value="${u.username}">${u.username} (${u.role})</option>`).join('');
+  document.querySelector('#usersTbl tbody').innerHTML = users.map(u => `
+    <tr>
+      <td>${u.id}</td>
+      <td>${esc(u.username)}</td>
+      <td><span class="badge in">${esc(u.role)}</span></td>
+      <td>${esc(u.full_name)}</td>
+      <td>${esc((u.created_at||'').slice(0,10))}</td>
+      <td>${u.username !== 'admin' ? `<button class="btn btn-sm btn-danger" onclick="delUser(${u.id})">🗑</button>` : '<em style="color:#a88a4d">primary</em>'}</td>
+    </tr>`).join('');
+}
+
+async function createUser() {
+  const username = $('newUser').value.trim();
+  const fullName = $('newName').value.trim();
+  const role = $('newRole').value;
+  const password = $('newPass').value;
+  if (!username || !password || password.length < 4) return $('createMsg').innerHTML = '<div class="alert err">Username and password (4+ chars) required.</div>';
+  try {
+    await api('/api/admin/create-user', { method:'POST', body: JSON.stringify({ username, password, role, fullName })});
+    $('createMsg').innerHTML = '<div class="alert ok">✓ User created. They can now log in with the password you set.</div>';
+    $('newUser').value=''; $('newName').value=''; $('newPass').value='';
+    refreshUsers();
+    toast('User created: ' + username);
+  } catch (e) { $('createMsg').innerHTML = '<div class="alert err">' + e.message + '</div>'; }
+}
+
+async function resetPwd() {
+  const username = $('resetUser').value;
+  const newPassword = $('resetPass').value;
+  if (!newPassword || newPassword.length < 4) return $('resetMsg').innerHTML = '<div class="alert err">Password must be 4+ characters.</div>';
+  try {
+    await api('/api/admin/reset-password', { method: 'POST', body: JSON.stringify({ username, newPassword }) });
+    $('resetMsg').innerHTML = '<div class="alert ok">✓ Password reset for ' + username + '. Tell them their new password: <strong>' + esc(newPassword) + '</strong></div>';
+    $('resetPass').value = '';
+    toast('Password reset for ' + username);
+  } catch (e) { $('resetMsg').innerHTML = '<div class="alert err">' + e.message + '</div>'; }
+}
+
+async function delUser(id) {
+  if (!confirm('Permanently delete this user?')) return;
+  try { await api('/api/admin/users/' + id, { method: 'DELETE' }); refreshUsers(); toast('User deleted'); }
+  catch (e) { toast(e.message, 'err'); }
+}
+
+/* ---------- RECORDS ---------- */
+PAGES.records = async () => {
+  $('pageContent').innerHTML = `
+    <h2 class="section-title">📋 Records</h2>
+    <div class="section-sub">Add data manually or scan an image (OCR). All data is stored permanently.</div>
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab(this,'manualR')">✍️ Manual Entry</button>
+      <button class="tab" onclick="switchTab(this,'scanR')">📷 Scan Image (OCR)</button>
+    </div>
+    <div id="manualR" class="card">
+      <h3>Add a record</h3>
+      <div class="row">
+        <div class="field"><label>Category</label>
+          <select id="rCat"><option>general</option><option>purchase</option><option>sale</option><option>expense</option><option>maintenance</option><option>damage</option><option>other</option></select>
+        </div>
+        <div class="field"><label>Title</label><input id="rTitle" placeholder="e.g. Office supplies" /></div>
+        <div class="field"><label>Amount (KES)</label><input id="rAmt" type="number" step="0.01" placeholder="0.00" /></div>
+      </div>
+      <div class="field" style="margin-top:10px"><label>Description</label><textarea id="rDesc" rows="2"></textarea></div>
+      <button class="btn" style="margin-top:10px" onclick="addRecord('manual')">💾 Save Record</button>
+      <div id="rMsg" style="margin-top:8px"></div>
+    </div>
+    <div id="scanR" class="card hidden">
+      <h3>📷 Scan a receipt or document</h3>
+      <p style="font-size:13px;color:#a88a4d;margin-bottom:10px">Take a picture or upload an image. We'll extract the text automatically.</p>
+      <label class="scan-zone" for="ocrFile">
+        <div class="ico">📷</div>
+        <div style="font-weight:600;color:var(--gold-glow)">Tap to take photo or upload image</div>
+        <div style="font-size:12px;color:#a88a4d;margin-top:4px">JPG, PNG up to 10 MB</div>
+        <input type="file" id="ocrFile" accept="image/*" capture="environment" style="display:none" onchange="runOCR(event)" />
+      </label>
+      <div class="scan-progress" id="ocrProg"><div></div></div>
+      <div id="ocrPreview" style="margin-top:12px"></div>
+    </div>
+    <div class="card">
+      <h3>📋 All records</h3>
+      <div class="tbl-wrap"><table class="tbl" id="recTbl"><thead><tr><th>ID</th><th>Category</th><th>Title</th><th>Amount</th><th>Source</th><th>By</th><th>When</th>${(ME.role==='admin'||ME.role==='director')?'<th></th>':''}</tr></thead><tbody></tbody></table></div>
+    </div>`;
+  refreshRecords();
+};
+
+function switchTab(btn, showId) {
+  btn.parentElement.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  ['manualR','scanR','invManual','invScan'].forEach(id => $(id) && $(id).classList.toggle('hidden', id !== showId));
+}
+
+async function addRecord(source) {
+  const body = {
+    category: $('rCat').value, title: $('rTitle').value,
+    description: $('rDesc').value, amount: $('rAmt').value || 0, source
+  };
+  if (!body.title) return $('rMsg').innerHTML = '<div class="alert err">Title required.</div>';
+  try {
+    await api('/api/records', { method:'POST', body: JSON.stringify(body) });
+    $('rMsg').innerHTML = '<div class="alert ok">✓ Saved.</div>';
+    $('rTitle').value=''; $('rAmt').value=''; $('rDesc').value='';
+    refreshRecords(); toast('Record saved');
+  } catch (e) { $('rMsg').innerHTML = '<div class="alert err">'+e.message+'</div>'; }
+}
+
+async function refreshRecords() {
+  const rows = await api('/api/records');
+  document.querySelector('#recTbl tbody').innerHTML = rows.map(r => `
+    <tr><td>${r.id}</td><td>${esc(r.category)}</td><td>${esc(r.title)}</td>
+        <td>${fmt(r.amount)}</td><td>${esc(r.source)}</td><td>${esc(r.created_by)}</td>
+        <td>${esc((r.created_at||'').slice(0,16))}</td>
+        ${(ME.role==='admin'||ME.role==='director')?`<td><button class="btn btn-sm btn-danger" onclick="delRec(${r.id})">🗑</button></td>`:''}
+    </tr>`).join('') || '<tr><td colspan="8" style="text-align:center;color:#888;padding:20px">No records yet</td></tr>';
+}
+
+async function delRec(id) {
+  if (!confirm('Delete record #' + id + '?')) return;
+  await api('/api/records/'+id, { method:'DELETE' }); refreshRecords(); toast('Deleted');
+}
+
+async function runOCR(ev) {
+  const f = ev.target.files[0]; if (!f) return;
+  $('ocrProg').classList.add('show');
+  const bar = $('ocrProg').querySelector('div');
+  $('ocrPreview').innerHTML = '<div style="font-size:13px;color:#a88a4d">Reading image…</div>';
+  try {
+    const { data } = await Tesseract.recognize(f, 'eng', { logger: m => { if(m.progress) bar.style.width = (m.progress*100).toFixed(0)+'%'; } });
+    const txt = (data.text || '').trim();
+    const m = txt.match(/(\d{1,3}(?:[,.]\d{3})*(?:\.\d{1,2})?|\d+\.\d{1,2})/);
+    const amount = m ? Number(m[0].replace(/,/g,'')) : 0;
+    const titleLine = txt.split('\n').find(l => l.trim().length > 3) || 'Scanned document';
+    $('ocrPreview').innerHTML = `
+      <div class="card" style="margin:0">
+        <h3>🔎 Extracted text</h3>
+        <pre style="white-space:pre-wrap;font-size:12px;padding:10px;border-radius:8px;max-height:180px;overflow:auto;border:1px solid var(--line)">${esc(txt)}</pre>
+        <div class="row" style="margin-top:10px">
+          <div class="field"><label>Title</label><input id="ocrTitle" value="${esc(titleLine.slice(0,80))}"/></div>
+          <div class="field"><label>Amount (auto)</label><input id="ocrAmt" value="${amount}" type="number" step="0.01"/></div>
+          <div class="field"><label>Category</label>
+            <select id="ocrCat"><option>purchase</option><option>expense</option><option>sale</option><option>general</option></select>
           </div>
-          <hr class="gold-sep">
-          <form id="scanForm">
-            <div class="row">
-              <div class="form-group"><label>Type</label>
-                <select id="sfType" class="form-control"><option value="expense">Expense</option><option value="purchase">Purchase</option><option value="sale">Sale</option><option value="income">Income</option></select></div>
-              <div class="form-group"><label>Category</label><input id="sfCat" class="form-control" value=""></div>
-            </div>
-            <div class="form-group"><label>Description</label><input id="sfDesc" class="form-control" value="${escapeHtml(firstLine).slice(0,120)}"></div>
-            <div class="form-group"><label>Amount (KES)</label><input id="sfAmt" type="number" step="0.01" class="form-control" value="${guessedAmount}"></div>
-            <button type="submit" class="btn btn-gold">💾 Save Scanned Transaction</button>
-          </form>
         </div>
-      `;
-      document.getElementById('scanForm').onsubmit = async ev=>{
-        ev.preventDefault();
-        try{
-          await api('/api/transactions',{method:'POST',body:JSON.stringify({
-            type:sfType.value, category:sfCat.value, description:sfDesc.value,
-            amount:sfAmt.value, attachment:dataUrl, reference:'SCAN-'+Date.now()
-          })});
-          showToast('✅ Scanned data saved');
-          result.innerHTML = '';
-          input.value = '';
-        }catch(err){ showToast(err.message); }
-      };
-    };
-    reader.readAsDataURL(file);
-  }catch(err){ result.innerHTML = `<div class="alert alert-error">Scan failed: ${err.message}</div>`; }
+        <button class="btn" style="margin-top:10px" onclick='saveOCR(${JSON.stringify(txt)})'>💾 Save scanned record</button>
+      </div>`;
+  } catch (e) {
+    $('ocrPreview').innerHTML = '<div class="alert err">OCR failed: '+e.message+'</div>';
+  } finally { setTimeout(()=>$('ocrProg').classList.remove('show'), 600); }
 }
 
-function startVoice(){
-  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SR){ showToast('Voice input not supported on this browser'); return; }
-  const rec = new SR(); rec.lang='en-US'; rec.interimResults=false;
-  document.getElementById('voiceResult').innerHTML = '<p class="muted">🎙️ Listening...</p>';
-  rec.onresult = e=>{
-    const text = e.results[0][0].transcript;
-    const amt = (text.match(/(\d+(\.\d+)?)/)||[])[1] || '';
-    document.getElementById('voiceResult').innerHTML = `
-      <div class="panel"><h3>🎙️ Heard: <em>"${text}"</em></h3>
-      <form id="voiceForm">
-        <div class="row">
-          <div class="form-group"><label>Type</label><select id="vfType" class="form-control"><option value="sale">Sale</option><option value="expense">Expense</option><option value="purchase">Purchase</option><option value="income">Income</option></select></div>
-          <div class="form-group"><label>Amount</label><input id="vfAmt" type="number" step="0.01" class="form-control" value="${amt}"></div>
+async function saveOCR(rawText) {
+  await api('/api/records', { method:'POST', body: JSON.stringify({
+    category: $('ocrCat').value, title: $('ocrTitle').value,
+    description: rawText.slice(0,500), amount: $('ocrAmt').value || 0, source:'scan'
+  })});
+  toast('Scanned record saved!'); refreshRecords();
+}
+
+/* ---------- TRANSACTIONS ---------- */
+PAGES.transactions = async () => {
+  $('pageContent').innerHTML = `
+    <h2 class="section-title">💰 Transactions</h2>
+    <div class="section-sub">Income, expenses, losses — drives the P&L report.</div>
+    <div class="card">
+      <h3>Add transaction</h3>
+      <div class="row">
+        <div class="field"><label>Type</label>
+          <select id="txType"><option value="income">Income</option><option value="sale">Sale</option><option value="expense">Expense</option><option value="purchase">Purchase</option><option value="loss">Loss</option></select>
         </div>
-        <div class="form-group"><label>Description</label><input id="vfDesc" class="form-control" value="${escapeHtml(text)}"></div>
-        <button type="submit" class="btn btn-gold">💾 Save</button>
-      </form></div>`;
-    document.getElementById('voiceForm').onsubmit = async ev=>{
-      ev.preventDefault();
-      await api('/api/transactions',{method:'POST',body:JSON.stringify({type:vfType.value,description:vfDesc.value,amount:vfAmt.value,reference:'VOICE-'+Date.now()})});
-      showToast('✅ Voice transaction saved');
-      document.getElementById('voiceResult').innerHTML='';
-    };
-  };
-  rec.onerror = ()=>{ document.getElementById('voiceResult').innerHTML='<div class="alert alert-error">Voice error. Try again.</div>'; };
-  rec.start();
-}
-
-/* ---------- Stock ---------- */
-PAGES.stock = async function(){
-  const m = document.getElementById('mainContent');
-  m.innerHTML = `
-    <div class="page-head"><div><h2>📦 Stock & Inventory</h2><p>Real-time inventory tracking</p></div>
-      <button class="btn btn-gold btn-sm" onclick="openStockModal()">+ Add Item</button></div>
-    <div class="panel"><div class="table-wrap"><table><thead><tr><th>Name</th><th>Category</th><th>Qty</th><th>Unit</th><th>Unit Price</th><th>Reorder Lvl</th><th>Status</th><th></th></tr></thead><tbody id="stockTbody"><tr><td colspan="8" class="muted" style="text-align:center;padding:20px">Loading...</td></tr></tbody></table></div></div>
-  `;
-  const d = await api('/api/stock');
-  document.getElementById('stockTbody').innerHTML = d.items.length ? d.items.map(i=>`
-    <tr><td><b>${i.name}</b></td><td>${i.category||'-'}</td><td>${i.quantity}</td><td>${i.unit||'-'}</td>
-    <td>${fmt(i.unit_price)}</td><td>${i.reorder_level}</td>
-    <td>${i.quantity<=i.reorder_level?'<span class="badge expense">LOW</span>':'<span class="badge income">OK</span>'}</td>
-    <td><button class="btn btn-sm btn-ghost" onclick="deleteStock(${i.id})">🗑️</button></td></tr>
-  `).join('') : '<tr><td colspan="8" class="muted" style="text-align:center;padding:30px">No items yet</td></tr>';
-};
-async function deleteStock(id){
-  if (!confirm('Delete this item?')) return;
-  await api('/api/stock/'+id,{method:'DELETE'}); navigate('stock');
-}
-function openStockModal(){
-  showModal(`
-    <h3>📦 Add Stock Item</h3>
-    <form id="stockForm">
-      <div class="form-group"><label>Name</label><input id="skName" class="form-control" required></div>
-      <div class="row">
-        <div class="form-group"><label>Category</label><input id="skCat" class="form-control"></div>
-        <div class="form-group"><label>Unit</label><input id="skUnit" class="form-control" placeholder="pc/kg/ltr"></div>
+        <div class="field"><label>Category</label><input id="txCat" placeholder="e.g. food, rent" /></div>
+        <div class="field"><label>Amount (KES)</label><input id="txAmt" type="number" step="0.01" /></div>
+        <div class="field"><label>Reference</label><input id="txRef" placeholder="Invoice / ref no." /></div>
       </div>
-      <div class="row">
-        <div class="form-group"><label>Quantity</label><input id="skQty" type="number" step="0.01" class="form-control" value="0"></div>
-        <div class="form-group"><label>Unit Price</label><input id="skPrice" type="number" step="0.01" class="form-control" value="0"></div>
-        <div class="form-group"><label>Reorder Level</label><input id="skReorder" type="number" step="0.01" class="form-control" value="0"></div>
-      </div>
-      <button type="submit" class="btn btn-gold">Save Item</button>
-    </form>
-  `);
-  document.getElementById('stockForm').onsubmit = async e=>{
-    e.preventDefault();
-    await api('/api/stock',{method:'POST',body:JSON.stringify({
-      name:skName.value,category:skCat.value,unit:skUnit.value,
-      quantity:skQty.value,unit_price:skPrice.value,reorder_level:skReorder.value
-    })});
-    closeModal(); navigate('stock');
-  };
-}
-
-/* ---------- Staff (HR) ---------- */
-PAGES.staff = async function(){
-  const m = document.getElementById('mainContent');
-  m.innerHTML = `
-    <div class="page-head"><div><h2>👥 Staff Records (HR)</h2><p>All employees with full details</p></div>
-      <button class="btn btn-gold btn-sm" onclick="openStaffModal()">+ Add Staff</button></div>
-    <div class="panel"><div class="table-wrap"><table><thead><tr><th>Name</th><th>Position</th><th>Phone</th><th>Email</th><th>ID</th><th>Salary</th><th>Status</th><th></th></tr></thead><tbody id="staffTb"><tr><td colspan="8" class="muted" style="text-align:center;padding:20px">Loading...</td></tr></tbody></table></div></div>
-  `;
-  const d = await api('/api/staff');
-  document.getElementById('staffTb').innerHTML = d.staff.length ? d.staff.map(s=>`
-    <tr><td><b>${s.name}</b></td><td>${s.position||'-'}</td><td>${s.phone||'-'}</td><td>${s.email||'-'}</td><td>${s.national_id||'-'}</td>
-    <td>KES ${fmt(s.salary)}</td><td><span class="badge ${s.status==='active'?'income':'expense'}">${s.status}</span></td>
-    <td><button class="btn btn-sm btn-ghost" onclick="deleteStaff(${s.id})">🗑️</button></td></tr>
-  `).join('') : '<tr><td colspan="8" class="muted" style="text-align:center;padding:30px">No staff yet</td></tr>';
-};
-async function deleteStaff(id){ if(!confirm('Delete this staff record?'))return; await api('/api/staff/'+id,{method:'DELETE'}); navigate('staff'); }
-function openStaffModal(){
-  showModal(`
-    <h3>👥 Add Staff Member</h3>
-    <form id="staffForm">
-      <div class="row">
-        <div class="form-group"><label>Full Name</label><input id="stName" class="form-control" required></div>
-        <div class="form-group"><label>Position</label><input id="stPos" class="form-control"></div>
-      </div>
-      <div class="row">
-        <div class="form-group"><label>Phone</label><input id="stPhone" class="form-control"></div>
-        <div class="form-group"><label>Email</label><input id="stEmail" type="email" class="form-control"></div>
-      </div>
-      <div class="row">
-        <div class="form-group"><label>National ID</label><input id="stId" class="form-control"></div>
-        <div class="form-group"><label>Salary (KES)</label><input id="stSal" type="number" step="0.01" class="form-control" value="0"></div>
-      </div>
-      <button type="submit" class="btn btn-gold">Save Staff</button>
-    </form>
-  `);
-  document.getElementById('staffForm').onsubmit = async e=>{
-    e.preventDefault();
-    await api('/api/staff',{method:'POST',body:JSON.stringify({
-      name:stName.value,position:stPos.value,phone:stPhone.value,email:stEmail.value,
-      national_id:stId.value,salary:stSal.value
-    })});
-    closeModal(); navigate('staff');
-  };
-}
-
-/* ---------- Conduct Reports ---------- */
-PAGES.conduct = async function(){
-  const m = document.getElementById('mainContent');
-  m.innerHTML = `
-    <div class="page-head"><div><h2>📋 Conduct & Behavior Reports</h2><p>HR disciplinary & commendation records</p></div>
-      <button class="btn btn-gold btn-sm" onclick="openConductModal()">+ New Report</button></div>
-    <div class="panel"><div class="table-wrap"><table><thead><tr><th>Date</th><th>Staff</th><th>Type</th><th>Severity</th><th>Description</th><th>Action Taken</th><th>By</th></tr></thead><tbody id="conTb"></tbody></table></div></div>
-  `;
-  const d = await api('/api/conduct');
-  document.getElementById('conTb').innerHTML = d.reports.length ? d.reports.map(r=>`
-    <tr><td>${new Date(r.created_at).toLocaleDateString()}</td><td><b>${r.staff_name}</b></td>
-    <td><span class="badge ${r.report_type==='commendation'?'income':'expense'}">${r.report_type}</span></td>
-    <td>${r.severity}</td><td>${r.description||'-'}</td><td>${r.action_taken||'-'}</td><td class="muted">${r.created_by}</td></tr>
-  `).join('') : '<tr><td colspan="7" class="muted" style="text-align:center;padding:30px">No reports yet</td></tr>';
-};
-function openConductModal(){
-  showModal(`
-    <h3>📋 New Conduct Report</h3>
-    <form id="conForm">
-      <div class="form-group"><label>Staff Name</label><input id="cnName" class="form-control" required></div>
-      <div class="row">
-        <div class="form-group"><label>Report Type</label><select id="cnType" class="form-control">
-          <option value="behavior">Behavior Issue</option>
-          <option value="code_of_conduct">Code of Conduct Violation</option>
-          <option value="commendation">Commendation</option>
-        </select></div>
-        <div class="form-group"><label>Severity</label><select id="cnSev" class="form-control">
-          <option>low</option><option>medium</option><option>high</option>
-        </select></div>
-      </div>
-      <div class="form-group"><label>Description</label><textarea id="cnDesc" class="form-control" rows="3"></textarea></div>
-      <div class="form-group"><label>Action Taken</label><input id="cnAct" class="form-control" placeholder="e.g. Verbal warning, Suspension..."></div>
-      <button type="submit" class="btn btn-gold">Save Report</button>
-    </form>
-  `);
-  document.getElementById('conForm').onsubmit = async e=>{
-    e.preventDefault();
-    await api('/api/conduct',{method:'POST',body:JSON.stringify({
-      staff_name:cnName.value,report_type:cnType.value,severity:cnSev.value,
-      description:cnDesc.value,action_taken:cnAct.value
-    })});
-    closeModal(); navigate('conduct');
-  };
-}
-
-/* ---------- Reports ---------- */
-PAGES.reports = async function(){
-  const m = document.getElementById('mainContent');
-  m.innerHTML = `
-    <div class="page-head"><div><h2>📈 Reports & Analytics</h2><p>Profit, loss, interest and daily breakdown</p></div></div>
-    <div class="cards-grid" id="repCards"></div>
-    <div class="panel"><h3>📅 Daily Performance (last 30 days)</h3><div class="table-wrap"><table><thead><tr><th>Date</th><th>Income</th><th>Expense</th><th>Net</th></tr></thead><tbody id="dailyTb"></tbody></table></div></div>
-  `;
-  const s = await api('/api/reports/summary');
-  document.getElementById('repCards').innerHTML = `
-    <div class="stat-card income"><div class="label">Income</div><div class="value">KES ${fmt(s.income)}</div></div>
-    <div class="stat-card expense"><div class="label">Expense</div><div class="value">KES ${fmt(s.expense)}</div></div>
-    <div class="stat-card profit"><div class="label">${s.profit>=0?'Profit':'Loss'}</div><div class="value">KES ${fmt(Math.abs(s.profit))}</div><div class="sub">Margin ${s.margin.toFixed(1)}%</div></div>
-    <div class="stat-card"><div class="label">Interest 5%</div><div class="value">KES ${fmt(s.interest)}</div></div>
-  `;
-  const d = await api('/api/reports/daily');
-  document.getElementById('dailyTb').innerHTML = d.days.map(x=>{
-    const net = (x.income||0)-(x.expense||0);
-    return `<tr><td>${x.day}</td><td class="text-success">${fmt(x.income)}</td><td class="text-danger">${fmt(x.expense)}</td><td><b class="${net>=0?'text-success':'text-danger'}">${fmt(net)}</b></td></tr>`;
-  }).join('') || '<tr><td colspan="4" class="muted" style="text-align:center">No data</td></tr>';
-};
-
-/* ---------- Receipt PDF ---------- */
-PAGES.receipt = async function(){
-  const m = document.getElementById('mainContent');
-  m.innerHTML = `
-    <div class="page-head"><div><h2>🧾 Receipt / Report PDF</h2><p>Generate printable receipts and download reports</p></div></div>
-    <div class="panel">
-      <p>Choose a report period:</p>
-      <div class="row" style="margin-top:14px">
-        <button class="btn btn-gold" onclick="genPDF('today')">📄 Today</button>
-        <button class="btn btn-gold" onclick="genPDF('week')">📄 Last 7 Days</button>
-        <button class="btn btn-gold" onclick="genPDF('month')">📄 Last 30 Days</button>
-        <button class="btn btn-gold" onclick="genPDF('all')">📄 All Time</button>
-      </div>
-      <hr class="gold-sep">
-      <p class="muted" style="font-size:13px">The generated PDF looks like a printable receipt and includes income, expense, profit/loss, interest, and a transaction list. You can print it directly from your browser after opening.</p>
+      <div class="field" style="margin-top:10px"><label>Description</label><input id="txDesc" /></div>
+      <button class="btn" style="margin-top:10px" onclick="addTx()">💾 Save</button>
     </div>
-  `;
+    <div class="card">
+      <h3>Recent transactions</h3>
+      <div class="tbl-wrap"><table class="tbl" id="txTbl"><thead><tr><th>ID</th><th>Type</th><th>Cat</th><th>Amount</th><th>Ref</th><th>Description</th><th>By</th><th>When</th>${(ME.role==='admin'||ME.role==='director'||ME.role==='finance_manager')?'<th></th>':''}</tr></thead><tbody></tbody></table></div>
+    </div>`;
+  refreshTx();
 };
-async function genPDF(period){
-  const today = new Date();
-  let from = null;
-  if (period==='today') from = new Date(today.getFullYear(),today.getMonth(),today.getDate()).toISOString();
-  if (period==='week')  from = new Date(today.getTime()-7*86400000).toISOString();
-  if (period==='month') from = new Date(today.getTime()-30*86400000).toISOString();
-  const q = from ? '?from='+encodeURIComponent(from) : '';
-  const s = await api('/api/reports/summary'+q);
-  const tx = await api('/api/transactions'+q);
 
+async function addTx() {
+  if (!$('txAmt').value) return toast('Amount required', 'err');
+  await api('/api/transactions', { method:'POST', body: JSON.stringify({
+    type:$('txType').value, category:$('txCat').value, amount:$('txAmt').value,
+    reference:$('txRef').value, description:$('txDesc').value
+  })});
+  $('txAmt').value=''; $('txDesc').value=''; $('txRef').value=''; refreshTx(); toast('Transaction saved');
+}
+
+async function refreshTx() {
+  const rows = await api('/api/transactions');
+  document.querySelector('#txTbl tbody').innerHTML = rows.map(t => `
+    <tr><td>${t.id}</td>
+        <td><span class="badge ${t.type==='income'||t.type==='sale'?'in':t.type==='loss'?'ls':'ex'}">${esc(t.type)}</span></td>
+        <td>${esc(t.category)}</td><td>${fmt(t.amount)}</td>
+        <td>${esc(t.reference)}</td><td>${esc(t.description)}</td>
+        <td>${esc(t.created_by)}</td><td>${esc((t.created_at||'').slice(0,16))}</td>
+        ${(ME.role==='admin'||ME.role==='director'||ME.role==='finance_manager')?`<td><button class="btn btn-sm btn-danger" onclick="delTx(${t.id})">🗑</button></td>`:''}
+    </tr>`).join('') || '<tr><td colspan="9" style="text-align:center;color:#888;padding:20px">No transactions yet</td></tr>';
+}
+
+async function delTx(id) { if(!confirm('Delete?'))return; await api('/api/transactions/'+id,{method:'DELETE'}); refreshTx(); toast('Deleted'); }
+
+/* ---------- STAFF (HR) ---------- */
+PAGES.staff = async () => {
+  $('pageContent').innerHTML = `
+    <h2 class="section-title">🧑‍💼 Staff & HR</h2>
+    <div class="section-sub">Behavior notes, code-of-conduct scores, and contact details.</div>
+    <div class="card">
+      <h3>Add staff member</h3>
+      <div class="row">
+        <div class="field"><label>Full name</label><input id="sName" /></div>
+        <div class="field"><label>Position</label><input id="sPos" /></div>
+        <div class="field"><label>Department</label><input id="sDept" /></div>
+        <div class="field"><label>Phone</label><input id="sPhone" /></div>
+        <div class="field"><label>Conduct score</label><input id="sScore" type="number" value="100" min="0" max="100" /></div>
+      </div>
+      <div class="field" style="margin-top:10px"><label>Behavior / conduct notes</label><textarea id="sNotes" rows="2"></textarea></div>
+      <button class="btn" style="margin-top:10px" onclick="addStaff()">💾 Save Staff</button>
+    </div>
+    <div class="card">
+      <h3>Staff list</h3>
+      <div class="tbl-wrap"><table class="tbl" id="stTbl"><thead><tr><th>ID</th><th>Name</th><th>Position</th><th>Dept</th><th>Phone</th><th>Conduct</th><th>Notes</th>${(ME.role==='hr'||ME.role==='admin')?'<th></th>':''}</tr></thead><tbody></tbody></table></div>
+    </div>`;
+  refreshStaff();
+};
+
+async function addStaff() {
+  if (!$('sName').value) return toast('Name required', 'err');
+  await api('/api/staff', { method:'POST', body: JSON.stringify({
+    full_name:$('sName').value, position:$('sPos').value, department:$('sDept').value,
+    phone:$('sPhone').value, behavior_notes:$('sNotes').value, conduct_score:$('sScore').value
+  })});
+  ['sName','sPos','sDept','sPhone','sNotes'].forEach(i=>$(i).value=''); $('sScore').value=100;
+  refreshStaff(); toast('Staff added');
+}
+
+async function refreshStaff() {
+  const rows = await api('/api/staff');
+  document.querySelector('#stTbl tbody').innerHTML = rows.map(s => `
+    <tr><td>${s.id}</td><td>${esc(s.full_name)}</td><td>${esc(s.position)}</td><td>${esc(s.department)}</td>
+    <td>${esc(s.phone)}</td><td><span class="badge ${s.conduct_score>=70?'in':s.conduct_score>=40?'ls':'ex'}">${s.conduct_score}/100</span></td>
+    <td>${esc((s.behavior_notes||'').slice(0,60))}</td>
+    ${(ME.role==='hr'||ME.role==='admin')?`<td><button class="btn btn-sm btn-danger" onclick="delStaff(${s.id})">🗑</button></td>`:''}
+    </tr>`).join('') || '<tr><td colspan="8" style="text-align:center;color:#888;padding:20px">No staff yet</td></tr>';
+}
+
+async function delStaff(id){if(!confirm('Delete?'))return;await api('/api/staff/'+id,{method:'DELETE'});refreshStaff();toast('Deleted');}
+
+/* ---------- INVENTORY ---------- */
+PAGES.inventory = async () => {
+  $('pageContent').innerHTML = `
+    <h2 class="section-title">📦 Inventory</h2>
+    <div class="section-sub">Stock tracking — add items manually or scan their label.</div>
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab(this,'invManual')">✍️ Manual</button>
+      <button class="tab" onclick="switchTab(this,'invScan')">📷 Scan label</button>
+    </div>
+    <div id="invManual" class="card">
+      <div class="row">
+        <div class="field"><label>Item name</label><input id="iName" /></div>
+        <div class="field"><label>SKU</label><input id="iSku" /></div>
+        <div class="field"><label>Qty</label><input id="iQty" type="number" /></div>
+        <div class="field"><label>Unit</label><input id="iUnit" value="pcs" /></div>
+        <div class="field"><label>Unit cost</label><input id="iCost" type="number" step="0.01" /></div>
+        <div class="field"><label>Supplier</label><input id="iSup" /></div>
+      </div>
+      <button class="btn" style="margin-top:10px" onclick="addInv()">💾 Save</button>
+    </div>
+    <div id="invScan" class="card hidden">
+      <label class="scan-zone" for="invFile">
+        <div class="ico">📷</div><div style="font-weight:600;color:var(--gold-glow)">Scan item label / barcode region</div>
+        <input type="file" id="invFile" accept="image/*" capture="environment" style="display:none" onchange="invOCR(event)" />
+      </label>
+      <div id="invOcrOut"></div>
+    </div>
+    <div class="card">
+      <h3>Stock list</h3>
+      <div class="tbl-wrap"><table class="tbl" id="invTbl"><thead><tr><th>ID</th><th>Item</th><th>SKU</th><th>Qty</th><th>Unit</th><th>Unit cost</th><th>Value</th><th>Supplier</th>${(ME.role==='storekeeper'||ME.role==='admin')?'<th></th>':''}</tr></thead><tbody></tbody></table></div>
+    </div>`;
+  refreshInv();
+};
+
+async function addInv() {
+  if (!$('iName').value) return toast('Item name required', 'err');
+  await api('/api/inventory', { method:'POST', body: JSON.stringify({
+    item_name:$('iName').value, sku:$('iSku').value, quantity:$('iQty').value,
+    unit:$('iUnit').value, unit_cost:$('iCost').value, supplier:$('iSup').value
+  })});
+  ['iName','iSku','iQty','iCost','iSup'].forEach(i=>$(i).value=''); refreshInv(); toast('Item added');
+}
+
+async function refreshInv() {
+  const rows = await api('/api/inventory');
+  document.querySelector('#invTbl tbody').innerHTML = rows.map(i=>`
+    <tr><td>${i.id}</td><td>${esc(i.item_name)}</td><td>${esc(i.sku)}</td><td>${i.quantity}</td>
+    <td>${esc(i.unit)}</td><td>${fmt(i.unit_cost)}</td><td>${fmt(i.quantity*i.unit_cost)}</td><td>${esc(i.supplier)}</td>
+    ${(ME.role==='storekeeper'||ME.role==='admin')?`<td><button class="btn btn-sm btn-danger" onclick="delInv(${i.id})">🗑</button></td>`:''}
+    </tr>`).join('') || '<tr><td colspan="9" style="text-align:center;color:#888;padding:20px">No inventory yet</td></tr>';
+}
+
+async function delInv(id){if(!confirm('Delete?'))return;await api('/api/inventory/'+id,{method:'DELETE'});refreshInv();toast('Deleted');}
+
+async function invOCR(ev){
+  const f=ev.target.files[0]; if(!f)return;
+  $('invOcrOut').innerHTML='<div style="font-size:13px;color:#a88a4d">Scanning…</div>';
+  const { data } = await Tesseract.recognize(f,'eng');
+  const txt=(data.text||'').trim();
+  const firstLine=txt.split('\n').find(l=>l.trim().length>2)||'Scanned item';
+  $('invOcrOut').innerHTML=`<div class="card" style="margin-top:10px">
+    <pre style="white-space:pre-wrap;font-size:12px;padding:10px;border-radius:8px;border:1px solid var(--line)">${esc(txt)}</pre>
+    <div class="row" style="margin-top:8px">
+      <div class="field"><label>Item</label><input id="iSname" value="${esc(firstLine.slice(0,60))}"/></div>
+      <div class="field"><label>Qty</label><input id="iSqty" type="number" value="1"/></div>
+      <div class="field"><label>Unit cost</label><input id="iScost" type="number" step="0.01" value="0"/></div>
+    </div>
+    <button class="btn" style="margin-top:8px" onclick="saveScannedInv()">Save scanned item</button></div>`;
+}
+
+async function saveScannedInv(){
+  await api('/api/inventory',{method:'POST',body:JSON.stringify({
+    item_name:$('iSname').value,quantity:$('iSqty').value,unit_cost:$('iScost').value,supplier:'scanned'
+  })});
+  toast('Saved!'); refreshInv();
+}
+
+/* ---------- REPORTS ---------- */
+PAGES.reports = async () => {
+  $('pageContent').innerHTML = `
+    <h2 class="section-title">📈 Reports — Profit & Loss</h2>
+    <div class="section-sub">Generate financial reports with interest calculations.</div>
+    <div class="card">
+      <div class="row">
+        <div class="field"><label>From date</label><input id="repFrom" type="date" /></div>
+        <div class="field"><label>To date</label><input id="repTo" type="date" /></div>
+        <div class="field"><label>Interest rate (%)</label><input id="repInt" type="number" step="0.1" value="0" /></div>
+        <button class="btn" onclick="runReport()">📊 Generate</button>
+        <button class="btn btn-ok" onclick="downloadReceipt()">📄 Download Receipt PDF</button>
+      </div>
+    </div>
+    <div id="reportOut"></div>`;
+  runReport();
+};
+
+let LAST_REPORT = null;
+async function runReport() {
+  const from = $('repFrom').value, to = $('repTo').value, rate = $('repInt').value || 0;
+  const qs = new URLSearchParams(); if(from)qs.set('from',from); if(to)qs.set('to',to+'T23:59:59'); qs.set('interestRate',rate);
+  const r = await api('/api/reports/profit-loss?'+qs.toString()); LAST_REPORT = r;
+  $('reportOut').innerHTML = `
+    <div class="card">
+      <h3>Summary</h3>
+      <div class="kpis">
+        ${kpi('Income', fmt(r.income), 'gross revenue')}
+        ${kpi('Expenses', fmt(r.expense), 'operating costs', 'warn')}
+        ${kpi('Loss events', fmt(r.loss), '', 'warn')}
+        ${kpi('Net profit', fmt(r.net_profit), 'income − costs')}
+        ${kpi('Interest ('+r.interest_rate_percent+'%)', fmt(r.interest_amount), 'on net')}
+        ${kpi('Final balance', fmt(r.final_balance), 'net + interest')}
+      </div>
+      <p style="font-size:12px;color:#a88a4d;margin-top:10px">Generated ${new Date(r.generated_at).toLocaleString()}</p>
+    </div>`;
+}
+
+async function downloadReceipt() {
+  if (!LAST_REPORT) await runReport();
+  const r = LAST_REPORT;
   const { jsPDF } = window.jspdf;
-  const pdf = new jsPDF({ unit:'mm', format:[80, 200 + tx.transactions.length*5] });
+  const doc = new jsPDF({ unit:'mm', format:[80,200] });
   let y = 8;
-  pdf.setFont('helvetica','bold'); pdf.setFontSize(14);
-  pdf.text('LOCATIONROOFTOP', 40, y, {align:'center'}); y+=6;
-  pdf.setFontSize(8); pdf.setFont('helvetica','normal');
-  pdf.text('Premium Hospitality Management', 40, y, {align:'center'}); y+=4;
-  pdf.text('--------------------------------', 40, y, {align:'center'}); y+=4;
-  pdf.setFont('helvetica','bold'); pdf.setFontSize(10);
-  pdf.text('RECEIPT / FINANCIAL REPORT', 40, y, {align:'center'}); y+=5;
-  pdf.setFont('helvetica','normal'); pdf.setFontSize(8);
-  pdf.text(`Period: ${period.toUpperCase()}`, 4, y); y+=4;
-  pdf.text(`Generated: ${new Date().toLocaleString()}`, 4, y); y+=4;
-  pdf.text(`Issued by: ${USER.full_name||USER.username} (${ROLE_LABELS[USER.role]})`, 4, y); y+=4;
-  pdf.text('--------------------------------', 40, y, {align:'center'}); y+=4;
-  pdf.setFont('helvetica','bold'); pdf.text('SUMMARY', 4, y); y+=4;
-  pdf.setFont('helvetica','normal');
-  pdf.text(`Income      : KES ${fmt(s.income)}`, 4, y); y+=4;
-  pdf.text(`Expense     : KES ${fmt(s.expense)}`, 4, y); y+=4;
-  pdf.text(`Net ${s.profit>=0?'Profit':'Loss '}: KES ${fmt(Math.abs(s.profit))}`, 4, y); y+=4;
-  pdf.text(`Margin      : ${s.margin.toFixed(2)}%`, 4, y); y+=4;
-  pdf.text(`Interest 5% : KES ${fmt(s.interest)}`, 4, y); y+=4;
-  pdf.text('--------------------------------', 40, y, {align:'center'}); y+=4;
-  pdf.setFont('helvetica','bold'); pdf.text('TRANSACTIONS', 4, y); y+=4;
-  pdf.setFont('helvetica','normal'); pdf.setFontSize(7);
-  tx.transactions.slice(0,80).forEach(t=>{
-    const line = `${new Date(t.created_at).toLocaleDateString()} ${t.type.padEnd(8)} ${(t.description||'').slice(0,18).padEnd(18)} ${fmt(t.amount).padStart(8)}`;
-    pdf.text(line, 4, y); y+=3.5;
-  });
-  y+=2; pdf.setFontSize(8); pdf.text('--------------------------------', 40, y, {align:'center'}); y+=4;
-  pdf.setFont('helvetica','bold'); pdf.text('THANK YOU', 40, y, {align:'center'}); y+=4;
-  pdf.setFont('helvetica','normal'); pdf.setFontSize(7);
-  pdf.text('LocationRooftop © '+new Date().getFullYear(), 40, y, {align:'center'});
-  pdf.save(`LocationRooftop-Receipt-${period}-${Date.now()}.pdf`);
-  showToast('✅ Receipt PDF downloaded');
+  doc.setFont('courier','bold'); doc.setFontSize(13);
+  doc.text('LOCATIONROOFTOP', 40, y, {align:'center'}); y+=5;
+  doc.setFont('courier','normal'); doc.setFontSize(8);
+  doc.text('Profit & Loss Receipt', 40, y, {align:'center'}); y+=4;
+  doc.text('-------------------------------', 40, y, {align:'center'}); y+=4;
+  doc.text('Date: ' + new Date().toLocaleString(), 5, y); y+=4;
+  doc.text('Cashier: ' + (ME.fullName||ME.username), 5, y); y+=4;
+  doc.text('Period: ' + r.period.from + ' - ' + r.period.to, 5, y); y+=4;
+  doc.text('-------------------------------', 40, y, {align:'center'}); y+=5;
+  const line = (k,v) => { doc.text(k, 5, y); doc.text(v, 75, y, {align:'right'}); y+=4; };
+  line('Income:',         fmt(r.income));
+  line('Expenses:',       fmt(r.expense));
+  line('Loss events:',    fmt(r.loss));
+  doc.text('-------------------------------', 40, y, {align:'center'}); y+=4;
+  doc.setFont('courier','bold'); line('NET PROFIT:', fmt(r.net_profit)); doc.setFont('courier','normal');
+  line('Interest %:',     r.interest_rate_percent + '%');
+  line('Interest amt:',   fmt(r.interest_amount));
+  doc.setFont('courier','bold'); line('FINAL:',      fmt(r.final_balance)); doc.setFont('courier','normal');
+  y+=2; doc.text('-------------------------------', 40, y, {align:'center'}); y+=4;
+  doc.text('Thank you for using', 40, y, {align:'center'}); y+=4;
+  doc.text('LocationRooftop System', 40, y, {align:'center'}); y+=4;
+  doc.text('** PRINTED RECEIPT **', 40, y, {align:'center'});
+  doc.save('locationrooftop-receipt-'+Date.now()+'.pdf');
+  toast('Receipt downloaded');
 }
 
-/* ---------- Admin ---------- */
-PAGES.admin = async function(){
-  if (USER.role !== 'admin'){ document.getElementById('mainContent').innerHTML='<div class="panel"><h3>🚫 Access denied</h3></div>'; return; }
-  const m = document.getElementById('mainContent');
-  m.innerHTML = `
-    <div class="page-head"><div><h2>🛡️ Admin Panel</h2><p>Manage all panel users, reset passwords, control records</p></div>
-      <button class="btn btn-gold btn-sm" onclick="openCreateUserModal()">+ Create User</button></div>
+PAGES.receipt = PAGES.reports;
 
-    <div class="cards-grid">
-      <div class="stat-card"><div class="label">Total Users</div><div class="value" id="adUsers">…</div></div>
-      <div class="stat-card"><div class="label">Total Transactions</div><div class="value" id="adTx">…</div></div>
-      <div class="stat-card"><div class="label">Total Staff</div><div class="value" id="adStaff">…</div></div>
-      <div class="stat-card"><div class="label">Stock Items</div><div class="value" id="adStock">…</div></div>
-    </div>
-
-    <div class="panel">
-      <h3>👤 User Management</h3>
-      <div class="table-wrap"><table><thead><tr><th>ID</th><th>Username</th><th>Role</th><th>Full name</th><th>Created</th><th>Actions</th></tr></thead><tbody id="adUsersTb"></tbody></table></div>
-    </div>
-  `;
-  const u = await api('/api/admin/users');
-  document.getElementById('adUsers').textContent = u.users.length;
-  document.getElementById('adUsersTb').innerHTML = u.users.map(x=>`
-    <tr><td>#${x.id}</td><td><b>${x.username}</b></td><td><span class="badge stock_in">${ROLE_LABELS[x.role]||x.role}</span></td>
-    <td>${x.full_name||'-'}</td><td class="muted">${new Date(x.created_at).toLocaleDateString()}</td>
-    <td>
-      <button class="btn btn-sm btn-ghost" onclick="resetPw('${x.username}')">🔑 Reset PW</button>
-      <button class="btn btn-sm btn-danger" onclick="delUser(${x.id},'${x.username}')">🗑️</button>
-    </td></tr>
-  `).join('');
-  try{
-    const tx = await api('/api/transactions'); document.getElementById('adTx').textContent = tx.transactions.length;
-    const st = await api('/api/staff'); document.getElementById('adStaff').textContent = st.staff.length;
-    const sk = await api('/api/stock'); document.getElementById('adStock').textContent = sk.items.length;
-  }catch(e){}
-};
-async function resetPw(username){
-  const np = prompt(`Reset password for "${username}". Enter new password:`);
-  if (!np) return;
-  await api('/api/admin/reset-password',{method:'POST',body:JSON.stringify({username,new_password:np})});
-  showToast(`✅ Password reset for ${username}`);
-}
-async function delUser(id,username){
-  if (!confirm(`Delete user ${username}? This cannot be undone.`)) return;
-  await api('/api/admin/users/'+id,{method:'DELETE'});
-  navigate('admin');
-}
-function openCreateUserModal(){
-  showModal(`
-    <h3>👤 Create New User</h3>
-    <form id="newUserForm">
-      <div class="form-group"><label>Username</label><input id="nuU" class="form-control" required></div>
-      <div class="form-group"><label>Full Name</label><input id="nuN" class="form-control"></div>
-      <div class="form-group"><label>Role</label><select id="nuR" class="form-control" required>
-        <option value="cost_controller">Cost Controller</option>
-        <option value="procurement">Procurement</option>
-        <option value="storekeeper">Storekeeper</option>
-        <option value="accounts">Accounts</option>
-        <option value="finance_manager">Finance Manager</option>
-        <option value="supervisor">Supervisor</option>
-        <option value="hr">HR</option>
-        <option value="director">Director</option>
-        <option value="auditor">Auditor</option>
-      </select></div>
-      <div class="form-group"><label>Password</label><input id="nuP" type="text" class="form-control" required></div>
-      <button type="submit" class="btn btn-gold">Create User</button>
-    </form>
-  `);
-  document.getElementById('newUserForm').onsubmit = async e=>{
-    e.preventDefault();
-    try{
-      await api('/api/admin/users',{method:'POST',body:JSON.stringify({
-        username:nuU.value,full_name:nuN.value,role:nuR.value,password:nuP.value
-      })});
-      closeModal(); navigate('admin'); showToast('✅ User created');
-    }catch(err){ showToast(err.message); }
-  };
-}
-
-/* ---------- Audit ---------- */
-PAGES.audit = async function(){
-  const m = document.getElementById('mainContent');
-  m.innerHTML = `<div class="page-head"><div><h2>🔍 Audit Log</h2><p>Complete activity trail</p></div></div>
-    <div class="panel"><div class="table-wrap"><table><thead><tr><th>When</th><th>Actor</th><th>Action</th><th>Details</th></tr></thead><tbody id="auTb"></tbody></table></div></div>`;
-  try{
-    const a = await api('/api/audit');
-    document.getElementById('auTb').innerHTML = a.log.map(l=>`<tr><td>${new Date(l.created_at).toLocaleString()}</td><td>${l.actor}</td><td><span class="badge stock_in">${l.action}</span></td><td><code style="font-size:11px">${escapeHtml(l.details||'')}</code></td></tr>`).join('') || '<tr><td colspan="4" class="muted" style="text-align:center;padding:30px">No audit records</td></tr>';
-  }catch(e){
-    document.getElementById('mainContent').innerHTML = '<div class="panel"><h3>🚫 Audit log restricted to Auditor / Director / Admin</h3></div>';
-  }
+/* ---------- AUDIT LOG ---------- */
+PAGES.audit = async () => {
+  const rows = await api('/api/audit-log');
+  $('pageContent').innerHTML = `
+    <h2 class="section-title">🔍 Audit Log</h2>
+    <div class="section-sub">Every important action is recorded permanently. Last 500 entries.</div>
+    <div class="card"><div class="tbl-wrap"><table class="tbl"><thead><tr><th>ID</th><th>Actor</th><th>Action</th><th>Details</th><th>When</th></tr></thead><tbody>
+      ${rows.map(a=>`<tr><td>${a.id}</td><td>${esc(a.actor)}</td><td><span class="badge in">${esc(a.action)}</span></td><td style="font-size:12px;color:#a88a4d">${esc((a.details||'').slice(0,80))}</td><td>${esc((a.created_at||'').slice(0,19))}</td></tr>`).join('') || '<tr><td colspan="5" style="text-align:center;padding:20px;color:#888">No audit entries</td></tr>'}
+    </tbody></table></div></div>`;
 };
 
-/* ---------- Settings ---------- */
-PAGES.settings = async function(){
-  const m = document.getElementById('mainContent');
-  m.innerHTML = `
-    <div class="page-head"><div><h2>⚙️ Settings</h2><p>Personalize your experience</p></div></div>
-    <div class="panel">
-      <h3>🔗 Backend Connection</h3>
-      <div class="form-group"><label>API Base URL</label>
-        <input id="apiUrlInput" class="form-control" value="${API_BASE}">
+/* ---------- SETTINGS ---------- */
+PAGES.settings = async () => {
+  $('pageContent').innerHTML = `
+    <h2 class="section-title">⚙️ Settings</h2>
+    <div class="card">
+      <h3>🔐 Change my password</h3>
+      <div class="row">
+        <div class="field"><label>Old password</label><input id="oldP" type="password" /></div>
+        <div class="field"><label>New password</label><input id="newP" type="password" /></div>
+        <button class="btn" onclick="changeMyPwd()">Update</button>
       </div>
-      <button class="btn btn-gold btn-sm" onclick="saveApiUrl()">💾 Save API URL</button>
-      <p class="muted" style="font-size:12px;margin-top:10px">After deploying backend to Render.com, paste the Render URL here (e.g. https://locationrooftop-backend.onrender.com).</p>
-      <hr class="gold-sep">
-      <h3>📋 System Info</h3>
-      <p class="muted" style="font-size:13px">
-        Version: 1.0.0<br>
-        User: <b class="text-gold">${USER.full_name||USER.username}</b><br>
-        Role: <b class="text-gold">${ROLE_LABELS[USER.role]}</b><br>
-        Token expires in 12 hours of inactivity
-      </p>
+      <div id="cpMsg" style="margin-top:8px"></div>
     </div>
-  `;
+    <div class="card">
+      <h3>🌐 Backend API URL</h3>
+      <p style="font-size:13px;color:#a88a4d">Current: <code style="color:var(--gold-glow)">${API}</code></p>
+      <div class="row">
+        <div class="field"><label>Override API URL</label><input id="apiOverride" placeholder="https://your-render-app.onrender.com" value="${localStorage.getItem('lr_api')||''}" /></div>
+        <button class="btn" onclick="saveApi()">Save</button>
+      </div>
+    </div>
+    <div class="card">
+      <h3>ℹ️ About</h3>
+      <p style="font-size:13px;line-height:1.7;color:#c4b283">LocationRooftop v1.0 — modern multi-panel management with OCR data capture, P&L reports, audit logging, PDF receipts, AI chatbot, and full role-based access control. Data persists permanently in the backend database.</p>
+      <p style="font-size:13px;line-height:1.7;color:#c4b283;margin-top:8px">Built with Node.js + Express + SQLite + Tesseract OCR + Chart.js + jsPDF.</p>
+    </div>`;
 };
-function saveApiUrl(){
-  const v = document.getElementById('apiUrlInput').value.trim().replace(/\/$/,'');
-  localStorage.setItem('apiBase', v);
-  showToast('✅ API URL saved. Reloading...');
-  setTimeout(()=>location.reload(), 800);
+
+async function changeMyPwd() {
+  try {
+    await api('/api/change-password', { method:'POST', body: JSON.stringify({ oldPassword:$('oldP').value, newPassword:$('newP').value })});
+    $('cpMsg').innerHTML = '<div class="alert ok">✓ Password changed successfully.</div>';
+    $('oldP').value=''; $('newP').value='';
+    toast('Password updated');
+  } catch(e){ $('cpMsg').innerHTML = '<div class="alert err">'+e.message+'</div>'; }
 }
 
-/* ============================================================
-   Helpers
-============================================================ */
-function fmt(n){ return Number(n||0).toLocaleString('en-KE',{minimumFractionDigits:2,maximumFractionDigits:2}); }
-function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
-function showToast(msg){
-  const t = document.createElement('div');
-  t.style.cssText='position:fixed;top:20px;right:20px;background:linear-gradient(135deg,#d4af37,#b8860b);color:#1a1408;padding:14px 22px;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.4);z-index:2000;font-weight:600';
-  t.textContent = msg;
-  document.body.appendChild(t);
-  setTimeout(()=>t.remove(),3000);
-}
-function showModal(html){ document.getElementById('modalBody').innerHTML = html; document.getElementById('modalBg').classList.add('show'); }
-function closeModal(){ document.getElementById('modalBg').classList.remove('show'); }
-function drawChart(id,type,data){
-  if (CHARTS[id]) CHARTS[id].destroy();
-  CHARTS[id] = new Chart(document.getElementById(id), {
-    type, data,
-    options:{ responsive:true, plugins:{ legend:{ labels:{ color:'#fff8e1' } } }, scales: type==='doughnut'?{}:{ x:{ ticks:{color:'#a89968'}}, y:{ ticks:{color:'#a89968'}} } }
-  });
-}
+function saveApi(){ const v=$('apiOverride').value.trim(); if(v) localStorage.setItem('lr_api',v); else localStorage.removeItem('lr_api'); alert('Saved — reloading.'); location.reload(); }
 
-/* ---------- Chatbot ---------- */
-function toggleChat(){ document.getElementById('chatBox').classList.toggle('show'); }
+/* ---------- CHATBOT ---------- */
+function toggleChat(){ $('chatBox').classList.toggle('open'); }
+function quickChat(text){ $('chatInput').value=text; sendChat(); }
+
 async function sendChat(){
-  const input = document.getElementById('chatInput');
-  const text = input.value.trim(); if (!text) return;
-  const body = document.getElementById('chatBody');
-  body.innerHTML += `<div class="chat-msg me">${escapeHtml(text)}</div>`;
-  input.value = '';
-  body.scrollTop = body.scrollHeight;
+  const inp=$('chatInput'); const msg=inp.value.trim(); if(!msg)return;
+  $('chatBody').insertAdjacentHTML('beforeend',`<div class="msg me">${esc(msg)}</div>`);
+  inp.value=''; $('chatBody').scrollTop=$('chatBody').scrollHeight;
+  // Show typing indicator
+  $('chatBody').insertAdjacentHTML('beforeend',`<div class="msg bot" id="typingMsg"><span class="loader" style="border-color:rgba(212,164,55,.3);border-top-color:var(--gold-3);width:14px;height:14px"></span> thinking…</div>`);
+  $('chatBody').scrollTop=$('chatBody').scrollHeight;
   try{
-    const r = await api('/api/chat',{method:'POST',body:JSON.stringify({message:text})});
-    body.innerHTML += `<div class="chat-msg bot">${escapeHtml(r.reply)}</div>`;
+    const r=await api('/api/chat',{method:'POST',body:JSON.stringify({message:msg})});
+    $('typingMsg').remove();
+    $('chatBody').insertAdjacentHTML('beforeend',`<div class="msg bot">${esc(r.reply)}</div>`);
   }catch(e){
-    body.innerHTML += `<div class="chat-msg bot">⚠️ ${e.message}</div>`;
+    $('typingMsg')?.remove();
+    $('chatBody').insertAdjacentHTML('beforeend',`<div class="msg bot">⚠️ ${esc(e.message)}</div>`);
   }
-  body.scrollTop = body.scrollHeight;
+  $('chatBody').scrollTop=$('chatBody').scrollHeight;
 }
 
-/* ---------- Auto-restore session ---------- */
-if (TOKEN && USER){
-  // verify token still valid
-  api('/api/me').then(()=>enterApp()).catch(()=>{ logout(); });
+/* ---------- AUTO 12h REPORT ---------- */
+function scheduleAutoReport(){
+  const last = Number(localStorage.getItem('lr_last_report') || 0);
+  const now = Date.now();
+  const TWELVE_H = 12 * 60 * 60 * 1000;
+  if (now - last > TWELVE_H && TOKEN) {
+    api('/api/reports/profit-loss').then(r => {
+      const snapshots = JSON.parse(localStorage.getItem('lr_snapshots') || '[]');
+      snapshots.unshift({ at: new Date().toISOString(), ...r });
+      localStorage.setItem('lr_snapshots', JSON.stringify(snapshots.slice(0,30)));
+      localStorage.setItem('lr_last_report', String(now));
+      console.log('Auto 12h snapshot saved');
+    }).catch(()=>{});
+  }
 }
+setInterval(scheduleAutoReport, 60 * 60 * 1000);
 
+/* ---------- BOOT ---------- */
+if (TOKEN && ME) {
+  api('/api/health').then(enterApp).catch(logout);
+}
+scheduleAutoReport();
 </script>
 </body>
 </html>
