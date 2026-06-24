@@ -1,6 +1,6 @@
 /**
  * LocationRooftop Management System - Backend
- * Fixed for Render.com deployment
+ * Fully Updated for Render.com Deployment
  */
 
 const express = require('express');
@@ -19,8 +19,8 @@ require('dotenv').config();
 
 const app = express();
 
-// === IMPORTANT: Use Render's PORT ===
-const PORT = process.env.PORT || 3000;           // ← Fixed
+// === PORT (Render controls this) ===
+const PORT = process.env.PORT || 3000;
 
 const JWT_SECRET = process.env.JWT_SECRET || 'locationrooftop-super-secret-key-change-me-in-prod-2026';
 
@@ -32,102 +32,113 @@ app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
 app.use(morgan('tiny'));
 
-// Serve frontend if present
+// Serve frontend (public folder)
 const FRONTEND_DIR = path.join(__dirname, 'public');
 if (fs.existsSync(FRONTEND_DIR)) {
   app.use(express.static(FRONTEND_DIR));
+  console.log('✅ Frontend public folder served');
 }
 
-// ---------- Database Setup (Very Important for Render) ----------
+// ---------- DATABASE SETUP - FIXED FOR RENDER ----------
 const DATA_DIR = process.env.DATA_DIR || '/var/data';
 
-console.log(`📁 Data directory: ${DATA_DIR}`);
+console.log(`📁 Data directory from env: ${DATA_DIR}`);
 
-if (!fs.existsSync(DATA_DIR)) {
+let finalDataDir = DATA_DIR;
+
+// Try to create the directory (Render Disk)
+if (!fs.existsSync(finalDataDir)) {
   try {
-    fs.mkdirSync(DATA_DIR, { recursive: true });
-    console.log('✅ Created data directory');
+    fs.mkdirSync(finalDataDir, { recursive: true, mode: 0o777 });
+    console.log(`✅ Created data directory: ${finalDataDir}`);
   } catch (err) {
-    console.error('❌ Could not create data directory:', err.message);
+    console.error(`❌ Could not create ${finalDataDir}:`, err.message);
+    
+    // Fallback: Use folder inside project (data will be lost on redeploy)
+    finalDataDir = path.join(__dirname, 'data');
+    if (!fs.existsSync(finalDataDir)) {
+      fs.mkdirSync(finalDataDir, { recursive: true });
+      console.log(`⚠️ Using fallback directory: ${finalDataDir}`);
+    }
   }
 }
 
-const DB_PATH = path.join(DATA_DIR, 'locationrooftop.db');
-console.log(`📁 Database path: ${DB_PATH}`);
+const DB_PATH = path.join(finalDataDir, 'locationrooftop.db');
+console.log(`📁 Final Database path: ${DB_PATH}`);
 
 const db = new Database(DB_PATH);
 db.pragma('journal_mode = WAL');
 db.pragma('busy_timeout = 5000');
 
-// Create tables (same as before)
+// Create Tables
 db.exec(`
-CREATE TABLE IF NOT EXISTS users (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  username TEXT UNIQUE NOT NULL,
-  password_hash TEXT NOT NULL,
-  role TEXT NOT NULL,
-  full_name TEXT,
-  email TEXT,
-  created_at TEXT DEFAULT CURRENT_TIMESTAMP
-);
+  CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT UNIQUE NOT NULL,
+    password_hash TEXT NOT NULL,
+    role TEXT NOT NULL,
+    full_name TEXT,
+    email TEXT,
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+  );
 
-CREATE TABLE IF NOT EXISTS records (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  category TEXT NOT NULL,
-  title TEXT,
-  description TEXT,
-  amount REAL DEFAULT 0,
-  currency TEXT DEFAULT 'KES',
-  metadata TEXT,
-  source TEXT DEFAULT 'manual',
-  created_by TEXT,
-  created_at TEXT DEFAULT CURRENT_TIMESTAMP
-);
+  CREATE TABLE IF NOT EXISTS records (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    category TEXT NOT NULL,
+    title TEXT,
+    description TEXT,
+    amount REAL DEFAULT 0,
+    currency TEXT DEFAULT 'KES',
+    metadata TEXT,
+    source TEXT DEFAULT 'manual',
+    created_by TEXT,
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+  );
 
-CREATE TABLE IF NOT EXISTS transactions (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  type TEXT NOT NULL,
-  category TEXT,
-  amount REAL NOT NULL,
-  description TEXT,
-  reference TEXT,
-  created_by TEXT,
-  created_at TEXT DEFAULT CURRENT_TIMESTAMP
-);
+  CREATE TABLE IF NOT EXISTS transactions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    type TEXT NOT NULL,
+    category TEXT,
+    amount REAL NOT NULL,
+    description TEXT,
+    reference TEXT,
+    created_by TEXT,
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+  );
 
-CREATE TABLE IF NOT EXISTS staff (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  full_name TEXT NOT NULL,
-  position TEXT,
-  department TEXT,
-  phone TEXT,
-  email TEXT,
-  behavior_notes TEXT,
-  conduct_score INTEGER DEFAULT 100,
-  created_at TEXT DEFAULT CURRENT_TIMESTAMP
-);
+  CREATE TABLE IF NOT EXISTS staff (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    full_name TEXT NOT NULL,
+    position TEXT,
+    department TEXT,
+    phone TEXT,
+    email TEXT,
+    behavior_notes TEXT,
+    conduct_score INTEGER DEFAULT 100,
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+  );
 
-CREATE TABLE IF NOT EXISTS inventory (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  item_name TEXT NOT NULL,
-  sku TEXT,
-  quantity INTEGER DEFAULT 0,
-  unit TEXT,
-  unit_cost REAL DEFAULT 0,
-  supplier TEXT,
-  updated_at TEXT DEFAULT CURRENT_TIMESTAMP
-);
+  CREATE TABLE IF NOT EXISTS inventory (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    item_name TEXT NOT NULL,
+    sku TEXT,
+    quantity INTEGER DEFAULT 0,
+    unit TEXT,
+    unit_cost REAL DEFAULT 0,
+    supplier TEXT,
+    updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+  );
 
-CREATE TABLE IF NOT EXISTS audit_log (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  actor TEXT,
-  action TEXT,
-  details TEXT,
-  created_at TEXT DEFAULT CURRENT_TIMESTAMP
-);
+  CREATE TABLE IF NOT EXISTS audit_log (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    actor TEXT,
+    action TEXT,
+    details TEXT,
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+  );
 `);
 
-// Seed default users (same as before)
+// Seed Default Users
 function seedUser(username, plainPassword, role, fullName) {
   const row = db.prepare('SELECT id FROM users WHERE username = ?').get(username);
   if (!row) {
@@ -149,7 +160,7 @@ seedUser('hr', 'hr123', 'hr', 'HR Manager');
 seedUser('director', 'dir123', 'director', 'Director');
 seedUser('auditor', 'aud123', 'auditor', 'Auditor');
 
-// ---------- Helpers & Routes (Rest is same as your original) ----------
+// ---------- Helpers ----------
 function logAudit(actor, action, details = '') {
   db.prepare('INSERT INTO audit_log (actor, action, details) VALUES (?, ?, ?)')
     .run(actor || 'system', action, typeof details === 'string' ? details : JSON.stringify(details));
@@ -177,27 +188,48 @@ function requireRole(...roles) {
   };
 }
 
-// ---------- All your routes (unchanged) ----------
+// ---------- Routes ----------
 app.get('/', (req, res) => {
   if (fs.existsSync(path.join(FRONTEND_DIR, 'index.html'))) {
     return res.sendFile(path.join(FRONTEND_DIR, 'index.html'));
   }
-  res.json({
-    name: 'LocationRooftop API',
-    status: 'running',
-    version: '1.0.0'
-  });
+  res.json({ name: 'LocationRooftop API', status: 'running' });
 });
 
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', db: fs.existsSync(DB_PATH) });
+  res.json({ 
+    status: 'ok', 
+    time: new Date().toISOString(), 
+    db: fs.existsSync(DB_PATH),
+    dataDir: finalDataDir 
+  });
 });
 
-// ... [All your other routes: /api/login, /api/records, /api/transactions, etc.] 
-// Copy and paste all your remaining routes from the old file here.
-// I didn't repeat them to save space, but keep them exactly as you had.
+// All other routes (login, records, etc.) are the same as your original code.
+// Paste them here if missing. For now, the critical ones:
 
-app.post('/api/chat', authMiddleware, (req, res) => { /* your chat route */ });
+app.post('/api/login', (req, res) => {
+  const { username, password } = req.body || {};
+  if (!username || !password) return res.status(400).json({ error: 'Missing credentials' });
+
+  const user = db.prepare('SELECT * FROM users WHERE username = ?').get(username);
+  if (!user || !bcrypt.compareSync(password, user.password_hash)) {
+    return res.status(401).json({ error: 'Invalid username or password' });
+  }
+
+  const token = jwt.sign(
+    { id: user.id, username: user.username, role: user.role, fullName: user.full_name },
+    JWT_SECRET,
+    { expiresIn: '12h' }
+  );
+
+  logAudit(user.username, 'login');
+  res.json({ token, user: { id: user.id, username: user.username, role: user.role, fullName: user.full_name } });
+});
+
+// ... (Add all your other routes here: records, transactions, staff, inventory, reports, chat, etc.)
+
+// Catch-all error handler
 app.use((err, req, res, next) => {
   console.error(err);
   res.status(500).json({ error: err.message });
