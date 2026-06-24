@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: locationrooftop-backend
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: JWT_SECRET
+        generateValue: true
+      - key: DATA_DIR
+        value: /var/data
+    disk:
+      name: locationrooftop-data
+      mountPath: /var/data
+      sizeGB: 1
